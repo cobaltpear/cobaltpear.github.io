@@ -63,6 +63,8 @@ body.all-shown .veil .full-btn { display: none; }
 #settings .pack [data-ep] { width: 16ch; }
 #settings .pack .new { font-size: 11px; color: var(--accent); }
 #pack-check { white-space: nowrap; }
+#settings .saved { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
+#settings .saved b { color: var(--text); font-weight: 600; }
 #settings .add { display: flex; gap: 6px; margin-top: 8px; }
 #settings .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 #settings .actions button { padding: 6px 14px; cursor: pointer; }
@@ -79,10 +81,11 @@ body.all-shown .veil .full-btn { display: none; }
 <main id="feed"></main>
 <form id="form"><div class="box">
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
-  <div class="row"><select id="model"></select><span class="right"><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+  <div class="row"><span id="model" class="meta"></span><span class="right"><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
 <div id="settings" hidden><form class="card" id="settings-form">
   <b>Settings</b>
+  <div class="saved">Everything is saved <b>only in this browser</b> — models, endpoint IDs and your results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is never stored — enter it again after a reload. A Restricted key allowing only your endpoints is recommended.</div>
@@ -91,8 +94,8 @@ body.all-shown .veil .full-btn { display: none; }
   <div id="pack-list"></div>
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <label class="pill" style="display:inline-block;cursor:pointer">Pack file (.json)<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label>
-  <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it. Models and endpoint IDs are stored only in this browser.</div>
-  <div class="hint">Cobalt Pear Simple 2026.10.23</div>
+  <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it. Simple uses one model — adding another replaces it.</div>
+  <div class="hint">Cobalt Pear Simple 2026.10.23.1</div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <script>
@@ -100,9 +103,10 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.23";
+const VERSION = "2026.10.23.1";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty hides the Plus links until the store is ready
+const PACKS_KEY = "simple-packs", MAX_MODELS = 1;  // Simple holds one model, in its own list so Plus's list on the same site stays as it is
 const GET_URL = "https://cobaltpear.github.io/";
 const KEEP = 300;  // newest prompts kept in the browser
 const $ = id => document.getElementById(id);
@@ -219,7 +223,7 @@ function mediaHtml({ url, kind }, shown) {
   return `<div class="veil${shown ? " shown" : ""}" data-veil="${esc(url)}">${el}</div>`;
 }
 let apiKey = "";
-let packs = store.get("packs", []);          // model packs
+let packs = store.get(PACKS_KEY, null) || store.get("packs", []).slice(0, MAX_MODELS);  // model packs
 let endpoints = store.get("endpoints", {});  // pack id → endpoint ID
 const turns = [];  // {created, prompt, items: [{id, packId, label, seed, w, h, status, error, media: [{url, kind, type}], blobs, text}]}
 let allShown = false;
@@ -259,6 +263,7 @@ function renderPacks() {
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
     <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div></div>`).join("");
   $("pack-tools").hidden = !packs.length;
+  $("pack-find").hidden = packs.length < 6;
   $("pack-check").hidden = !packs.some(p => p.src);
   findPacks();
 }
@@ -284,7 +289,7 @@ $("pack-check").addEventListener("click", async e => {
       packs[i] = n; freshPacks.add(n.id);
     } catch { failed++; }
   }));
-  store.set("packs", packs); store.set("endpoints", endpoints);
+  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints);
   renderPacks();
   btn.disabled = false;
   btn.textContent = (freshPacks.size ? `${freshPacks.size} updated` : "Up to date") + (failed ? ` · ${failed} not reached` : "");
@@ -298,8 +303,11 @@ function addPack(data, name, src) {
   const p = checkPack(data.format ? data : detectPack(data.prompt && !data.class_type && typeof data.prompt === "object" ? data.prompt : data, name));
   if (src) p.src = src;
   keepEndpointInputs();
+  if (packs.length && !packs.some(x => x.id === p.id)
+      && !confirm(`Cobalt Pear Simple uses one model. Use ${p.label} instead of ${packs[0].label}?` + (PLUS_URL ? "\n\nSeveral models: Cobalt Pear Plus." : ""))) return;
+  packs = [];
   packs = packs.filter(x => x.id !== p.id).concat(p);
-  store.set("packs", packs);
+  store.set(PACKS_KEY, packs);
   renderPacks();
 }
 $("pack-add").addEventListener("click", async () => {
@@ -316,7 +324,7 @@ $("pack-list").addEventListener("click", e => {
   if (!id) return;
   keepEndpointInputs();
   packs = packs.filter(p => p.id !== id); delete endpoints[id];
-  store.set("packs", packs); store.set("endpoints", endpoints);
+  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints);
   renderPacks();
 });
 let afterSettings = null;  // what was asked for before the key was given — runs on OK
@@ -341,14 +349,11 @@ $("settings-form").addEventListener("submit", async e => {
 // ---- Models ----
 const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
 function fillModels() {
-  const list = usable(), last = store.get("model", "");
-  $("model").innerHTML = list.length ? list.map(p => `<option value="${esc(p.id)}">${esc(p.label)}</option>`).join("")
-                                     : `<option value="">Add a model and endpoint in Settings</option>`;
-  if (list.some(p => p.id === last)) $("model").value = last;
+  const p = usable()[0];
+  $("model").textContent = p ? p.label : "Add a model and endpoint in Settings";
 }
-$("model").addEventListener("change", e => store.set("model", e.target.value));
-const chosenPacks = () => usable().filter(p => p.id === $("model").value);
-function choose(ids) { if (usable().some(p => p.id === ids[0])) { $("model").value = ids[0]; store.set("model", ids[0]); } }
+const chosenPacks = () => usable().slice(0, 1);
+function choose() {}  // one model — nothing to choose
 
 // ---- Generate ----
 async function runpod(path, body) {
