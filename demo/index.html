@@ -27,6 +27,7 @@ input { width: 100%; padding: 8px 10px; }
 .turn img, .turn video { display: block; width: 100%; border-radius: 10px; }
 .turn img { cursor: zoom-in; }
 .turn audio { display: block; width: 100%; margin-top: 8px; }
+.sent { margin-top: 6px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font: 11px/1.5 ui-monospace, monospace; color: var(--muted); white-space: pre-wrap; word-break: break-word; }
 .turn .text { margin-top: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; white-space: pre-wrap; word-break: break-word; }
 .err { color: #f88; }
 form#form { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 16px; }
@@ -37,7 +38,8 @@ form select { border-radius: 999px; font-size: 13px; color: var(--muted); }
 #send { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--accent); color: #111; font-size: 18px; font-weight: 700; cursor: pointer; }
 #send:disabled { opacity: .5; cursor: default; }
 form .right { display: flex; align-items: center; gap: 6px; }
-#seed { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+#seed, #negative { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+#negative { width: 26ch; min-width: 6ch; flex: 0 1 auto; }
 .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }
 #viewer { position: fixed; inset: 0; z-index: 10; background: #000; display: flex; cursor: zoom-out; }
 #viewer img { width: 100%; height: 100%; object-fit: contain; }
@@ -84,7 +86,7 @@ body.all-shown .veil .full-btn { display: none; }
 <main id="feed"></main>
 <form id="form"><div class="box">
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
-  <div class="row"><span id="model" class="meta"></span><span class="right"><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+  <div class="row"><span id="model" class="meta"></span><span class="right"><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — starts as the model's own" hidden><button id="neg-default" class="pill" type="button" title="Back to the model's own negative" hidden>Default</button><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
 <div id="settings" hidden><form class="card" id="settings-form">
   <b>Settings</b>
@@ -98,7 +100,7 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it. Simple uses one model — adding another replaces it.</div>
-  <div class="hint">Cobalt Pear Simple 2026.10.23.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear Simple 2026.10.23.6 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <script>
@@ -138,7 +140,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.23.5";
+const VERSION = "2026.10.23.6";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty hides the Plus links until the store is ready
 const PACKS_KEY = "simple-packs", MAX_MODELS = 1;  // Simple holds one model, in its own list so Plus's list on the same site stays as it is
@@ -160,7 +162,7 @@ const store = {
 // The only engine-specific part is filling values into the template. Output is read whatever its shape: images, video, audio, text.
 // So video, TTS and LLM workers plug in with just a pack. A worker with a very different template gets one more entry in ENGINES.
 const PACK_FORMATS = ["pack/1", "comfy-pack/1"];  // first = current, the other is an old name (engine = comfyui)
-const SLOTS = ["prompt", "seed", "width", "height"];
+const SLOTS = ["prompt", "negative", "seed", "width", "height"];
 const ENGINES = {
   // ComfyUI worker (runpod/worker-comfyui) — template = API-format workflow (pack.workflow), slot = [node id, input name]
   comfyui: {
@@ -169,6 +171,16 @@ const ENGINES = {
       const wf = structuredClone(p.workflow);
       for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) wf[n].inputs[name] = v[k];
       return { workflow: wf };
+    },
+    get: (p, k) => { const [n, name] = p[k]?.[0] || []; return p.workflow[n]?.inputs[name]; },  // the template's own value of a slot
+    // every plain value of the workflow (links to other nodes left out): "KSampler · steps: 30".
+    // A node fed into a positive/negative input is named that, so the two prompt boxes can be told apart.
+    describe(inp) {
+      const wf = inp.workflow || {}, role = {};
+      for (const n of Object.values(wf)) for (const [k, v] of Object.entries(n.inputs || {}))
+        if (Array.isArray(v) && /^(positive|negative)$/.test(k)) role[v[0]] ??= k;
+      return Object.entries(wf).flatMap(([id, n]) => Object.entries(n.inputs || {})
+        .filter(([, v]) => !Array.isArray(v)).map(([k, v]) => `${role[id] || n.class_type} · ${k}: ${v}`));
     },
   },
   // Any other worker — template = the RunPod input as is (pack.input), slot = path inside it (["prompt"], ["openai_input", "messages", 0, "content"])
@@ -183,6 +195,8 @@ const ENGINES = {
       }
       return inp;
     },
+    get: (p, k) => p[k]?.[0]?.reduce((o, s) => o?.[s], p.input),
+    describe: inp => [JSON.stringify(inp, null, 1)],
   },
 };
 function checkPack(p) {
@@ -194,6 +208,8 @@ function checkPack(p) {
   return { ...p, engine, label: p.label || p.id, sizes: p.sizes || [], size_step: p.size_step || 16 };
 }
 const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values);
+const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
+const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
 const hasSize = p => !!(p.width?.length && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
 // Get a pack by URL — a GitHub repo URL means pack.json on main
 async function fetchPack(url) {
@@ -387,9 +403,22 @@ const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
 function fillModels() {
   const p = usable()[0];
   $("model").textContent = p ? p.label : "Add a model and endpoint in Settings";
+  fitNegative();
 }
 const chosenPacks = () => usable().slice(0, 1);
 function choose() {}  // one model — nothing to choose
+
+// The Negative box shows only when a chosen model takes one. It starts as the model's own negative (so nothing is hidden);
+// once changed it is sent instead of it, and Default puts the model's own back.
+let negEdited = false;
+const negDefault = () => { const p = chosenPacks().find(p => p.negative?.length); return p ? String(packDefault(p, "negative") ?? "") : ""; };
+function fitNegative() {
+  $("negative").hidden = !chosenPacks().some(p => p.negative?.length);
+  if (!negEdited) $("negative").value = negDefault();
+  $("neg-default").hidden = $("negative").hidden || !negEdited;
+}
+function setNegative(v) { negEdited = v != null && v.trim() !== negDefault(); if (negEdited) $("negative").value = v; fitNegative(); }
+$("neg-default").addEventListener("click", () => { setNegative(null); keepDraft(); });
 
 // ---- Generate ----
 async function runpod(path, body) {
@@ -422,8 +451,8 @@ function newItem(pack, created, n, seed) {
   return { id: `${created}-${n}`, packId: pack.id, label: pack.label, seed: seed ?? randSeed(), w, h, status: "IN_QUEUE", media: [], text: "" };
 }
 // one prompt → one turn; every chosen model × count gets its own job (a given seed is used for all of them)
-function run(prompt, use, count = 1, seed) {
-  const created = newCreated(), t = { created, prompt, items: [] };
+function run(prompt, use, count = 1, seed, negative = "") {
+  const created = newCreated(), t = { created, prompt, negative, items: [] };
   for (const pack of use) for (let i = 0; i < count; i++) t.items.push(newItem(pack, created, t.items.length, seed));
   turns.push(t);
   render(); scrollTo(0, document.body.scrollHeight);
@@ -433,7 +462,8 @@ async function runItem(t, it) {
   const pack = packs.find(p => p.id === it.packId);
   try {
     if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
-    const input = packInput(pack, { prompt: t.prompt, seed: it.seed, width: it.w, height: it.h });
+    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h });
+    it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
     const out = await runAndWait(endpoints[pack.id], input, st => { it.status = st; render(); }) || {};
     if (out.error) throw new Error(out.error);
     const { media, text } = await readOutput(out);
@@ -449,17 +479,18 @@ async function runItem(t, it) {
 }
 $("form").addEventListener("submit", e => {
   e.preventDefault();
-  const text = $("prompt").value.trim(), use = chosenPacks(), sv = $("seed").value.trim();
+  const text = $("prompt").value.trim(), use = chosenPacks(), sv = $("seed").value.trim(), neg = negEdited && !$("negative").hidden ? $("negative").value.trim() : "";
   if (!text) return;
   if (sv && !/^\d{1,15}$/.test(sv)) { alert("The seed is a whole number (or leave it empty for random)"); $("seed").focus(); return; }
   if (!apiKey || !use.length) { openSettings(() => $("form").requestSubmit()); return; }
   $("prompt").value = ""; keepDraft();
-  run(text, use, 1, sv ? Number(sv) : undefined);
+  run(text, use, 1, sv ? Number(sv) : undefined, neg);
 });
 // what is typed in the box survives a reload too
-const keepDraft = () => store.set("draft", { prompt: $("prompt").value, seed: $("seed").value });
+const keepDraft = () => store.set("draft", { prompt: $("prompt").value, negative: negEdited ? $("negative").value : null, seed: $("seed").value });
 $("prompt").addEventListener("input", keepDraft);
 $("seed").addEventListener("input", keepDraft);
+$("negative").addEventListener("input", () => { negEdited = $("negative").value.trim() !== negDefault(); $("neg-default").hidden = !negEdited; keepDraft(); });
 $("prompt").addEventListener("keydown", e => {
   if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("form").requestSubmit(); }
 });
@@ -474,9 +505,9 @@ function idb(mode, fn) {
   });
 }
 async function keepTurn(t) {  // stores the finished items of a turn; a turn with none left is removed
-  const items = t.items.filter(i => i.status === "COMPLETED").map(({ id, packId, label, seed, w, h, text, blobs }) => ({ id, packId, label, seed, w, h, text, blobs }));
+  const items = t.items.filter(i => i.status === "COMPLETED").map(({ id, packId, label, seed, w, h, text, blobs, sent }) => ({ id, packId, label, seed, w, h, text, blobs, sent }));
   if (!items.length) return idb("readwrite", s => s.delete(t.created));
-  await idb("readwrite", s => s.put({ created: t.created, prompt: t.prompt, items }));
+  await idb("readwrite", s => s.put({ created: t.created, prompt: t.prompt, negative: t.negative, items }));
   const keys = await idb("readonly", s => s.getAllKeys());
   if (keys.length > KEEP) await idb("readwrite", s => { for (const k of keys.slice(0, keys.length - KEEP)) s.delete(k); });
 }
@@ -506,12 +537,15 @@ function removeItems(ids) {
 const stamp = ms => { const d = new Date(ms), p = n => String(n).padStart(2, "0");
   return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`; };
 const fileName = (t, it, i, type) => `cobaltpear_${stamp(t.created)}_${it.seed}_${i}.${extOf(type)}`;
+const opened = new Set();  // results whose Details are open
 function itemHtml(t, it) {
   const media = it.media.map(m => mediaHtml(m, allShown || revealed.has(m.url))).join("") + (it.text ? `<div class="text">${esc(it.text)}</div>` : "");
   const st = (it.status === "COMPLETED" ? "" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
   const dl = it.media.map((m, i) => `<a href="${esc(m.url)}" download="${fileName(t, it, i, m.type)}">Download</a>`).join(" ");
   const edit = it.status === "COMPLETED" ? `<button type="button" data-edit="${esc(it.id)}" title="Put the prompt and this seed back in the box">Edit</button>` : "";
-  return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${edit}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div></div>`;
+  const det = it.sent ? `<button type="button" data-details="${esc(it.id)}" title="Everything that was sent to the model">Details</button>` : "";
+  const sent = it.sent && opened.has(it.id) ? `<div class="sent">${esc(it.sent.join("\n"))}</div>` : "";
+  return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${edit}${det}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div>${sent}</div>`;
 }
 function render() {
   $("feed").innerHTML = turns.length ? turns.map((t, ti) => {
@@ -528,11 +562,12 @@ function render() {
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
   const d = e.target.dataset;
+  if (d.details) { opened.has(d.details) ? opened.delete(d.details) : opened.add(d.details); render(); return; }
   if (d.edit) {  // one result: its prompt, model and seed go back into the box
     const t = turns.find(t => t.items.some(i => i.id === d.edit)), it = t?.items.find(i => i.id === d.edit);
     if (!it) return;
-    $("prompt").value = t.prompt; $("seed").value = it.seed; keepDraft();
-    choose([it.packId]);
+    $("prompt").value = t.prompt; $("seed").value = it.seed;
+    choose([it.packId]); setNegative(t.negative || null); keepDraft();
     $("prompt").focus();
     return;
   }
@@ -541,7 +576,7 @@ $("feed").addEventListener("click", e => {
   if (d.again || d.four) {
     const use = turnPacks(t);
     if (!use.length) { alert("Those models or their endpoints are gone"); return; }
-    const go = () => run(t.prompt, use, d.four ? 4 : Math.max(1, Math.round(t.items.length / use.length)));
+    const go = () => run(t.prompt, use, d.four ? 4 : Math.max(1, Math.round(t.items.length / use.length)), undefined, t.negative);
     if (apiKey) go(); else openSettings(go);
   } else if (d.forget) removeItems(new Set(t.items.map(i => i.id)));
 });
@@ -612,6 +647,7 @@ checkUpdate();
 
 const draft = store.get("draft", {});
 $("prompt").value = draft.prompt || ""; $("seed").value = draft.seed || "";
+setNegative(draft.negative ?? null);
 render();
 loadHistory();
 if (usable().length) $("prompt").focus(); else openSettings();  // the key is asked for on the first send
