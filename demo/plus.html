@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEMO Cobalt Pear Plus</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%230047AB%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%23F4EFE8%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%23F4EFE8%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%23F4EFE8%22/%3E%3C/g%3E%3C/svg%3E">
+<style>
+:root { color-scheme: dark; --bg: #111; --panel: #1b1b1b; --line: #333; --text: #eee; --muted: #999; --accent: #e8e8e8; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, sans-serif; }
+header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
+header b { margin-right: auto; display: flex; align-items: center; gap: 8px; }
+header b img { width: 22px; height: 22px; }
+header a.plus { color: var(--text); text-decoration: none; }
+select, textarea, button, input { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+select { padding: 6px 10px; max-width: 70vw; }
+input { width: 100%; padding: 8px 10px; }
+#feed { max-width: 900px; margin: 0 auto; padding: 16px 16px 170px; display: flex; flex-direction: column; gap: 18px; }
+.turn .p { align-self: flex-end; margin-left: auto; max-width: 85%; width: fit-content; padding: 8px 12px; background: var(--panel); border-radius: 12px; white-space: pre-wrap; word-break: break-word; }
+.turn .items { display: grid; gap: 8px; }
+.turn .items.many { grid-template-columns: 1fr 1fr; }
+.item { position: relative; min-width: 0; }
+.meta { margin-top: 6px; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.meta a, .meta button { color: var(--muted); background: none; border: 0; padding: 0; font-size: 12px; text-decoration: underline; cursor: pointer; }
+.turn img, .turn video { display: block; width: 100%; border-radius: 10px; }
+.turn img { cursor: zoom-in; }
+.turn audio { display: block; width: 100%; margin-top: 8px; }
+.turn .text { margin-top: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; white-space: pre-wrap; word-break: break-word; }
+.err { color: #f88; }
+form#form { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 16px; }
+form .box { max-width: 900px; margin: 0 auto; padding: 10px 12px 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; }
+textarea { display: block; width: 100%; resize: none; height: 52px; padding: 2px 4px; border: 0; background: none; outline: none; }
+form .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px; }
+form select { border-radius: 999px; font-size: 13px; color: var(--muted); }
+#send { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--accent); color: #111; font-size: 18px; font-weight: 700; cursor: pointer; }
+#send:disabled { opacity: .5; cursor: default; }
+form .right { display: flex; align-items: center; gap: 6px; }
+#seed { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+.pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }
+#models { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.chip.on { color: #111; background: var(--accent); border-color: var(--accent); }
+#add-model { width: 11ch; }  /* the open menu still shows full names */
+#viewer { position: fixed; inset: 0; z-index: 10; background: #000; display: flex; cursor: zoom-out; }
+#viewer img { width: 100%; height: 100%; object-fit: contain; }
+#viewer .count { position: absolute; bottom: 12px; right: 16px; color: #fff8; font-size: 13px; }
+.empty { color: var(--muted); text-align: center; margin-top: 40px; }
+.empty a { color: var(--text); }
+/* Veil — click to show */
+.veil { position: relative; margin-top: 8px; border-radius: 10px; overflow: hidden; cursor: pointer; }
+.veil:not(.shown) { background: #1c1c1f; }
+.veil:not(.shown) :is(img, video) { opacity: 0; aspect-ratio: 16/10; object-fit: cover; }
+.veil:not(.shown)::after { content: "Click to show"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
+.veil .full-btn { position: absolute; top: 8px; right: 8px; display: none; background: rgba(0,0,0,.6); border: 0; }
+.veil.shown .full-btn { display: block; }
+body.all-shown .veil .full-btn { display: none; }
+/* Settings */
+#settings { position: fixed; inset: 0; z-index: 5; background: rgba(0,0,0,.7); display: flex; align-items: flex-start; justify-content: center; padding: 60px 16px; overflow: auto; }
+#settings .card { width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+#settings label { display: block; margin: 12px 0 4px; font-size: 13px; color: var(--muted); }
+#settings .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+#settings .pack { border-top: 1px solid var(--line); padding: 8px 0; margin-top: 8px; }
+#settings .pack .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+#settings .pack b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+#settings .pack [data-ep] { width: 16ch; }
+#settings .pack .new { font-size: 11px; color: var(--accent); }
+#pack-check { white-space: nowrap; }
+#settings .saved { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
+#settings .saved b { color: var(--text); font-weight: 600; }
+#settings .add { display: flex; gap: 6px; margin-top: 8px; }
+#settings .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+#settings .actions button { padding: 6px 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+<header>
+  <b><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%230047AB%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%23F4EFE8%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%23F4EFE8%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%23F4EFE8%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear Plus <span class="meta">· demo</span></b>
+  <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
+  <button id="reveal-all" class="pill" type="button">Show all</button>
+  <button id="open-settings" class="pill" type="button">Settings</button>
+</header>
+<main id="feed"></main>
+<form id="form"><div class="box">
+  <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
+  <div class="row"><div id="models"></div><span class="right"><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+</div></form>
+<div id="settings" hidden><form class="card" id="settings-form">
+  <b>Settings</b>
+  <div class="saved">Everything is saved <b>only in this browser</b> — models, endpoint IDs and your results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
+  <label for="key">RunPod API key</label>
+  <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
+  <div class="hint">The key is never stored — enter it again after a reload. A Restricted key allowing only your endpoints is recommended.</div>
+  <label for="license">Plus license key</label>
+  <input id="license" autocomplete="off" placeholder="From your Gumroad receipt">
+  <div class="hint" id="license-state"></div>
+  <label for="pack-url">Models</label>
+  <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"><button id="pack-check" class="pill" type="button" title="Get the newest settings of models added by repo URL">Check for updates</button></div>
+  <div id="pack-list"></div>
+  <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
+  <label class="pill" style="display:inline-block;cursor:pointer">Pack file (.json)<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label>
+  <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it.</div>
+  <div class="hint">Cobalt Pear Plus 2026.10.23.2</div>
+  <div class="actions"><button type="submit">OK</button></div>
+</form></div>
+<script>
+// DEMO — fake RunPod: no key or endpoint is checked, nothing leaves the browser except fetching packs from GitHub.
+// The "image" is drawn here: its colors come from the seed (same seed = same picture), the prompt is written on it.
+(() => {
+  const real = window.fetch, jobs = {};
+  const draw = (prompt, seed, w, h) => new Promise(res => {
+    const c = document.createElement("canvas"); c.width = w || 1536; c.height = h || 960;
+    const g = c.getContext("2d"); let s = seed % 2147483647 || 1; const r = () => (s = s * 16807 % 2147483647) / 2147483647;
+    const gr = g.createLinearGradient(0, 0, c.width, c.height);
+    gr.addColorStop(0, `hsl(${r() * 360} 60% 45%)`); gr.addColorStop(1, `hsl(${r() * 360} 60% 25%)`);
+    g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
+    for (let i = 0; i < 12; i++) { g.fillStyle = `hsla(${r() * 360} 70% 60% / .35)`; g.beginPath(); g.arc(r() * c.width, r() * c.height, 40 + r() * 220, 0, 7); g.fill(); }
+    g.fillStyle = "#fff"; g.font = `bold ${c.width / 24}px system-ui`; g.fillText(prompt.slice(0, 40), c.width * .05, c.height * .5);
+    g.font = `${c.width / 48}px system-ui`; g.fillText(`DEMO · seed ${seed} · ${c.width}×${c.height}`, c.width * .05, c.height * .6);
+    c.toBlob(b => { const fr = new FileReader(); fr.onload = () => res(fr.result.split(",")[1]); fr.readAsDataURL(b); }, "image/png");
+  });
+  const pick = (wf, key) => Object.values(wf).find(n => typeof n.inputs?.[key] === (key === "text" ? "string" : "number") && (key !== "text" || n.inputs.text))?.inputs[key];
+  window.fetch = async (url, opt = {}) => {
+    if (!String(url).startsWith("https://api.runpod.ai/")) return real(url, opt);
+    await new Promise(r => setTimeout(r, 300));
+    const json = o => new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json" } });
+    if (String(url).endsWith("/run")) {
+      const id = "demo" + Math.random().toString(36).slice(2), wf = JSON.parse(opt.body).input.workflow || {};
+      jobs[id] = { t: Date.now(), p: draw(pick(wf, "text") || "(no prompt)", pick(wf, "seed") ?? pick(wf, "noise_seed") ?? 0, pick(wf, "width"), pick(wf, "height")) };
+      return json({ id, status: "IN_QUEUE" });
+    }
+    const j = jobs[String(url).split("/").pop()], age = Date.now() - j.t;
+    if (age < 2000) return json({ status: age < 1000 ? "IN_QUEUE" : "IN_PROGRESS" });
+    return json({ status: "COMPLETED", output: { images: [{ type: "base64", data: await j.p }] } });
+  };
+})();
+</script>
+<script>
+// Cobalt Pear Plus — a serverless page: the browser calls the user's own RunPod Serverless endpoints directly.
+// The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
+// Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
+const RUNPOD_API = "https://api.runpod.ai/v2";
+const VERSION = "2026.10.23.2";
+const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
+const GET_URL = "https://cobaltpear.github.io/plus.html";
+const PACKS_KEY = "packs", MAX_MODELS = Infinity;
+const GUMROAD_PRODUCT = "";  // Gumroad product ID of Plus — empty skips the license check until the store is ready
+const KEEP = 300;  // newest prompts kept in the browser
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const STATUS = { IN_QUEUE: "In queue", IN_PROGRESS: "Generating", COMPLETED: "Done", FAILED: "Failed", CANCELLED: "Cancelled", TIMED_OUT: "Timed out", ERROR: "Error" };
+const randSeed = () => Math.floor(Math.random() * 2 ** 48);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const NS = "demo.";  // storage namespace — the demo build sets "demo." so its fake results never mix with real ones on the same site
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(NS + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(NS + k, JSON.stringify(v)); } catch {} },
+};
+
+// ---- Model packs · engines · output ----
+// A pack tells how to call one worker: engine, request template, where prompt/seed/width/height go, size list. Format: PACK.md.
+// The only engine-specific part is filling values into the template. Output is read whatever its shape: images, video, audio, text.
+// So video, TTS and LLM workers plug in with just a pack. A worker with a very different template gets one more entry in ENGINES.
+const PACK_FORMATS = ["pack/1", "comfy-pack/1"];  // first = current, the other is an old name (engine = comfyui)
+const SLOTS = ["prompt", "seed", "width", "height"];
+const ENGINES = {
+  // ComfyUI worker (runpod/worker-comfyui) — template = API-format workflow (pack.workflow), slot = [node id, input name]
+  comfyui: {
+    valid: p => p.workflow && typeof p.workflow === "object",
+    input(p, v) {
+      const wf = structuredClone(p.workflow);
+      for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) wf[n].inputs[name] = v[k];
+      return { workflow: wf };
+    },
+  },
+  // Any other worker — template = the RunPod input as is (pack.input), slot = path inside it (["prompt"], ["openai_input", "messages", 0, "content"])
+  json: {
+    valid: p => p.input && typeof p.input === "object",
+    input(p, v) {
+      const inp = structuredClone(p.input);
+      for (const k of SLOTS) if (v[k] != null) for (const path of p[k] || []) {
+        let o = inp;
+        for (const s of path.slice(0, -1)) o = o[s] ??= {};
+        o[path.at(-1)] = v[k];
+      }
+      return inp;
+    },
+  },
+};
+function checkPack(p) {
+  if (!PACK_FORMATS.includes(p?.format)) throw new Error("Not a model pack");
+  const engine = p.engine || "comfyui";
+  if (!ENGINES[engine]) throw new Error(`Unknown engine (${engine}) — get the latest version of this page`);
+  if (!ENGINES[engine].valid(p) || !p.prompt?.length) throw new Error("The pack has no request template or prompt slot");
+  if (!p.id) throw new Error("The pack has no id");
+  return { ...p, engine, label: p.label || p.id, sizes: p.sizes || [], size_step: p.size_step || 16 };
+}
+const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values);
+const hasSize = p => !!(p.width?.length && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
+// Get a pack by URL — a GitHub repo URL means pack.json on main
+async function fetchPack(url) {
+  const m = url.trim().match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/);
+  const r = await fetch(m ? `https://raw.githubusercontent.com/${m[1]}/${m[2]}/main/pack.json` : url.trim());
+  if (!r.ok) throw new Error(`Could not get the pack (${r.status})`);
+  return r.json();
+}
+
+// Read the output — workers differ, so look for all the common shapes:
+// ComfyUI worker [{type:"base64"|"s3_url", data}], "data:...;base64,...", bare base64 and "https://..." are files;
+// strings under keys like content/text (LLM) are text. File type comes from the first bytes.
+const TEXT_KEYS = ["content", "text", "response", "output", "caption"];
+async function readOutput(out) {
+  const files = [], texts = [];
+  (function walk(v, key) {
+    if (typeof v === "string") {
+      if (/^data:[\w.+-]+\/[\w.+-]+;base64,/.test(v) || /^[A-Za-z0-9+/]{256}/.test(v) || /^https?:\/\/\S+$/.test(v)) files.push(v);
+      else if (TEXT_KEYS.includes(key) && v.trim()) texts.push(v.replace(/<think>[\s\S]*?<\/think>/g, "").trim());
+    } else if (Array.isArray(v)) v.forEach(x => walk(x, key));
+    else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) walk(x, k);
+  })(out, "output");
+  const media = [];
+  for (const s of files) {
+    try {
+      const blob = /^https?:/.test(s) ? await retype(await (await fetch(s)).blob()) : b64ToBlob(s.replace(/^data:[^,]*,/, ""));
+      const kind = mediaKind(blob.type);
+      if (kind) media.push({ blob, kind });
+    } catch {}  // skip URLs that are not files or cannot be fetched
+  }
+  return { media, text: texts.filter(Boolean).join("\n\n") };
+}
+const mediaKind = type => ["image", "video", "audio"].find(k => type.startsWith(k + "/"));
+const EXT = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif", "video/mp4": "mp4", "video/webm": "webm",
+              "audio/wav": "wav", "audio/mpeg": "mp3", "audio/ogg": "ogg", "audio/flac": "flac" };
+const extOf = type => EXT[type] || "bin";
+function sniff(b) {  // b = first 16 bytes as a string
+  if (b.startsWith("\x89PNG")) return "image/png";
+  if (b.startsWith("\xff\xd8\xff")) return "image/jpeg";
+  if (b.startsWith("GIF8")) return "image/gif";
+  if (b.startsWith("RIFF")) return { WEBP: "image/webp", WAVE: "audio/wav" }[b.slice(8, 12)] || "";
+  if (b.slice(4, 8) === "ftyp") return "video/mp4";
+  if (b.startsWith("\x1a\x45\xdf\xa3")) return "video/webm";
+  if (b.startsWith("OggS")) return "audio/ogg";
+  if (b.startsWith("fLaC")) return "audio/flac";
+  if (b.startsWith("ID3") || (b.charCodeAt(0) === 0xff && (b.charCodeAt(1) & 0xe0) === 0xe0)) return "audio/mpeg";
+  return "";
+}
+function b64ToBlob(data) {
+  const bin = atob(data.replace(/\s/g, "")), buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return new Blob([buf], { type: sniff(bin.slice(0, 16)) || "application/octet-stream" });
+}
+async function retype(blob) {  // if the type is missing or generic, decide it from the first bytes
+  if (mediaKind(blob.type)) return blob;
+  const head = String.fromCharCode(...new Uint8Array(await blob.slice(0, 16).arrayBuffer()));
+  return new Blob([blob], { type: sniff(head) || blob.type });
+}
+// One result on screen — images and video go behind the veil, audio as is
+function mediaHtml({ url, kind }, shown) {
+  if (kind === "audio") return `<audio class="media" controls src="${esc(url)}"></audio>`;
+  const el = kind === "video" ? `<video src="${esc(url)}" controls loop playsinline></video>` : `<img src="${esc(url)}" alt=""><button class="full-btn pill" type="button">Full screen</button>`;
+  return `<div class="veil${shown ? " shown" : ""}" data-veil="${esc(url)}">${el}</div>`;
+}
+let apiKey = "demo";
+let packs = store.get(PACKS_KEY, null) || store.get("packs", []).slice(0, MAX_MODELS);  // model packs
+let endpoints = store.get("endpoints", {});  // pack id → endpoint ID
+const turns = [];  // {created, prompt, items: [{id, packId, label, seed, w, h, status, error, media: [{url, kind, type}], blobs, text}]}
+let allShown = false;
+const revealed = new Set();
+
+// ---- Settings ----
+// A plain ComfyUI API workflow becomes a pack: the text node feeding the sampler's positive, seed/noise_seed, width/height of the empty latent
+function detectPack(wf, name) {
+  const ref = v => Array.isArray(v) && typeof v[0] === "string" ? v[0] : null;
+  const prompt = [];
+  for (const n of Object.values(wf)) {
+    const pos = ref(n.inputs?.positive) || ref(n.inputs?.conditioning);
+    if (!pos || !/Sampler|Guider/.test(n.class_type)) continue;
+    let id = pos;  // follow conditioning nodes a few steps up to the one with a text input
+    for (let i = 0; i < 5 && wf[id]; i++) {
+      const key = ["text", "prompt"].find(k => typeof wf[id].inputs[k] === "string");
+      if (key) { if (!prompt.some(p => p[0] === id)) prompt.push([id, key]); break; }
+      id = ref(Object.values(wf[id].inputs).find(ref));
+    }
+  }
+  const seed = [], width = [], height = [];
+  for (const [id, n] of Object.entries(wf)) {
+    for (const k of ["seed", "noise_seed"]) if (typeof n.inputs?.[k] === "number") seed.push([id, k]);
+    if (/Latent/.test(n.class_type) && typeof n.inputs?.width === "number") { width.push([id, "width"]); height.push([id, "height"]); }
+  }
+  if (!prompt.length) throw new Error("No prompt slot found");
+  const w0 = width.length ? wf[width[0][0]].inputs.width : 1024, h0 = width.length ? wf[height[0][0]].inputs.height : 1024;
+  return { format: PACK_FORMATS[0], engine: "comfyui", id: name.replace(/\.json$/i, "").replace(/[^\w.-]+/g, "-").toLowerCase(), label: name.replace(/\.json$/i, ""),
+           note: "Found automatically in the workflow.", workflow: wf, sizes: [[w0, h0]], prompt, seed, width, height };
+}
+const byLabel = list => [...list].sort((a, b) => a.label.localeCompare(b.label));
+const freshPacks = new Set();  // packs changed by the last update check
+function renderPacks() {
+  // one line per model so a long list stays easy to scan; the note shows on hover
+  $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
+    <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
+    <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID (any text in the demo)">
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div></div>`).join("");
+  $("pack-tools").hidden = !packs.length;
+  $("pack-find").hidden = packs.length < 6;
+  $("pack-check").hidden = !packs.some(p => p.src);
+  findPacks();
+}
+function findPacks() {
+  const q = $("pack-find").value.trim().toLowerCase();
+  document.querySelectorAll("#pack-list .pack").forEach(d => { d.hidden = !!q && !d.dataset.name.includes(q); });
+}
+$("pack-find").addEventListener("input", findPacks);
+// packs added by repo URL remember it, so their newest pack.json can be fetched again; endpoint IDs stay
+$("pack-check").addEventListener("click", async e => {
+  const btn = e.target;
+  keepEndpointInputs();
+  btn.disabled = true; btn.textContent = "Checking…";
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  let failed = 0;
+  freshPacks.clear();
+  await Promise.all(packs.map(async (p, i) => {
+    if (!p.src) return;
+    try {
+      const n = { ...checkPack(await fetchPack(p.src)), src: p.src };
+      if (same(n, p)) return;
+      if (n.id !== p.id && endpoints[p.id]) { endpoints[n.id] = endpoints[p.id]; delete endpoints[p.id]; }
+      packs[i] = n; freshPacks.add(n.id);
+    } catch { failed++; }
+  }));
+  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints);
+  renderPacks();
+  btn.disabled = false;
+  btn.textContent = (freshPacks.size ? `${freshPacks.size} updated` : "Up to date") + (failed ? ` · ${failed} not reached` : "");
+  setTimeout(() => { btn.textContent = "Check for updates"; }, 4000);
+});
+function keepEndpointInputs() {
+  document.querySelectorAll("#pack-list [data-ep]").forEach(i => { if (i.value.trim()) endpoints[i.dataset.ep] = i.value.trim(); else delete endpoints[i.dataset.ep]; });
+}
+function addPack(data, name, src) {
+  // a pack, or a ComfyUI API workflow (bare, or inside {"prompt": …})
+  const p = checkPack(data.format ? data : detectPack(data.prompt && !data.class_type && typeof data.prompt === "object" ? data.prompt : data, name));
+  if (src) p.src = src;
+  keepEndpointInputs();
+  packs = packs.filter(x => x.id !== p.id).concat(p);
+  store.set(PACKS_KEY, packs);
+  renderPacks();
+}
+$("pack-add").addEventListener("click", async () => {
+  const url = $("pack-url").value.trim();
+  if (!url) return;
+  try { addPack(await fetchPack(url), url.split("/").pop(), url); $("pack-url").value = ""; } catch (err) { alert(err.message); }
+});
+$("pack-file").addEventListener("change", async e => {
+  for (const f of e.target.files) { try { addPack(JSON.parse(await f.text()), f.name); } catch (err) { alert(`${f.name}: ${err.message}`); } }
+  e.target.value = "";
+});
+$("pack-list").addEventListener("click", e => {
+  const id = e.target.dataset.delPack;
+  if (!id) return;
+  keepEndpointInputs();
+  packs = packs.filter(p => p.id !== id); delete endpoints[id];
+  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints);
+  renderPacks();
+});
+let afterSettings = null;  // what was asked for before the key was given — runs on OK
+function openSettings(then) {
+  afterSettings = typeof then === "function" ? then : null;
+  $("key").value = apiKey;
+  $("license").value = store.get("license", "");
+  showLicense();
+  renderPacks();
+  $("settings").hidden = false;
+  $("key").focus();
+}
+$("open-settings").addEventListener("click", () => openSettings());
+$("settings-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  apiKey = $("key").value.trim();
+  keepEndpointInputs(); store.set("endpoints", endpoints);
+  const lic = $("license").value.trim();
+  if (lic !== store.get("license", "") || (lic && !licensed())) {
+    store.set("license", lic);
+    $("license-state").textContent = "Checking…";
+    await checkLicense();
+    showLicense();
+    if (lic && !licensed()) return;  // stay in Settings so the key can be fixed
+  }
+  $("settings").hidden = true;
+  fillModels();
+  const then = afterSettings; afterSettings = null;
+  if (apiKey && then) then();
+});
+
+// ---- Models ----
+const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
+// ---- License — several models at once is what Plus sells ----
+// The page is open code, so this only asks honest buyers for their key: Gumroad says whether it is a live purchase,
+// the answer is kept a week and a failed check (offline) keeps the last good one.
+const WEEK = 7 * 864e5;
+const licensed = () => !GUMROAD_PRODUCT || store.get("license-ok", 0) > Date.now() - WEEK;
+let licenseError = "";
+async function checkLicense() {
+  const key = store.get("license", "");
+  if (!GUMROAD_PRODUCT || !key) { store.set("license-ok", 0); licenseError = ""; return; }
+  try {
+    const r = await fetch("https://api.gumroad.com/v2/licenses/verify", { method: "POST",
+      body: new URLSearchParams({ product_id: GUMROAD_PRODUCT, license_key: key, increment_uses_count: "false" }) });
+    const j = await r.json(), b = j.purchase || {};
+    const live = j.success && !b.refunded && !b.chargebacked && !b.disputed && !b.subscription_ended_at && !b.subscription_cancelled_at && !b.subscription_failed_at;
+    store.set("license-ok", live ? Date.now() : 0);
+    licenseError = live ? "" : j.success ? "This purchase is no longer active." : "This key was not found.";
+  } catch { licenseError = ""; }  // offline — keep what was known
+}
+function showLicense() {
+  $("license-state").textContent = !GUMROAD_PRODUCT ? "" : licensed() ? "✓ Plus is on." : licenseError || "Enter the key to use several models at once.";
+}
+if (GUMROAD_PRODUCT && store.get("license", "") && store.get("license-ok", 0) < Date.now() - 864e5) checkLicense().then(fillModels);  // re-check daily in the background
+
+// several models can be on at once — each prompt goes to every model that is on.
+// Only the ones on are shown, plus a menu to add another, so a hundred models still fit in one row.
+let chosen = store.get("models", []);
+function fillModels() {
+  const list = usable(), name = id => list.find(p => p.id === id).label, opt = p => `<option value="${esc(p.id)}">${esc(p.label)}</option>`;
+  chosen = chosen.filter(id => list.some(p => p.id === id));
+  if (!chosen.length && list.length) chosen = [list[0].id];
+  if (!list.length) { $("models").innerHTML = `<span class="meta">Add a model and endpoint in Settings</span>`; return; }
+  if (!licensed()) {  // without a key it works like Simple: one model from a menu
+    chosen = chosen.slice(0, 1);
+    $("models").innerHTML = `<select id="one-model">${list.map(opt).join("")}</select> <a href="#" id="unlock" class="meta">Several at once →</a>`;
+    $("one-model").value = chosen[0];
+    return;
+  }
+  const rest = list.filter(p => !chosen.includes(p.id)), many = chosen.length > 1;
+  $("models").innerHTML = chosen.map(id => `<button type="button" class="chip on" data-model="${esc(id)}"${many ? ` title="Click to remove"` : ""}>${esc(name(id))}${many ? " ✕" : ""}</button>`).join("")
+    + (rest.length ? `<select id="add-model" title="Use one more model"><option value="">+ Model</option>${rest.map(opt).join("")}</select>` : "");
+}
+$("models").addEventListener("click", e => {
+  if (e.target.id === "unlock") { e.preventDefault(); openSettings(); $("license").focus(); return; }
+  const id = e.target.dataset.model;
+  if (!id || chosen.length < 2) return;
+  chosen = chosen.filter(x => x !== id);
+  store.set("models", chosen); fillModels();
+});
+$("models").addEventListener("change", e => {
+  if (!["add-model", "one-model"].includes(e.target.id) || !e.target.value) return;
+  chosen = e.target.id === "add-model" ? [...chosen, e.target.value] : [e.target.value];
+  store.set("models", chosen); fillModels();
+});
+const chosenPacks = () => chosen.map(id => usable().find(p => p.id === id)).filter(Boolean);
+function choose(ids) { const ok = ids.filter(id => usable().some(p => p.id === id)); if (ok.length) { chosen = ok; store.set("models", chosen); fillModels(); } }
+
+// ---- Generate ----
+async function runpod(path, body) {
+  const r = await fetch(`${RUNPOD_API}/${path}`, { method: body ? "POST" : "GET", body: body && JSON.stringify(body),
+                                                    headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey } });
+  if (r.status === 401) throw new Error("Wrong RunPod key, or the key may not use this endpoint");
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || `RunPod error ${r.status}`);
+  return j;
+}
+// submit with /run and poll /status until done; onStatus is called when the status changes
+async function runAndWait(ep, input, onStatus) {
+  const job = await runpod(`${ep}/run`, { input });
+  let last = "", fails = 0;
+  for (;;) {
+    await sleep(2000);
+    let s;
+    try { s = await runpod(`${ep}/status/${job.id}`); fails = 0; }
+    catch (e) { if (++fails >= 5) throw e; continue; }  // ride out short network drops
+    if (s.status !== last) { last = s.status; onStatus?.(s.status); }
+    if (s.status === "COMPLETED") return s.output;
+    if (["FAILED", "CANCELLED", "TIMED_OUT"].includes(s.status)) throw new Error(s.error || STATUS[s.status]);
+  }
+}
+let lastCreated = 0;
+const newCreated = () => (lastCreated = Math.max(Date.now(), lastCreated + 1));  // also the turn's key in IndexedDB
+function newItem(pack, created, n, seed) {
+  // size = the first landscape size of the pack (fills a laptop screen), else the first size
+  const [w, h] = hasSize(pack) ? pack.sizes.find(([w, h]) => w > h) || pack.sizes[0] : [];
+  return { id: `${created}-${n}`, packId: pack.id, label: pack.label, seed: seed ?? randSeed(), w, h, status: "IN_QUEUE", media: [], text: "" };
+}
+// one prompt → one turn; every chosen model × count gets its own job (a given seed is used for all of them)
+function run(prompt, use, count = 1, seed) {
+  const created = newCreated(), t = { created, prompt, items: [] };
+  for (const pack of use) for (let i = 0; i < count; i++) t.items.push(newItem(pack, created, t.items.length, seed));
+  turns.push(t);
+  render(); scrollTo(0, document.body.scrollHeight);
+  t.items.forEach(it => runItem(t, it));
+}
+async function runItem(t, it) {
+  const pack = packs.find(p => p.id === it.packId);
+  try {
+    if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
+    const input = packInput(pack, { prompt: t.prompt, seed: it.seed, width: it.w, height: it.h });
+    const out = await runAndWait(endpoints[pack.id], input, st => { it.status = st; render(); }) || {};
+    if (out.error) throw new Error(out.error);
+    const { media, text } = await readOutput(out);
+    if (!media.length && !text) throw new Error("No image, video, audio or text in the output");
+    it.blobs = media.map(m => m.blob);
+    it.media = media.map(m => ({ url: URL.createObjectURL(m.blob), kind: m.kind, type: m.blob.type }));
+    it.text = text;
+    it.status = "COMPLETED";
+    // show first, then keep — the result must not wait on browser storage (it can stall, e.g. Safari on a file:// page)
+    keepTurn(t).catch(e => { it.error = "Not kept in the browser: " + e.message; render(); });
+  } catch (err) { it.status = "ERROR"; it.error = err.message; }
+  render();
+}
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+  const text = $("prompt").value.trim(), use = chosenPacks(), sv = $("seed").value.trim();
+  if (!text) return;
+  if (sv && !/^\d{1,15}$/.test(sv)) { alert("The seed is a whole number (or leave it empty for random)"); $("seed").focus(); return; }
+  if (!apiKey || !use.length) { openSettings(() => $("form").requestSubmit()); return; }
+  $("prompt").value = ""; keepDraft();
+  run(text, use, 1, sv ? Number(sv) : undefined);
+});
+// what is typed in the box survives a reload too
+const keepDraft = () => store.set("draft", { prompt: $("prompt").value, seed: $("seed").value });
+$("prompt").addEventListener("input", keepDraft);
+$("seed").addEventListener("input", keepDraft);
+$("prompt").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("form").requestSubmit(); }
+});
+
+// ---- History (IndexedDB — results with their files survive a reload) ----
+function idb(mode, fn) {
+  return new Promise((res, rej) => {
+    const o = indexedDB.open(NS + "cobaltpear", 1);
+    o.onupgradeneeded = () => o.result.createObjectStore("turns", { keyPath: "created" });
+    o.onerror = () => rej(o.error);
+    o.onsuccess = () => { const tx = o.result.transaction("turns", mode), r = fn(tx.objectStore("turns")); tx.oncomplete = () => res(r?.result); tx.onerror = () => rej(tx.error); };
+  });
+}
+async function keepTurn(t) {  // stores the finished items of a turn; a turn with none left is removed
+  const items = t.items.filter(i => i.status === "COMPLETED").map(({ id, packId, label, seed, w, h, text, blobs }) => ({ id, packId, label, seed, w, h, text, blobs }));
+  if (!items.length) return idb("readwrite", s => s.delete(t.created));
+  await idb("readwrite", s => s.put({ created: t.created, prompt: t.prompt, items }));
+  const keys = await idb("readonly", s => s.getAllKeys());
+  if (keys.length > KEEP) await idb("readwrite", s => { for (const k of keys.slice(0, keys.length - KEEP)) s.delete(k); });
+}
+async function loadHistory() {
+  let recs = [];
+  try { recs = await idb("readonly", s => s.getAll()); } catch { return; }  // private windows may have no IndexedDB
+  for (const r of recs) for (const it of r.items) {
+    it.status = "COMPLETED";
+    it.media = (it.blobs || []).map(b => ({ url: URL.createObjectURL(b), kind: mediaKind(b.type) || "image", type: b.type }));
+  }
+  lastCreated = Math.max(lastCreated, ...recs.map(r => r.created));
+  turns.unshift(...recs.filter(r => !turns.some(t => t.created === r.created)));
+  render(); scrollTo(0, document.body.scrollHeight);
+}
+function removeItems(ids) {
+  for (const t of [...turns]) {
+    const before = t.items.length;
+    t.items = t.items.filter(i => !ids.has(i.id));
+    if (t.items.length === before) continue;
+    keepTurn(t).catch(() => {});
+    if (!t.items.length) turns.splice(turns.indexOf(t), 1);
+  }
+  render();
+}
+
+// ---- Results ----
+const stamp = ms => { const d = new Date(ms), p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`; };
+const fileName = (t, it, i, type) => `cobaltpear_${stamp(t.created)}_${it.seed}_${i}.${extOf(type)}`;
+function itemHtml(t, it) {
+  const media = it.media.map(m => mediaHtml(m, allShown || revealed.has(m.url))).join("") + (it.text ? `<div class="text">${esc(it.text)}</div>` : "");
+  const st = (it.status === "COMPLETED" ? "" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
+  const dl = it.media.map((m, i) => `<a href="${esc(m.url)}" download="${fileName(t, it, i, m.type)}">Download</a>`).join(" ");
+  const edit = it.status === "COMPLETED" ? `<button type="button" data-edit="${esc(it.id)}" title="Put the prompt and this seed back in the box">Edit</button>` : "";
+  return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${edit}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div></div>`;
+}
+function render() {
+  $("feed").innerHTML = turns.length ? turns.map((t, ti) => {
+    const done = t.items.every(i => ["COMPLETED", "ERROR"].includes(i.status));
+    const more = `<button type="button" data-four="${ti}" title="4 more with the same prompt and models">×4</button>`;
+    return `<section class="turn"><div class="p">${esc(t.prompt)}</div>
+      <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
+      ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
+    </section>`;
+  }).join("") : `<div class="empty">Add your RunPod key, a worker repo URL and its endpoint in Settings, then send a prompt.`
+    + `</div>`;
+}
+const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
+$("feed").addEventListener("click", e => {
+  const d = e.target.dataset;
+  if (d.edit) {  // one result: its prompt, model and seed go back into the box
+    const t = turns.find(t => t.items.some(i => i.id === d.edit)), it = t?.items.find(i => i.id === d.edit);
+    if (!it) return;
+    $("prompt").value = t.prompt; $("seed").value = it.seed; keepDraft();
+    choose([it.packId]);
+    $("prompt").focus();
+    return;
+  }
+  const t = turns[+(d.again ?? d.four ?? d.forget)];
+  if (!t) return;
+  if (d.again || d.four) {
+    const use = turnPacks(t);
+    if (!use.length) { alert("Those models or their endpoints are gone"); return; }
+    const go = () => run(t.prompt, use, d.four ? 4 : Math.max(1, Math.round(t.items.length / use.length)));
+    if (apiKey) go(); else openSettings(go);
+  } else if (d.forget) removeItems(new Set(t.items.map(i => i.id)));
+});
+
+// ---- Veil · full screen ----
+function setVeil(v, show) {
+  v.classList.toggle("shown", show);
+  if (show) revealed.add(v.dataset.veil); else revealed.delete(v.dataset.veil);
+}
+$("reveal-all").addEventListener("click", () => {
+  allShown = !allShown;
+  revealed.clear();
+  document.body.classList.toggle("all-shown", allShown);
+  document.querySelectorAll("#feed .veil").forEach(v => v.classList.toggle("shown", allShown));
+  $("reveal-all").textContent = allShown ? "Hide all" : "Show all";
+});
+document.addEventListener("click", e => {
+  const v = e.target.closest("#feed .veil");
+  if (v && e.target.classList.contains("full-btn")) { openViewer(v.querySelector("img").src); return; }
+  if (v && e.target.tagName === "VIDEO" && v.classList.contains("shown")) return;  // a shown video keeps its playback controls
+  if (v && !allShown) { setVeil(v, !v.classList.contains("shown")); return; }
+  if (e.target.tagName === "IMG" && e.target.closest("#feed")) openViewer(e.target.src);
+});
+// Full screen: ←/→ previous/next, Esc or click closes
+function openViewer(src) {
+  const urls = [...document.querySelectorAll("#feed img")].filter(i => !i.closest(".veil:not(.shown)")).map(i => i.src);
+  if (!urls.length) return;
+  let i = Math.max(0, urls.indexOf(src));
+  const vw = document.createElement("div"); vw.id = "viewer"; vw.innerHTML = `<img alt=""><span class="count"></span>`;
+  const img = vw.querySelector("img"), count = vw.querySelector(".count");
+  const show = () => { img.src = urls[i]; count.textContent = `${i + 1} / ${urls.length}`; };
+  const close = () => { document.removeEventListener("keydown", onKey); vw.remove(); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); };
+  const onKey = k => {
+    if (k.key === "Escape") close();
+    else if (k.key === "ArrowLeft" && i > 0) { i--; show(); }
+    else if (k.key === "ArrowRight" && i + 1 < urls.length) { i++; show(); }
+  };
+  vw.addEventListener("click", close); document.addEventListener("keydown", onKey);
+  document.body.append(vw);
+  show();
+  vw.requestFullscreen?.().catch(() => {});
+}
+
+fillModels();
+// ---- Update ----
+// The page is a file people keep, so it asks once per load whether a newer one is out and shows a link — nothing changes by itself
+const newer = (a, b) => {
+  const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0);
+  return false;
+};
+async function checkUpdate() {
+  if (!UPDATE_URL) return;
+  try {
+    const v = (await (await fetch(UPDATE_URL, { cache: "no-store" })).json()).version;
+    if (!newer(v, VERSION)) return;
+    Object.assign($("update"), { href: GET_URL || UPDATE_URL, title: `Version ${v} is out — this one is ${VERSION}`, hidden: false });
+  } catch {}
+}
+checkUpdate();
+
+const draft = store.get("draft", {});
+$("prompt").value = draft.prompt || ""; $("seed").value = draft.seed || "";
+render();
+loadHistory();
+if (usable().length) $("prompt").focus(); else openSettings();  // the key is asked for on the first send
+</script>
+</body>
+</html>
