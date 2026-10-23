@@ -70,6 +70,8 @@ body.all-shown .veil .full-btn { display: none; }
 #settings .saved { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
 #settings .saved b { color: var(--text); font-weight: 600; }
 #settings .add { display: flex; gap: 6px; margin-top: 8px; }
+#settings .file-add { align-items: center; }
+#settings .file-add label { display: inline-block; margin: 0; background: var(--panel); border: 1px solid var(--line); }
 #settings .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 #settings .actions button { padding: 6px 14px; cursor: pointer; }
 </style>
@@ -99,9 +101,9 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"><button id="pack-check" class="pill" type="button" title="Get the newest settings of models added by repo URL">Check for updates</button></div>
   <div id="pack-list"></div>
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
-  <label class="pill" style="display:inline-block;cursor:pointer">Pack file (.json)<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label>
+  <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it.</div>
-  <div class="hint">Cobalt Pear Plus 2026.10.23.3</div>
+  <div class="hint">Cobalt Pear Plus 2026.10.23.4</div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <script>
@@ -141,7 +143,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.23.3";
+const VERSION = "2026.10.23.4";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const GET_URL = "https://cobaltpear.github.io/plus.html";
 const PACKS_KEY = "packs", MAX_MODELS = Infinity;
@@ -299,7 +301,7 @@ function renderPacks() {
   // one line per model so a long list stays easy to scan; the note shows on hover
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
-    <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID (any text in the demo)">
+    <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Any text (demo)">
     <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div></div>`).join("");
   $("pack-tools").hidden = !packs.length;
   $("pack-find").hidden = packs.length < 6;
