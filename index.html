@@ -57,6 +57,7 @@ body.all-shown .veil .full-btn { display: none; }
 #settings .card { width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
 #settings label { display: block; margin: 12px 0 4px; font-size: 13px; color: var(--muted); }
 #settings .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+#settings .hint a { color: inherit; }
 #settings .pack { border-top: 1px solid var(--line); padding: 8px 0; margin-top: 8px; }
 #settings .pack .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
 #settings .pack b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
@@ -97,7 +98,7 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it. Simple uses one model — adding another replaces it.</div>
-  <div class="hint">Cobalt Pear Simple 2026.10.23.4</div>
+  <div class="hint">Cobalt Pear Simple 2026.10.23.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <script>
@@ -105,7 +106,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.23.4";
+const VERSION = "2026.10.23.5";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty hides the Plus links until the store is ready
 const PACKS_KEY = "simple-packs", MAX_MODELS = 1;  // Simple holds one model, in its own list so Plus's list on the same site stays as it is
