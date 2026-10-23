@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cobalt Pear Setup Guide</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E">
+<style>
+:root { color-scheme: dark; --bg: #111; --panel: #1b1b1b; --line: #333; --text: #eee; --muted: #999; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, sans-serif; }
+header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+header b { margin-right: auto; display: flex; align-items: center; gap: 8px; }
+header b img { width: 22px; height: 22px; }
+header a { color: var(--text); font-size: 13px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
+main { max-width: 720px; margin: 0 auto; padding: 8px 16px 80px; }
+h1 { font-size: 26px; line-height: 1.3; margin: 24px 0 4px; }
+h2 { font-size: 18px; margin: 0; }
+.lead, .muted { color: var(--muted); }
+a { color: var(--text); }
+code, kbd { font: 14px ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; word-break: break-all; }
+b.ui { white-space: nowrap; }
+.step { margin: 14px 0; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.step > label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.step input { width: 20px; height: 20px; flex: none; accent-color: #8fb3ff; }
+.step.done { opacity: .55; }
+.step ol, .step ul { margin: 8px 0 0; padding-left: 22px; }
+.step li { margin: 4px 0; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+td { border-top: 1px solid var(--line); padding: 6px 8px 6px 0; vertical-align: top; }
+td:first-child { color: var(--muted); width: 42%; }
+.note { margin-top: 8px; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header><b><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</b><a href="./">Open the app</a></header>
+<main>
+<h1>Set up your own image generator</h1>
+<p class="lead">About 15 minutes of clicking, then about 30 minutes of waiting. No coding. You need a card to add $10 of RunPod credit — you pay only while pictures are being made, nothing while it sits idle.</p>
+<p class="muted">Tick each step as you go — this page remembers where you are.</p>
+
+<div class="step"><label><input type="checkbox"><h2>1. Make three accounts</h2></label>
+<ul>
+<li><a href="https://github.com/signup" target="_blank" rel="noopener">GitHub</a> — holds your copy of the generator.</li>
+<li><a href="https://civitai.com" target="_blank" rel="noopener">Civitai</a> — where most models come from. Needed if the worker's page asks for a Civitai token.</li>
+<li><a href="https://runpod.io?ref=qpguwapm" target="_blank" rel="noopener">RunPod</a> — the computer that makes the pictures. Then <b class="ui">Billing</b> → add <b>$10</b>.
+  <div class="note">This is a referral link: after your first $10, RunPod gives you a bonus credit (usually $5–10) and Cobalt Pear a small credit.</div></li>
+</ul></div>
+
+<div class="step"><label><input type="checkbox"><h2>2. Copy the worker</h2></label>
+<p class="note">A «worker» is the model packed for RunPod. Each model has its own worker page on GitHub — its page links here.</p>
+<ol>
+<li>On the worker's GitHub page, click the green <b class="ui">Use this template</b> → <b class="ui">Create a new repository</b>.</li>
+<li>Any name is fine. Choose <b>Private</b> → <b class="ui">Create repository</b>.</li>
+</ol>
+<p class="note">Keep the worker's own page address — you will paste it into Cobalt Pear in step 7 (not the address of your copy).</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>3. Put your Civitai token in your copy</h2></label>
+<p class="note">Only if the worker's page asks for it. It lets RunPod download the model with your account.</p>
+<ol>
+<li>Civitai → your picture (top right) → <b class="ui">Account settings</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → copy it.</li>
+<li>In your copy on GitHub, click <code>Dockerfile</code> → the pencil ✏️ (top right of the file).</li>
+<li>Replace <code>PASTE_YOUR_CIVITAI_TOKEN_HERE</code> with your token → <b class="ui">Commit changes</b>.</li>
+</ol></div>
+
+<div class="step"><label><input type="checkbox"><h2>4. Create the endpoint</h2></label>
+<p class="note">The «endpoint» is your generator on RunPod.</p>
+<ol>
+<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">GitHub Repo</b>.</li>
+<li>The first time, connect GitHub and allow your copy. Then pick your copy.</li>
+<li>Fill in the settings from the worker's page. They usually look like this:</li>
+</ol>
+<table>
+<tr><td>Branch · Dockerfile path · Build context</td><td><code>main</code> · <code>Dockerfile</code> · <code>.</code></td></tr>
+<tr><td>GPU</td><td>as the worker's page says (24 GB or more)</td></tr>
+<tr><td>Active workers · Max workers</td><td><code>0</code> · <code>1</code> — 0 active = nothing to pay while idle</td></tr>
+<tr><td>Idle timeout</td><td><code>5</code> seconds</td></tr>
+<tr><td>Execution timeout</td><td><code>600</code> seconds</td></tr>
+<tr><td>FlashBoot</td><td>On</td></tr>
+<tr><td>Container disk</td><td>as the worker's page says</td></tr>
+</table>
+<ol start="4"><li><b class="ui">Create</b>.</li></ol></div>
+
+<div class="step"><label><input type="checkbox"><h2>5. Wait for the build</h2></label>
+<p>RunPod now builds your generator — about 30 minutes. The endpoint's page shows its progress. You can do step 6 meanwhile.</p>
+<p class="note">If it fails, open the build log, copy the last lines and ask in <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Discussions</a>.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>6. Make an API key</h2></label>
+<ol>
+<li>RunPod → <b class="ui">Settings</b> → <b class="ui">API Keys</b> → <b class="ui">Create API Key</b>.</li>
+<li>Choose <b>Restricted</b>, and give only your endpoint <b>Read / Write</b>. (Read Only does not work.)</li>
+<li>Copy the key now — RunPod shows it only once.</li>
+</ol>
+<p class="note">A Restricted key can only use your endpoint, so even if it leaked it could not touch the rest of your account.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
+<ol>
+<li><a href="./">Open Cobalt Pear</a> → <b class="ui">Settings</b>.</li>
+<li>Paste the API key.</li>
+<li>Paste the <b>worker's page address</b> (from step 2) → <b class="ui">Add</b>.</li>
+<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>).</li>
+<li><b class="ui">OK</b>, type what you want to see, press Enter.</li>
+</ol>
+<p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p></div>
+
+<h2 style="margin-top:28px">When something is off</h2>
+<table>
+<tr><td>«Wrong RunPod key»</td><td>Check the key, and that it has Read / Write on this endpoint.</td></tr>
+<tr><td>Waits a long time</td><td>Normal for the first picture, and after a long break. If it never starts, check the endpoint's page on RunPod.</td></tr>
+<tr><td>To stop paying entirely</td><td>Set Max workers to 0, or delete the endpoint. Idle endpoints with 0 active workers cost nothing.</td></tr>
+<tr><td>Anything else</td><td><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Ask in Discussions</a>.</td></tr>
+</table>
+</main>
+<script>
+// ticks are remembered in this browser only
+const steps = [...document.querySelectorAll(".step input")];
+let done = [];
+try { done = JSON.parse(localStorage.getItem("guide-done") || "[]"); } catch {}
+steps.forEach((c, i) => {
+  c.checked = !!done[i];
+  c.closest(".step").classList.toggle("done", c.checked);
+  c.addEventListener("change", () => {
+    c.closest(".step").classList.toggle("done", c.checked);
+    try { localStorage.setItem("guide-done", JSON.stringify(steps.map(s => s.checked))); } catch {}
+  });
+});
+</script>
+</body>
+</html>

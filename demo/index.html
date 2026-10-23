@@ -93,14 +93,14 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="saved">Everything is saved <b>only in this browser</b> — your key, models, endpoint IDs and results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
-  <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended.</div>
+  <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
   <label for="pack-url">Models</label>
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"></div>
   <div id="pack-list"></div>
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it. Simple uses one model — adding another replaces it.</div>
-  <div class="hint">Cobalt Pear Simple 2026.10.23.7 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear Simple 2026.10.23.8 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <script>
@@ -140,7 +140,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.23.7";
+const VERSION = "2026.10.23.8";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty hides the Plus links until the store is ready
 const PACKS_KEY = "simple-packs", MAX_MODELS = 1;  // Simple holds one model, in its own list so Plus's list on the same site stays as it is
@@ -554,7 +554,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty">Add your RunPod key, a worker repo URL and its endpoint in Settings, then send a prompt.`
+  }).join("") : `<div class="empty">Add your RunPod key, a worker repo URL and its endpoint in Settings, then send a prompt.<br>New to RunPod? <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Step-by-step setup guide</a>`
     + (PLUS_URL ? `<br><br>Several models at once: <a href="${PLUS_URL}" target="_blank" rel="noopener">Cobalt Pear Plus</a>` : "")
     + `</div>`;
 }
