@@ -79,7 +79,8 @@ td:first-child { color: var(--muted); width: 42%; }
 <tr><td>FlashBoot</td><td>On</td></tr>
 <tr><td>Container disk</td><td>as the worker's page says</td></tr>
 </table>
-<ol start="4"><li><b class="ui">Create</b>.</li></ol></div>
+<ol start="4"><li><b class="ui">Create</b>.</li></ol>
+<p class="note">RunPod may warn «runpod.serverless.start() handler not found in your repo». You can ignore it — the worker starts its handler from the image it builds on.</p></div>
 
 <div class="step"><label><input type="checkbox"><h2>5. Wait for the build</h2></label>
 <p>RunPod now builds your generator — about 30 minutes. The endpoint's page shows its progress. You can do step 6 meanwhile.</p>
