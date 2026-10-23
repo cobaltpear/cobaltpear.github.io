@@ -106,7 +106,7 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it.</div>
-  <div class="hint">Cobalt Pear Plus 2026.10.23.9 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear Plus 2026.10.23.10 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <script>
@@ -146,11 +146,11 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.23.9";
+const VERSION = "2026.10.23.10";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const GET_URL = "https://cobaltpear.github.io/plus.html";
 const PACKS_KEY = "packs", MAX_MODELS = Infinity;
-const GUMROAD_PRODUCT = "";  // Gumroad product ID of Plus — empty skips the license check until the store is ready
+const GUMROAD_PRODUCT = "";  // Gumroad product ID of Plus — empty = not on sale yet, so Plus stays one model
 const KEEP = 300;  // newest prompts kept in the browser
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -416,7 +416,8 @@ const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
 // The page is open code, so this only asks honest buyers for their key: Gumroad says whether it is a live purchase,
 // the answer is kept a week and a failed check (offline) keeps the last good one.
 const WEEK = 7 * 864e5;
-const licensed = () => !GUMROAD_PRODUCT || store.get("license-ok", 0) > Date.now() - WEEK;
+// Until the store is ready (no product ID) nobody has Plus — it works like Simple. The demo shows Plus whole.
+const licensed = () => NS === "demo." || (!!GUMROAD_PRODUCT && store.get("license-ok", 0) > Date.now() - WEEK);
 let licenseError = "";
 async function checkLicense() {
   const key = store.get("license", "");
@@ -431,7 +432,7 @@ async function checkLicense() {
   } catch { licenseError = ""; }  // offline — keep what was known
 }
 function showLicense() {
-  $("license-state").textContent = !GUMROAD_PRODUCT ? "" : licensed() ? "✓ Plus is on." : licenseError || "Enter the key to use several models at once.";
+  $("license-state").textContent = licensed() ? (GUMROAD_PRODUCT ? "✓ Plus is on." : "") : !GUMROAD_PRODUCT ? "Plus is not on sale yet — for now it uses one model at a time." : licenseError || "Enter the key to use several models at once.";
 }
 if (GUMROAD_PRODUCT && store.get("license", "") && store.get("license-ok", 0) < Date.now() - 864e5) checkLicense().then(fillModels);  // re-check daily in the background
 
