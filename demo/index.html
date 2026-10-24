@@ -71,6 +71,8 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack .new { font-size: 11px; color: var(--accent); }
 .sheet .pack .how { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .sheet .pack .how a { color: var(--text); }
+.sheet .pack .pick { margin-top: 6px; font-size: 13px; }
+.sheet .pack .pick code { font: 600 14px ui-monospace, monospace; color: var(--accent); cursor: copy; }
 .sheet .pack.cat b { color: var(--muted); }
 .sheet .card > b { font-size: 16px; }
 .sheet .saved { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
@@ -102,7 +104,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.6 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
@@ -158,7 +160,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.5";
+const VERSION = "2026.10.24.6";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet, so adding your own worker stays free here too
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -234,7 +236,7 @@ const hasSize = p => !!((p.width?.length || p.size?.length) && p.sizes?.length);
 // Get a pack by URL — a GitHub repo URL means pack.json on main
 async function fetchPack(url) {
   const m = url.trim().match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/);
-  const r = await fetch(m ? `https://raw.githubusercontent.com/${m[1]}/${m[2]}/main/pack.json` : url.trim());
+  const r = await fetch(m ? `https://raw.githubusercontent.com/${m[1]}/${m[2]}/main/pack.json` : url.trim(), { cache: "no-cache" });  // ask the server each time, so a changed pack shows at once
   if (!r.ok) throw new Error(`Could not get the pack (${r.status})`);
   return r.json();
 }
@@ -334,7 +336,7 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Any text (demo)">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div>${!endpoints[p.id] && p.setup ? `<div class="how">${p.setup_url ? `<a href="${esc(p.setup_url)}" target="_blank" rel="noopener">Open RunPod ↗</a> → ` : ""}${esc(p.setup)}</div>` : ""}</div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div>${!endpoints[p.id] && p.setup ? `${p.setup_pick ? `<div class="pick">Model: <code data-copy="${esc(p.setup_pick)}" title="Click to copy">${esc(p.setup_pick)}</code></div>` : ""}<div class="how">${p.setup_url ? `<a href="${esc(p.setup_url)}" target="_blank" rel="noopener">Open RunPod ↗</a> → ` : ""}${esc(p.setup)}</div>` : ""}</div>`).join("");
   $("pack-tools").hidden = packs.length < 6;
   findPacks();
   renderCatalog();
@@ -351,7 +353,7 @@ function renderCatalog() {
   $("catalog").innerHTML = rest.map(c => `<div class="pack cat"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>
     <button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("");
 }
-fetch(CATALOG_URL).then(r => r.json()).then(j => { catalog = (j.models || []).map(m => ({ ...m, url: new URL(m.pack, CATALOG_URL).href })); renderCatalog(); }).catch(() => {});
+fetch(CATALOG_URL, { cache: "no-cache" }).then(r => r.json()).then(j => { catalog = (j.models || []).map(m => ({ ...m, url: new URL(m.pack, CATALOG_URL).href })); renderCatalog(); }).catch(() => {});
 $("catalog").addEventListener("click", async e => {
   const url = e.target.dataset.cat;
   if (!url) return;
@@ -401,6 +403,8 @@ $("pack-file").addEventListener("change", async e => {
   e.target.value = "";
 });
 $("pack-list").addEventListener("click", e => {
+  const copy = e.target.dataset.copy;
+  if (copy) { navigator.clipboard?.writeText(copy).then(() => { e.target.textContent = "Copied ✓"; setTimeout(() => e.target.textContent = copy, 1200); }, () => {}); return; }
   const id = e.target.dataset.delPack;
   if (!id) return;
   keepEndpointInputs();
@@ -423,6 +427,9 @@ function openModels(then) {
   $("models-sheet").hidden = false;
 }
 $("open-models").addEventListener("click", () => openModels());
+// a click beside the card (or Esc) works like OK / Done
+for (const id of ["settings", "models-sheet"]) $(id).addEventListener("click", e => { if (e.target.id === id) $(id).querySelector("form").requestSubmit(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") for (const id of ["settings", "models-sheet"]) if (!$(id).hidden) $(id).querySelector("form").requestSubmit(); });
 $("models-form").addEventListener("submit", e => {
   e.preventDefault();
   keepEndpointInputs(); store.set("endpoints", endpoints);
