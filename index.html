@@ -36,7 +36,7 @@ input { width: 100%; padding: 8px 10px; }
 .turn .text { margin-top: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; white-space: pre-wrap; word-break: break-word; }
 .err { color: #f88; }
 form#form { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 16px; }
-form .box { max-width: 900px; margin: 0 auto; padding: 10px 12px 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; }
+form .box { position: relative; max-width: 900px; margin: 0 auto; padding: 10px 12px 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; }
 textarea { display: block; width: 100%; resize: none; height: 52px; padding: 2px 4px; border: 0; background: none; outline: none; }
 form .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px; }
 form select { border-radius: 999px; font-size: 13px; color: var(--muted); }
@@ -47,6 +47,12 @@ form .right { display: flex; align-items: center; gap: 6px; min-width: 0; }
 #negative { width: 26ch; min-width: 6ch; flex: 0 1 auto; }
 #pic { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
 #pic img, .turn .p img { height: 48px; border-radius: 6px; }
+#pic-menu { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 3; width: min(360px, calc(100vw - 32px)); padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; }
+#pic-menu .kind { padding: 0 2px 6px; font-size: 11px; font-weight: 600; color: var(--muted); }
+#pic-menu .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 40vh; overflow-y: auto; margin-bottom: 8px; }
+#pic-menu .grid button { padding: 0; border: 0; border-radius: 6px; overflow: hidden; background: #1c1c1f; cursor: pointer; aspect-ratio: 1; }
+#pic-menu .grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+body:not(.all-shown) #pic-menu .grid img { filter: blur(12px); }
 .turn .p img { display: block; margin-bottom: 4px; }
 .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }
 #models { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
@@ -164,6 +170,7 @@ body.all-shown .veil .full-btn { display: none; }
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
+<div class="news"><time>2026-10-24</time>Picture: pick one you made here, right from the Picture button — and «Use as picture» under every result, even before you have a model that takes one.</div>
 <div class="news"><time>2026-10-24</time>Negative: with several models chosen, leave it empty and each gets its own — type words to send the same to all, ✕ to go back. Feedback is now in the top menu.</div>
 <div class="news"><time>2026-10-24</time>Chat: all models sit in one list, grouped like the Models tabs — click to tick them on or off, so the row stays short however many you have.</div>
 <div class="news"><time>2026-10-24</time>Make it: pick any of 127 models, tick «Let Cobalt Pear make it», and it's ready on your RunPod in a few minutes.</div>
@@ -256,7 +263,7 @@ body.all-shown .veil .full-btn { display: none; }
 </table>
 </section>
 <form id="form"><div class="box">
-  <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button></div><input id="pic-file" type="file" accept="image/*" hidden>
+  <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button></div><input id="pic-file" type="file" accept="image/*" hidden><div id="pic-menu" hidden></div>
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
   <div class="row"><div id="models"></div><span class="right"><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
@@ -266,7 +273,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.29 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.30 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -291,7 +298,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.29";
+const VERSION = "2026.10.24.30";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -833,12 +840,30 @@ async function fitFile(file) {
 const toB64 = blob => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result.split(",")[1]); fr.onerror = () => rej(fr.error); fr.readAsDataURL(blob); });
 let afterPick = null;
 const pickPicture = then => { afterPick = then || null; $("pic-file").value = ""; $("pic-file").click(); };
+// the Picture button lists the pictures made here (newest first) above «Choose a file…»; with none yet it opens the file picker
+const madePictures = () => turns.flatMap(t => t.items).flatMap(it => (it.blobs || []).map((b, i) => ({ b, url: it.media?.[i]?.url }))).filter(x => x.url && x.b.type.startsWith("image/")).reverse().slice(0, 24);
+let menuPics = [];
+function choosePicture(then) {
+  menuPics = madePictures();
+  if (!menuPics.length) { pickPicture(then); return; }
+  afterPick = then || null;
+  $("pic-menu").innerHTML = `<div class="kind">Made here</div><div class="grid">${menuPics.map((x, i) => `<button type="button" data-pic="${i}"><img src="${esc(x.url)}" alt=""></button>`).join("")}</div><button type="button" class="pill" id="pic-from-file">Choose a file…</button>`;
+  $("pic-menu").hidden = false;
+}
+$("pic-menu").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  $("pic-menu").hidden = true;
+  if (b.id === "pic-from-file") { pickPicture(afterPick); return; }
+  setPicture(menuPics[+b.dataset.pic].b); const then = afterPick; afterPick = null; then?.();
+});
+document.addEventListener("click", e => { if (!e.target.closest("#pic-menu, #attach")) $("pic-menu").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("pic-menu").hidden = true; });
 async function takeFile(file) {
   if (!file?.type.startsWith("image/")) return false;
   try { setPicture(await fitFile(file)); } catch { alert("Could not read that picture"); return false; }
   return true;
 }
-$("attach").addEventListener("click", () => pickPicture());
+$("attach").addEventListener("click", () => $("pic-menu").hidden ? choosePicture() : ($("pic-menu").hidden = true));
 $("pic-x").addEventListener("click", () => setPicture(null));
 $("pic-file").addEventListener("change", async () => { if (await takeFile($("pic-file").files[0])) afterPick?.(); afterPick = null; });
 $("form").addEventListener("dragover", e => { if (needsPicture()) e.preventDefault(); });
@@ -913,7 +938,7 @@ $("form").addEventListener("submit", e => {
   if (!text) return;
   if (sv && !/^\d{1,15}$/.test(sv)) { alert("The seed is a whole number (or leave it empty for random)"); $("seed").focus(); return; }
   if (!use.length) { openModels(() => $("form").requestSubmit()); return; }
-  if (use.some(takesImage) && !picture) { pickPicture(() => $("form").requestSubmit()); return; }
+  if (use.some(takesImage) && !picture) { choosePicture(() => $("form").requestSubmit()); return; }
   if (!apiKey) { openSettings(() => $("form").requestSubmit()); return; }
   $("prompt").value = ""; keepDraft();
   run(text, use, 1, sv ? Number(sv) : undefined, neg, picture);
@@ -1003,8 +1028,8 @@ function itemHtml(t, it) {
   const media = it.media.map(m => mediaHtml(m, allShown || revealed.has(m.url))).join("") + (it.text ? `<div class="text">${esc(it.text)}</div>` : "");
   const st = (it.status === "COMPLETED" ? "" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
   const dl = it.media.map((m, i) => `<a href="${esc(m.url)}" download="${fileName(t, it, i, m.type)}">Download</a>`).join(" ");
-  // a finished picture can be the start of the next one, once a model that takes a picture is in Models
-  const use = usable().some(takesImage) ? it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use</button>` : "").join("") : "";
+  // a finished picture can be the start of the next one (Image To Image / Image To Video)
+  const use = it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use as picture</button>` : "").join("");
   const edit = it.status === "COMPLETED" ? `<button type="button" data-edit="${esc(it.id)}" title="Put the prompt and this seed back in the box">Edit</button>` : "";
   const det = it.sent ? `<button type="button" data-details="${esc(it.id)}" title="Everything that was sent to the model">Details</button>` : "";
   const sent = it.sent && opened.has(it.id) ? `<div class="sent">${esc(it.sent.join("\n"))}</div>` : "";
@@ -1025,10 +1050,12 @@ const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable
 $("feed").addEventListener("click", e => {
   const d = e.target.dataset;
   if (d.details) { opened.has(d.details) ? opened.delete(d.details) : opened.add(d.details); render(); return; }
-  if (d.use) {  // this result becomes the picture; if no chosen model takes one, the first such model is chosen
+  if (d.use) {  // this result becomes the picture; if no chosen model takes one, the first such model is chosen —
+    // with none in Models yet, Models opens on Image To Image and the picture waits
     const it = turns.flatMap(t => t.items).find(i => i.id === d.use);
     if (!it?.blobs?.[+d.i]) return;
     setPicture(it.blobs[+d.i]);
+    if (!usable().some(takesImage)) { kind = "Image To Image"; try { localStorage.setItem("catalog-kind", kind); } catch {} openModels(); return; }
     if (!needsPicture()) choose([usable().find(takesImage).id]);
     $("prompt").focus();
     return;
