@@ -134,11 +134,10 @@ body.all-shown .veil .full-btn { display: none; }
 <body>
 <header>
   <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</a></b>
-  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#about">About</a><a href="#news">News</a><a href="#guide">Guide</a></nav>
+  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#about">About</a><a href="#news">News</a><a href="#guide">Guide</a></nav>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
-  <button id="open-settings" class="pill" type="button">Settings</button>
 </header>
 <main id="feed"></main>
 <section id="v-about" class="doc" hidden>
@@ -232,7 +231,7 @@ body.all-shown .veil .full-btn { display: none; }
 <ol>
 <li><a href="#">Open Cobalt Pear</a> → <b class="ui">Models</b> → paste the <b>worker's page address</b> (from step 2) under «Your own worker» → <b class="ui">Add</b>.</li>
 <li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>), then go to <b class="ui">Chat</b>.</li>
-<li>Type what you want to see, press Enter. The first time it asks for your RunPod API key — the one from step 6 — paste it → <b class="ui">OK</b>.</li>
+<li>Type what you want to see, press Enter. The first time it opens <b class="ui">Settings</b> — paste your RunPod API key from step 6 there, then go back to <b class="ui">Chat</b>.</li>
 </ol>
 <p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p></div>
 
@@ -249,14 +248,13 @@ body.all-shown .veil .full-btn { display: none; }
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
   <div class="row"><div id="models"></div><span class="right"><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — starts as the model's own" hidden><button id="neg-default" class="pill" type="button" title="Back to the model's own negative" hidden>Default</button><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
-<div id="settings" class="sheet" hidden><form class="card" id="settings-form">
+<div id="v-settings" class="sheet page" hidden><form class="card" id="settings-form">
   <b>Settings</b>
   <div class="saved">Everything is saved <b>only in this browser</b> — your key, models, endpoint IDs and results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
-  <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.23 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
-  <div class="actions"><button type="submit">OK</button></div>
+  <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.24 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -281,7 +279,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.23";
+const VERSION = "2026.10.24.24";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -613,15 +611,22 @@ $("pack-list").addEventListener("click", e => {
     fetch(RELAY_URL + "/delete", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey }, body: JSON.stringify({ id: ep }) }).catch(() => {});
   }
 });
-let afterSettings = null;  // what was asked for before the key was given — runs on OK
+let afterSettings = null;  // what was asked for before the key was given — runs on leaving Settings
 function openSettings(then) {
   afterSettings = typeof then === "function" ? then : null;
+  location.hash = "settings";
+}
+function enterSettings() {
   $("key").value = apiKey;
-  $("settings").hidden = false;
   $("key").focus();
 }
-$("open-settings").addEventListener("click", () => openSettings());
-document.addEventListener("click", e => { if (e.target.closest(".open-settings")) { e.preventDefault(); openSettings(); } });  // the Settings link on the empty screen
+// the key is saved as it is typed — no OK button, like Models
+$("key").addEventListener("input", () => { apiKey = $("key").value.trim(); store.set("key", apiKey); });
+function leaveSettings() {
+  fillModels();
+  const then = afterSettings; afterSettings = null;
+  if (apiKey && then) then();
+}
 let afterModels = null;
 function openModels(then) {
   afterModels = typeof then === "function" ? then : null;
@@ -634,10 +639,8 @@ function leaveModels() {
   const then = afterModels; afterModels = null;
   if (usable().length && then) then();
 }
-// a click beside the card (or Esc) works like OK
-$("settings").addEventListener("click", e => { if (e.target.id === "settings") $("settings-form").requestSubmit(); });
-// Chat · Models · About · News · Guide are views of this one page (#models, #about, #news, #guide) — nothing opens a new tab and Back works
-const views = { models: $("v-models"), about: $("v-about"), news: $("v-news"), guide: $("v-guide") }, scrollAt = {};
+// Chat · Models · Settings · About · News · Guide are views of this one page (#models, #settings, #about, #news, #guide) — nothing opens a new tab and Back works
+const views = { models: $("v-models"), settings: $("v-settings"), about: $("v-about"), news: $("v-news"), guide: $("v-guide") }, scrollAt = {};
 let view = null;
 function showView() {
   const v = location.hash.slice(1) in views ? location.hash.slice(1) : "";
@@ -646,15 +649,15 @@ function showView() {
   const was = view;
   view = v;
   if (v === "models") renderPacks();
+  if (v === "settings") enterSettings();
   for (const [k, el] of Object.entries(views)) el.hidden = k !== v;
   $("feed").hidden = $("form").hidden = $("reveal-all").hidden = !!v;
   document.querySelectorAll("header nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + v));
   scrollTo(0, scrollAt[v] ?? (v ? 0 : document.body.scrollHeight));
   if (was === "models") leaveModels();
+  if (was === "settings") leaveSettings();
 }
 addEventListener("hashchange", showView);
-// a link to a view from inside Settings closes it first
-document.addEventListener("click", e => { if (e.target.closest("#settings a[href^='#']")) $("settings-form").requestSubmit(); });
 // the guide's ticks are remembered in this browser (shared with guide.html)
 const guideSteps = [...document.querySelectorAll("#v-guide .step input")];
 let guideDone = [];
@@ -667,17 +670,8 @@ guideSteps.forEach((c, i) => {
     try { localStorage.setItem("guide-done", JSON.stringify(guideSteps.map(s => s.checked))); } catch {}
   });
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("settings").hidden) $("settings-form").requestSubmit(); });
 $("models-form").addEventListener("submit", e => { e.preventDefault(); location.hash = ""; });  // Done = back to the chat
-$("settings-form").addEventListener("submit", async e => {
-  e.preventDefault();
-  apiKey = $("key").value.trim();
-  store.set("key", apiKey);
-  $("settings").hidden = true;
-  fillModels();
-  const then = afterSettings; afterSettings = null;
-  if (apiKey && then) then();
-});
+$("settings-form").addEventListener("submit", e => { e.preventDefault(); location.hash = ""; });  // Enter = back to the chat
 
 // ---- Models ----
 const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
@@ -905,7 +899,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#" class="open-settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="#news">News</a> · <a href="#guide">Setup guide</a></div>`;
+  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="#news">News</a> · <a href="#guide">Setup guide</a></div>`;
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
