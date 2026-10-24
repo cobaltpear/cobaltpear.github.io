@@ -275,7 +275,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.32 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.33 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -334,7 +334,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.32";
+const VERSION = "2026.10.24.33";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -538,7 +538,7 @@ function renderPacks() {
   // a Gated model needs the customer's own HF token and its license accepted on HF — asked only while one is waiting
   const gated = $("auto-ok").checked ? waitingForAuto().filter(p => catalogOf(p).gated) : [];
   $("auto-hf-row").hidden = $("auto-hf-how").hidden = !gated.length;
-  $("auto-hf-how").innerHTML = gated.length ? `Gated: first press <b>Agree</b> on ${gated.map(p => `<a href="https://huggingface.co/${esc(p.setup_pick)}" target="_blank" rel="noopener">${esc(p.label)}</a>`).join(", ")}, then paste a <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener">Read token</a>.` : "";
+  $("auto-hf-how").innerHTML = gated.length ? `Gated: first press <b>Agree</b> on ${gated.map(p => `<a href="https://huggingface.co/${esc(p.setup_pick)}" target="_blank" rel="noopener">${esc(p.label)}</a>`).join(", ")}, then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token</a> — pick <b>Read</b> — and paste it here.` : "";
   $("auto-go").disabled = !$("auto-ok").checked;
   $("auto-or").hidden = $("auto").hidden || !how.size;
   renderCatalog();
