@@ -25,7 +25,8 @@
       "kind": "Text To Image",
       "note": "The original general-purpose SDXL base model. Needs a 24 GB GPU.",
       "pack": "sdxl-1-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "stabilityai/stable-diffusion-xl-base-1.0"
     },
     {
       "id": "realvisxl-v5",
@@ -33,7 +34,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic model focused on lifelike people and scenes. Needs a 24 GB GPU.",
       "pack": "realvisxl-v5.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "SG161222/RealVisXL_V5.0"
     },
     {
       "id": "z-image-turbo",
@@ -41,7 +43,8 @@
       "kind": "Text To Image",
       "note": "Fast, sharp text-to-image by Tongyi-MAI. No GitHub, no build, no token. Needs a 48 GB GPU.",
       "pack": "z-image-turbo.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "Tongyi-MAI/Z-Image-Turbo"
     },
     {
       "id": "flux-1-dev",
@@ -50,7 +53,8 @@
       "note": "High-quality general-purpose model with strong prompt following; slower than schnell. Needs a 48 GB GPU.",
       "pack": "flux-1-dev.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "black-forest-labs/FLUX.1-dev"
     },
     {
       "id": "sdxl-turbo",
@@ -58,7 +62,8 @@
       "kind": "Text To Image",
       "note": "Very fast general model that makes an image in one to four steps. Needs a 24 GB GPU.",
       "pack": "sdxl-turbo.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "stabilityai/sdxl-turbo"
     },
     {
       "id": "flux-1-schnell-black-forest-labs",
@@ -67,7 +72,8 @@
       "note": "Very fast model that makes good images in 1 to 4 steps. Needs a 48 GB GPU. Another upload of FLUX.1 schnell.",
       "pack": "flux-1-schnell-black-forest-labs.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "black-forest-labs/FLUX.1-schnell"
     },
     {
       "id": "animagine-xl-4-0",
@@ -75,7 +81,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Its maker suggests starting the prompt with «masterpiece, high score, great score, absurdres». Needs a 24 GB GPU.",
       "pack": "animagine-xl-4-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "cagliostrolab/animagine-xl-4.0"
     },
     {
       "id": "juggernaut-xl-v9",
@@ -83,7 +90,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic all-round model for people, products and scenes. Needs a 24 GB GPU.",
       "pack": "juggernaut-xl-v9.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "RunDiffusion/Juggernaut-XL-v9"
     },
     {
       "id": "qwen-image",
@@ -91,7 +99,8 @@
       "kind": "Text To Image",
       "note": "Strong at rendering text inside images and following detailed prompts; slow (50 steps). Needs an 80 GB GPU.",
       "pack": "qwen-image.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Qwen/Qwen-Image"
     },
     {
       "id": "animagine-xl-3-1",
@@ -99,7 +108,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Its maker suggests starting the prompt with «masterpiece, best quality, very aesthetic, absurdres». Needs a 24 GB GPU.",
       "pack": "animagine-xl-3-1.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "cagliostrolab/animagine-xl-3.1"
     },
     {
       "id": "krea-2-turbo",
@@ -107,7 +117,8 @@
       "kind": "Text To Image",
       "note": "Fast distilled photorealistic model; generates in 8 steps. Needs a 48 GB GPU.",
       "pack": "krea-2-turbo.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "unsloth/Krea-2-Turbo"
     },
     {
       "id": "realvisxl-v4",
@@ -115,7 +126,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic model focused on lifelike people and scenes. Needs a 24 GB GPU.",
       "pack": "realvisxl-v4.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "SG161222/RealVisXL_V4.0"
     },
     {
       "id": "z-image-turbo-unsloth",
@@ -123,7 +135,8 @@
       "kind": "Text To Image",
       "note": "Fast, sharp text-to-image by Tongyi-MAI. No GitHub, no build, no token. Another upload of Z-Image Turbo.",
       "pack": "z-image-turbo-unsloth.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "unsloth/Z-Image-Turbo"
     },
     {
       "id": "tiny-random-stable-diffusion-xl-optimum-intel-internal-testing",
@@ -131,7 +144,8 @@
       "kind": "Text To Image",
       "note": "The original general-purpose SDXL base model. Needs a 24 GB GPU. Based on SDXL 1.0.",
       "pack": "tiny-random-stable-diffusion-xl-optimum-intel-internal-testing.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "optimum-intel-internal-testing/tiny-random-stable-diffusion-xl"
     },
     {
       "id": "illustrious-xl-v0-1",
@@ -139,7 +153,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration base model with no default style. Needs a 24 GB GPU.",
       "pack": "illustrious-xl-v0-1.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "OnomaAIResearch/Illustrious-xl-early-release-v0"
     },
     {
       "id": "amanatsu-v1-1",
@@ -147,7 +162,8 @@
       "kind": "Text To Image",
       "note": "Anime-style model with a detailed illustrated look. Needs a 24 GB GPU.",
       "pack": "amanatsu-v1-1.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "John6666/amanatsu-illustrious-v11-sdxl"
     },
     {
       "id": "krea-2-raw",
@@ -156,7 +172,8 @@
       "note": "Undistilled base Krea 2 model, best for fine-tuning; slow (52 steps). Needs a 48 GB GPU.",
       "pack": "krea-2-raw.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "krea/Krea-2-Raw"
     },
     {
       "id": "playground-v2-5",
@@ -164,7 +181,8 @@
       "kind": "Text To Image",
       "note": "General model tuned for colorful, polished, aesthetic images. Needs a 24 GB GPU.",
       "pack": "playground-v2-5.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "playgroundai/playground-v2.5-1024px-aesthetic"
     },
     {
       "id": "krea-2-turbo-krea",
@@ -173,7 +191,8 @@
       "note": "Fast distilled photorealistic model; generates in 8 steps. Needs a 48 GB GPU. Another upload of Krea 2 Turbo.",
       "pack": "krea-2-turbo-krea.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "krea/Krea-2-Turbo"
     },
     {
       "id": "nova-anime-xl-v14",
@@ -181,7 +200,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Needs a 24 GB GPU.",
       "pack": "nova-anime-xl-v14.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "frankjoshua/novaAnimeXL_ilV140"
     },
     {
       "id": "diving-real-asian-v5",
@@ -189,7 +209,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic model focused on East Asian portraits. Its maker suggests starting the prompt with «masterpiece, ultra-HD, photorealistic, high detail, best quality, 8k, best quality, sharp focus, ray-tracing, realistic, depth of field, shallow depth of field, raw photo». Needs a 24 GB GPU.",
       "pack": "diving-real-asian-v5.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "John6666/diving-illustrious-real-asian-v50-sdxl"
     },
     {
       "id": "realvisxl-v5-lightning",
@@ -197,7 +218,8 @@
       "kind": "Text To Image",
       "note": "Fast photorealistic model that needs only a few steps. Needs a 24 GB GPU.",
       "pack": "realvisxl-v5-lightning.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "SG161222/RealVisXL_V5.0_Lightning"
     },
     {
       "id": "sd-3-5-medium",
@@ -206,7 +228,8 @@
       "note": "Mid-size Stable Diffusion model that runs on modest GPUs; moderate speed. Needs a 48 GB GPU.",
       "pack": "sd-3-5-medium.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "stabilityai/stable-diffusion-3.5-medium"
     },
     {
       "id": "flux-1-schnell",
@@ -214,7 +237,8 @@
       "kind": "Text To Image",
       "note": "Very fast model that makes good images in 1 to 4 steps. Needs a 48 GB GPU.",
       "pack": "flux-1-schnell.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "unsloth/FLUX.1-schnell"
     },
     {
       "id": "dvine82-xl",
@@ -222,7 +246,8 @@
       "kind": "Text To Image",
       "note": "General-purpose SDXL model. Needs a 24 GB GPU.",
       "pack": "dvine82-xl.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "martineux/dvine82-xl"
     },
     {
       "id": "sd-3-5-large",
@@ -231,7 +256,8 @@
       "note": "Largest Stable Diffusion 3.5 model with good quality and prompt following; moderate speed. Needs an 80 GB GPU.",
       "pack": "sd-3-5-large.json",
       "gated": true,
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "stabilityai/stable-diffusion-3.5-large"
     },
     {
       "id": "sd-3-medium",
@@ -240,7 +266,8 @@
       "note": "Earlier Stable Diffusion 3 model; moderate speed. Needs a 48 GB GPU.",
       "pack": "sd-3-medium.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "stabilityai/stable-diffusion-3-medium-diffusers"
     },
     {
       "id": "animagine-xl-3-0",
@@ -248,7 +275,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Its maker suggests starting the prompt with «masterpiece, best quality». Needs a 24 GB GPU.",
       "pack": "animagine-xl-3-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "cagliostrolab/animagine-xl-3.0"
     },
     {
       "id": "dreamshaper-xl-v2-turbo",
@@ -256,7 +284,8 @@
       "kind": "Text To Image",
       "note": "Fast general-purpose model for art and photos. Needs a 24 GB GPU.",
       "pack": "dreamshaper-xl-v2-turbo.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "Lykon/dreamshaper-xl-v2-turbo"
     },
     {
       "id": "hidream-i1-fast",
@@ -264,7 +293,8 @@
       "kind": "Text To Image",
       "note": "Distilled fast version of HiDream I1, strong at prompt following. Needs an 80 GB GPU.",
       "pack": "hidream-i1-fast.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "HiDream-ai/HiDream-I1-Fast"
     },
     {
       "id": "dreamshaper-xl-lightning",
@@ -272,7 +302,8 @@
       "kind": "Text To Image",
       "note": "Fast general-purpose model for art and photos. Needs a 24 GB GPU.",
       "pack": "dreamshaper-xl-lightning.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "Lykon/dreamshaper-xl-lightning"
     },
     {
       "id": "obsession-illustrious-v1-0",
@@ -280,7 +311,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Needs a 24 GB GPU.",
       "pack": "obsession-illustrious-v1-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "John6666/obsession-illustriousxl-v10-sdxl"
     },
     {
       "id": "qwen-image-2512",
@@ -288,7 +320,8 @@
       "kind": "Text To Image",
       "note": "Updated Qwen-Image with more realistic people and better text rendering; slow (50 steps). Needs an 80 GB GPU.",
       "pack": "qwen-image-2512.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Qwen/Qwen-Image-2512"
     },
     {
       "id": "juggernaut-x-v10",
@@ -296,7 +329,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic all-round model for people, products and scenes. Needs a 24 GB GPU.",
       "pack": "juggernaut-x-v10.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "RunDiffusion/Juggernaut-X-v10"
     },
     {
       "id": "z-image",
@@ -304,7 +338,8 @@
       "kind": "Text To Image",
       "note": "Undistilled base model with high diversity and negative prompt control; slower than Turbo. Needs a 48 GB GPU.",
       "pack": "z-image.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "Tongyi-MAI/Z-Image"
     },
     {
       "id": "prefect-illustrious-xl-v3",
@@ -312,7 +347,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Its maker suggests starting the prompt with «masterpiece,best quality,amazing quality,absurdres,». Needs a 24 GB GPU.",
       "pack": "prefect-illustrious-xl-v3.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "John6666/prefect-illustrious-xl-v3-sdxl"
     },
     {
       "id": "qwen-image-unsloth",
@@ -320,7 +356,8 @@
       "kind": "Text To Image",
       "note": "Strong at rendering text inside images and following detailed prompts; slow (50 steps). Needs an 80 GB GPU. Another upload of Qwen-Image.",
       "pack": "qwen-image-unsloth.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "unsloth/Qwen-Image"
     },
     {
       "id": "cyberrealistic-pony-v6-3",
@@ -328,7 +365,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic model in the Pony family. Needs a 24 GB GPU.",
       "pack": "cyberrealistic-pony-v6-3.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "misri/CyberRealisticPony_V63"
     },
     {
       "id": "flux-1-krea-dev",
@@ -337,7 +375,8 @@
       "note": "FLUX dev variant tuned by Krea for more natural, photographic aesthetics; slow. Needs a 48 GB GPU.",
       "pack": "flux-1-krea-dev.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "black-forest-labs/FLUX.1-Krea-dev"
     },
     {
       "id": "realvisxl-v3",
@@ -345,7 +384,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic model focused on lifelike people and scenes. Needs a 24 GB GPU.",
       "pack": "realvisxl-v3.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "SG161222/RealVisXL_V3.0"
     },
     {
       "id": "lustify-v2-0",
@@ -353,7 +393,8 @@
       "kind": "Text To Image",
       "note": "Photo-style SDXL model. Needs a 24 GB GPU.",
       "pack": "lustify-v2-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "shootstuff/LUSTIFY-v2.0"
     },
     {
       "id": "noobai-xl-1-0",
@@ -361,7 +402,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Its maker suggests starting the prompt with «masterpiece, best quality, newest, absurdres, highres, safe,». Needs a 24 GB GPU.",
       "pack": "noobai-xl-1-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "Laxhar/noobai-XL-1.0"
     },
     {
       "id": "minecraft-skin-generator-sdxl-monadical-labs",
@@ -369,7 +411,8 @@
       "kind": "Text To Image",
       "note": "The original general-purpose SDXL base model. Needs a 24 GB GPU. Based on SDXL 1.0.",
       "pack": "minecraft-skin-generator-sdxl-monadical-labs.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "monadical-labs/minecraft-skin-generator-sdxl"
     },
     {
       "id": "ssd-1b",
@@ -377,7 +420,8 @@
       "kind": "Text To Image",
       "note": "Smaller, faster general SDXL model. Needs a 24 GB GPU.",
       "pack": "ssd-1b.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "segmind/SSD-1B"
     },
     {
       "id": "krea-2-turbo-bf16-rootlocalghost",
@@ -385,7 +429,8 @@
       "kind": "Text To Image",
       "note": "Fast distilled photorealistic model; generates in 8 steps. Based on Krea 2 Turbo.",
       "pack": "krea-2-turbo-bf16-rootlocalghost.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "rootlocalghost/Krea-2-Turbo-BF16"
     },
     {
       "id": "testllm-lovis93",
@@ -393,7 +438,8 @@
       "kind": "Text To Image",
       "note": "Runs with RunPod's default settings.",
       "pack": "testllm-lovis93.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "lovis93/testllm"
     },
     {
       "id": "juggernaut-xi-v11",
@@ -401,7 +447,8 @@
       "kind": "Text To Image",
       "note": "Photorealistic all-round model for people, products and scenes. Needs a 24 GB GPU.",
       "pack": "juggernaut-xi-v11.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "RunDiffusion/Juggernaut-XI-v11"
     },
     {
       "id": "sdxl-unstable-diffusers-v11",
@@ -409,7 +456,8 @@
       "kind": "Text To Image",
       "note": "General-purpose SDXL model. Needs a 24 GB GPU.",
       "pack": "sdxl-unstable-diffusers-v11.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "frankjoshua/sdxlUnstableDiffusers_v11"
     },
     {
       "id": "proteus-v0-3",
@@ -417,7 +465,8 @@
       "kind": "Text To Image",
       "note": "General model with strong prompt following across photo and art styles. Needs a 24 GB GPU.",
       "pack": "proteus-v0-3.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "dataautogpt3/ProteusV0.3"
     },
     {
       "id": "proteus-v0-2",
@@ -425,7 +474,8 @@
       "kind": "Text To Image",
       "note": "General model with strong prompt following across photo and art styles. Needs a 24 GB GPU.",
       "pack": "proteus-v0-2.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "dataautogpt3/ProteusV0.2"
     },
     {
       "id": "juggernaut-xl-lightning",
@@ -433,7 +483,8 @@
       "kind": "Text To Image",
       "note": "Fast photorealistic model that needs only a few steps. Needs a 24 GB GPU.",
       "pack": "juggernaut-xl-lightning.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "RunDiffusion/Juggernaut-XL-Lightning"
     },
     {
       "id": "juggernaut-z-image",
@@ -441,7 +492,8 @@
       "kind": "Text To Image",
       "note": "Z-Image fine-tune for polished portraits and cinematic scenes; moderate speed (35 steps). Needs a 48 GB GPU.",
       "pack": "juggernaut-z-image.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "RunDiffusion/Juggernaut-Z-Image"
     },
     {
       "id": "autismmix-pony",
@@ -449,7 +501,8 @@
       "kind": "Text To Image",
       "note": "Anime-style model in the Pony family. Its maker suggests starting the prompt with «score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, BREAK». Needs a 24 GB GPU.",
       "pack": "autismmix-pony.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "John6666/autismmix-sdxl-autismmix-pony-sdxl"
     },
     {
       "id": "hassaku-xl-illustrious-v3-0",
@@ -457,7 +510,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration model. Needs a 24 GB GPU.",
       "pack": "hassaku-xl-illustrious-v3-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "misri/hassakuXLIllustrious_v30"
     },
     {
       "id": "true-pencil-xl-v1-0",
@@ -465,7 +519,8 @@
       "kind": "Text To Image",
       "note": "Sketch and pencil-drawing style model; works best with short prompts. Needs a 24 GB GPU.",
       "pack": "true-pencil-xl-v1-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "John6666/true-pencil-xl-v100-sdxl"
     },
     {
       "id": "zavychroma-xl-v8-0",
@@ -473,7 +528,8 @@
       "kind": "Text To Image",
       "note": "General-purpose SDXL model. Needs a 24 GB GPU.",
       "pack": "zavychroma-xl-v8-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "misri/zavychromaxl_v80"
     },
     {
       "id": "lustify-v2-0-theimposterimposters",
@@ -481,7 +537,8 @@
       "kind": "Text To Image",
       "note": "Photo-style SDXL model. Needs a 24 GB GPU. Another upload of LUSTIFY v2.0.",
       "pack": "lustify-v2-0-theimposterimposters.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "TheImposterImposters/LUSTIFY-v2.0"
     },
     {
       "id": "realvisxl-v4-lightning",
@@ -489,7 +546,8 @@
       "kind": "Text To Image",
       "note": "Fast photorealistic model that needs only a few steps. Needs a 24 GB GPU.",
       "pack": "realvisxl-v4-lightning.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "SG161222/RealVisXL_V4.0_Lightning"
     },
     {
       "id": "illustrious-xl-v2-0",
@@ -497,7 +555,8 @@
       "kind": "Text To Image",
       "note": "Anime-style illustration base model. Needs a 24 GB GPU.",
       "pack": "illustrious-xl-v2-0.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "Jommarn/Illustrious-XL-v2.0"
     },
     {
       "id": "wan-2-1-t2v-1-3b",
@@ -505,7 +564,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip. Needs a 24 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-1-t2v-1-3b.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers"
     },
     {
       "id": "wan-2-2-t2v-a14b",
@@ -513,7 +573,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-2-t2v-a14b.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Wan-AI/Wan2.2-T2V-A14B-Diffusers"
     },
     {
       "id": "wan-2-2-ti2v-5b",
@@ -521,7 +582,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence or a picture into a short video clip. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-2-ti2v-5b.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "Wan-AI/Wan2.2-TI2V-5B-Diffusers"
     },
     {
       "id": "wan-2-1-t2v-14b",
@@ -529,7 +591,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-1-t2v-14b.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "Wan-AI/Wan2.1-T2V-14B-Diffusers"
     },
     {
       "id": "ltx-2-5-diffusers-lightricks",
@@ -538,7 +601,8 @@
       "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes. Based on LTX-2.5 (FP8).",
       "pack": "ltx-2-5-diffusers-lightricks.json",
       "gated": true,
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Lightricks/LTX-2.5-Diffusers"
     },
     {
       "id": "hunyuanvideo-1-5-720p",
@@ -546,7 +610,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "hunyuanvideo-1-5-720p.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-720p_t2v"
     },
     {
       "id": "ltx-2-5-fp8",
@@ -554,7 +619,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "ltx-2-5-fp8.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "unsloth/LTX-2.5-FP8"
     },
     {
       "id": "hunyuanvideo-1-5-480p",
@@ -562,7 +628,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "hunyuanvideo-1-5-480p.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_t2v"
     },
     {
       "id": "helios-distilled",
@@ -570,7 +637,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a longer video clip quickly. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "helios-distilled.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "BestWishYsh/Helios-Distilled"
     },
     {
       "id": "helios-base",
@@ -578,7 +646,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a video clip. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "helios-base.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "BestWishYsh/Helios-Base"
     },
     {
       "id": "ltx-2-lightricks",
@@ -586,7 +655,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes. Based on LTX-2 (FP8).",
       "pack": "ltx-2-lightricks.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Lightricks/LTX-2"
     },
     {
       "id": "ltx-2-nsagar05",
@@ -594,7 +664,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes. Based on LTX-2 (FP8).",
       "pack": "ltx-2-nsagar05.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "nsagar05/LTX-2"
     },
     {
       "id": "ltx-2-3-distilled",
@@ -602,7 +673,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip with sound, quickly. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "ltx-2-3-distilled.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "diffusers/LTX-2.3-Distilled-Diffusers"
     },
     {
       "id": "ltx-2-3",
@@ -610,7 +682,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "ltx-2-3.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "diffusers/LTX-2.3-Diffusers"
     },
     {
       "id": "ltx-2-fp8",
@@ -618,7 +691,8 @@
       "kind": "Text To Video",
       "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "ltx-2-fp8.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "unsloth/LTX-2-FP8"
     },
     {
       "id": "flux-2-klein-base-4b",
@@ -626,7 +700,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence. Needs a 24 GB GPU.",
       "pack": "flux-2-klein-base-4b.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "black-forest-labs/FLUX.2-klein-base-4B"
     },
     {
       "id": "qwen-image-edit-2509",
@@ -634,7 +709,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs an 80 GB GPU.",
       "pack": "qwen-image-edit-2509.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Qwen/Qwen-Image-Edit-2509"
     },
     {
       "id": "flux-2-klein-4b",
@@ -642,7 +718,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 24 GB GPU.",
       "pack": "flux-2-klein-4b.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "black-forest-labs/FLUX.2-klein-4B"
     },
     {
       "id": "flux-2-dev-black-forest-labs",
@@ -651,7 +728,8 @@
       "note": "Makes or edits a picture from a sentence. Needs more than 80 GB of GPU memory (H200 or B200). Another upload of FLUX.2 dev.",
       "pack": "flux-2-dev-black-forest-labs.json",
       "gated": true,
-      "gpu": 141
+      "gpu": 141,
+      "setup_pick": "black-forest-labs/FLUX.2-dev"
     },
     {
       "id": "flux-1-kontext-dev-black-forest-labs",
@@ -660,7 +738,8 @@
       "note": "Edits a picture from a sentence. Needs a 48 GB GPU. Another upload of FLUX.1 Kontext dev.",
       "pack": "flux-1-kontext-dev-black-forest-labs.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "black-forest-labs/FLUX.1-Kontext-dev"
     },
     {
       "id": "flux-2-klein-9b-black-forest-labs",
@@ -669,7 +748,8 @@
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Another upload of FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-black-forest-labs.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "black-forest-labs/FLUX.2-klein-9B"
     },
     {
       "id": "qwen-image-edit-2511",
@@ -677,7 +757,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs an 80 GB GPU.",
       "pack": "qwen-image-edit-2511.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Qwen/Qwen-Image-Edit-2511"
     },
     {
       "id": "qwen-image-edit",
@@ -685,7 +766,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs an 80 GB GPU.",
       "pack": "qwen-image-edit.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Qwen/Qwen-Image-Edit"
     },
     {
       "id": "flux-2-klein-base-9b-black-forest-labs",
@@ -694,7 +776,8 @@
       "note": "Makes or edits a picture from a sentence. Needs a 48 GB GPU. Another upload of FLUX.2 klein base 9B.",
       "pack": "flux-2-klein-base-9b-black-forest-labs.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "black-forest-labs/FLUX.2-klein-base-9B"
     },
     {
       "id": "firered-image-edit-1-0",
@@ -702,7 +785,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs an 80 GB GPU.",
       "pack": "firered-image-edit-1-0.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "FireRedTeam/FireRed-Image-Edit-1.0"
     },
     {
       "id": "flux-2-klein-4b-unsloth",
@@ -710,7 +794,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 24 GB GPU. Another upload of FLUX.2 klein 4B.",
       "pack": "flux-2-klein-4b-unsloth.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "unsloth/FLUX.2-klein-4B"
     },
     {
       "id": "flux-2-dev",
@@ -718,7 +803,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence. Needs more than 80 GB of GPU memory (H200 or B200).",
       "pack": "flux-2-dev.json",
-      "gpu": 141
+      "gpu": 141,
+      "setup_pick": "unsloth/FLUX.2-dev"
     },
     {
       "id": "flux-2-klein-base-9b-uncensored",
@@ -726,7 +812,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence. Needs a 48 GB GPU.",
       "pack": "flux-2-klein-base-9b-uncensored.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "darknight9121/FLUX.2-klein-base-9B-bucket-uncensored"
     },
     {
       "id": "flux-2-klein-base-4b-unsloth",
@@ -734,7 +821,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence. Needs a 24 GB GPU. Another upload of FLUX.2 klein base 4B.",
       "pack": "flux-2-klein-base-4b-unsloth.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "unsloth/FLUX.2-klein-base-4B"
     },
     {
       "id": "flux-2-klein-9b",
@@ -742,7 +830,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU.",
       "pack": "flux-2-klein-9b.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "unsloth/FLUX.2-klein-9B"
     },
     {
       "id": "flux-2-klein-base-9b",
@@ -750,7 +839,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence. Needs a 48 GB GPU.",
       "pack": "flux-2-klein-base-9b.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "unsloth/FLUX.2-klein-base-9B"
     },
     {
       "id": "bfl-flux-2-klein-9b-runware",
@@ -758,7 +848,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Based on FLUX.2 klein 9B.",
       "pack": "bfl-flux-2-klein-9b-runware.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "Runware/BFL-FLUX.2-klein-9B"
     },
     {
       "id": "bfl-flux-2-klein-base-9b-runware",
@@ -766,7 +857,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence. Needs a 48 GB GPU. Based on FLUX.2 klein base 9B.",
       "pack": "bfl-flux-2-klein-base-9b-runware.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "Runware/BFL-FLUX.2-klein-base-9B"
     },
     {
       "id": "flux-2-klein-9b-snofs-timdrnl",
@@ -774,7 +866,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Based on FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-snofs-timdrnl.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "timdrnl/FLUX.2-klein-9B-SNOFS"
     },
     {
       "id": "bfl-flux-2-klein-base-4b-runware",
@@ -782,7 +875,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence. Needs a 24 GB GPU. Based on FLUX.2 klein base 4B.",
       "pack": "bfl-flux-2-klein-base-4b-runware.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "Runware/BFL-FLUX.2-klein-base-4B"
     },
     {
       "id": "flux-2-klein-9b-nunchaku-tonera",
@@ -790,7 +884,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Based on FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-nunchaku-tonera.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "tonera/FLUX.2-klein-9B-Nunchaku"
     },
     {
       "id": "flux-2-klein-9b-kv-black-forest-labs",
@@ -799,7 +894,8 @@
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Based on FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-kv-black-forest-labs.json",
       "gated": true,
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "black-forest-labs/FLUX.2-klein-9b-kv"
     },
     {
       "id": "flux-2-klein-9b-kp-forks",
@@ -807,7 +903,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Another upload of FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-kp-forks.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "kp-forks/FLUX.2-klein-9B"
     },
     {
       "id": "flux-2-klein-9b-modelslab",
@@ -815,7 +912,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Another upload of FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-modelslab.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "ModelsLab/FLUX.2-klein-9B"
     },
     {
       "id": "flux-2-klein-9b-blitz-comfyui-guangyuansd",
@@ -823,7 +921,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Based on FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-blitz-comfyui-guangyuansd.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "GuangyuanSD/FLUX.2-klein-9B-Blitz-ComfyUI"
     },
     {
       "id": "bfl-flux-2-klein-4b-runware",
@@ -831,7 +930,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 24 GB GPU. Based on FLUX.2 klein 4B.",
       "pack": "bfl-flux-2-klein-4b-runware.json",
-      "gpu": 24
+      "gpu": 24,
+      "setup_pick": "Runware/BFL-FLUX.2-klein-4B"
     },
     {
       "id": "firered-image-edit-1-1",
@@ -839,7 +939,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs an 80 GB GPU.",
       "pack": "firered-image-edit-1-1.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "FireRedTeam/FireRed-Image-Edit-1.1"
     },
     {
       "id": "qwen-image-edit-2511-lightning-nunchaku-tonera",
@@ -847,7 +948,8 @@
       "kind": "Image To Image",
       "note": "Runs with RunPod's default settings.",
       "pack": "qwen-image-edit-2511-lightning-nunchaku-tonera.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "tonera/Qwen-Image-Edit-2511-Lightning-Nunchaku"
     },
     {
       "id": "qwen-image-edit-2511-unsloth",
@@ -855,7 +957,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs an 80 GB GPU. Another upload of Qwen-Image-Edit 2511.",
       "pack": "qwen-image-edit-2511-unsloth.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "unsloth/Qwen-Image-Edit-2511"
     },
     {
       "id": "flux-1-kontext-dev",
@@ -863,7 +966,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs a 48 GB GPU.",
       "pack": "flux-1-kontext-dev.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "unsloth/FLUX.1-Kontext-dev"
     },
     {
       "id": "flux-2-klein-4b-fp8-diffusers-tonera",
@@ -871,7 +975,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Based on FLUX.2 klein 4B.",
       "pack": "flux-2-klein-4b-fp8-diffusers-tonera.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "tonera/FLUX.2-klein-4B-fp8-diffusers"
     },
     {
       "id": "flux-2-klein-9b-blitz-comfyui-wraps",
@@ -879,7 +984,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Needs a 48 GB GPU. Based on FLUX.2 klein 9B.",
       "pack": "flux-2-klein-9b-blitz-comfyui-wraps.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "wraps/FLUX.2-klein-9B-Blitz-ComfyUI"
     },
     {
       "id": "flux-2-klein-4b-nunchaku-tonera",
@@ -887,7 +993,8 @@
       "kind": "Image To Image",
       "note": "Makes or edits a picture from a sentence, quickly. Based on FLUX.2 klein 4B.",
       "pack": "flux-2-klein-4b-nunchaku-tonera.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "tonera/FLUX.2-klein-4B-Nunchaku"
     },
     {
       "id": "qwen-image-layered",
@@ -895,7 +1002,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU.",
       "pack": "qwen-image-layered.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Qwen/Qwen-Image-Layered"
     },
     {
       "id": "qwen-image-edit-causal-lightx2v",
@@ -903,7 +1011,8 @@
       "kind": "Image To Image",
       "note": "Edits a picture from a sentence. Needs an 80 GB GPU. Based on Qwen-Image-Edit 2511.",
       "pack": "qwen-image-edit-causal-lightx2v.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "lightx2v/Qwen-Image-Edit-Causal"
     },
     {
       "id": "qwen-image-layered-runware",
@@ -911,7 +1020,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Another upload of Qwen-Image-Layered.",
       "pack": "qwen-image-layered-runware.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Runware/Qwen-Image-Layered"
     },
     {
       "id": "spatialasm-nvg-yuhongliu",
@@ -919,7 +1029,8 @@
       "kind": "Image To Image",
       "note": "Runs with RunPod's default settings.",
       "pack": "spatialasm-nvg-yuhongliu.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "YuhongLiu/SpatialASM-NVG"
     },
     {
       "id": "qwen-image-layered-8bit-mzbac",
@@ -927,7 +1038,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Based on Qwen-Image-Layered.",
       "pack": "qwen-image-layered-8bit-mzbac.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "mzbac/Qwen-Image-Layered-8bit"
     },
     {
       "id": "qwen-image-layered-6bit-mzbac",
@@ -935,7 +1047,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Based on Qwen-Image-Layered.",
       "pack": "qwen-image-layered-6bit-mzbac.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "mzbac/Qwen-Image-Layered-6bit"
     },
     {
       "id": "qwen-image-layered-terryrdt",
@@ -943,7 +1056,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Another upload of Qwen-Image-Layered.",
       "pack": "qwen-image-layered-terryrdt.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "terryrdt/Qwen-Image-Layered"
     },
     {
       "id": "qwen-image-layered-fargol83",
@@ -951,7 +1065,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Another upload of Qwen-Image-Layered.",
       "pack": "qwen-image-layered-fargol83.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Fargol83/Qwen-Image-Layered"
     },
     {
       "id": "qwen-image-dodge-burn-hewei3",
@@ -959,7 +1074,8 @@
       "kind": "Image To Image",
       "note": "Runs with RunPod's default settings.",
       "pack": "qwen-image-dodge-burn-hewei3.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "hewei3/qwen-image-dodge_burn"
     },
     {
       "id": "qwen-image-layered-sunqiang",
@@ -967,7 +1083,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Another upload of Qwen-Image-Layered.",
       "pack": "qwen-image-layered-sunqiang.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "sunqiang/Qwen-Image-Layered"
     },
     {
       "id": "qwen-image-layered-control-llmrobot",
@@ -975,7 +1092,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Based on Qwen-Image-Layered.",
       "pack": "qwen-image-layered-control-llmrobot.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "llmrobot/qwen-image-layered-control"
     },
     {
       "id": "qwen-image-layered-jinstudio",
@@ -983,7 +1101,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Another upload of Qwen-Image-Layered.",
       "pack": "qwen-image-layered-jinstudio.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Jinstudio/Qwen-Image-Layered"
     },
     {
       "id": "qwen-image-layered-grgrhgff",
@@ -991,7 +1110,8 @@
       "kind": "Image To Image",
       "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Another upload of Qwen-Image-Layered.",
       "pack": "qwen-image-layered-grgrhgff.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "grgrhgff/Qwen-Image-Layered"
     },
     {
       "id": "wan-2-2-i2v-a14b-lightning",
@@ -999,7 +1119,8 @@
       "kind": "Image To Video",
       "note": "Turns a picture into a short clip, quickly. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-2-i2v-a14b-lightning.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "magespace/Wan2.2-I2V-A14B-Lightning-Diffusers"
     },
     {
       "id": "wan-2-2-i2v-a14b",
@@ -1007,7 +1128,8 @@
       "kind": "Image To Video",
       "note": "Turns a picture into a short clip. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-2-i2v-a14b.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Wan-AI/Wan2.2-I2V-A14B-Diffusers"
     },
     {
       "id": "wan-2-1-i2v-14b-720p",
@@ -1015,7 +1137,8 @@
       "kind": "Image To Video",
       "note": "Turns a picture into a short clip. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-1-i2v-14b-720p.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Wan-AI/Wan2.1-I2V-14B-720P-Diffusers"
     },
     {
       "id": "wan-2-1-i2v-14b-480p",
@@ -1023,7 +1146,8 @@
       "kind": "Image To Video",
       "note": "Turns a picture into a short clip. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "wan-2-1-i2v-14b-480p.json",
-      "gpu": 80
+      "gpu": 80,
+      "setup_pick": "Wan-AI/Wan2.1-I2V-14B-480P-Diffusers"
     },
     {
       "id": "lingbot-world-fast",
@@ -1031,7 +1155,8 @@
       "kind": "Image To Video",
       "note": "Turns a picture into an explorable moving scene. Needs more than 80 GB of GPU memory (H200 or B200). Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "lingbot-world-fast.json",
-      "gpu": 141
+      "gpu": 141,
+      "setup_pick": "robbyant/lingbot-world-fast-diffusers"
     },
     {
       "id": "hunyuanvideo-1-5-480p-i2v-fast",
@@ -1039,7 +1164,8 @@
       "kind": "Image To Video",
       "note": "Turns a picture into a short clip, quickly. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "hunyuanvideo-1-5-480p-i2v-fast.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_i2v_step_distilled"
     },
     {
       "id": "hunyuanvideo-1-5-480p-i2v",
@@ -1047,7 +1173,8 @@
       "kind": "Image To Video",
       "note": "Turns a picture into a short clip. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
       "pack": "hunyuanvideo-1-5-480p-i2v.json",
-      "gpu": 48
+      "gpu": 48,
+      "setup_pick": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_i2v"
     }
   ]
 }

@@ -58,6 +58,7 @@ form .right { display: flex; align-items: center; gap: 6px; }
 #viewer .count { position: absolute; bottom: 12px; right: 16px; color: #fff8; font-size: 13px; }
 .empty { color: var(--muted); text-align: center; margin-top: 40px; }
 .empty a { color: var(--text); }
+.full { color: var(--muted); font-size: 13px; text-align: center; margin: 8px 0 16px; }
 .empty b.intro { display: block; color: var(--text); font-size: 20px; margin-bottom: 12px; }
 /* Veil — click to show */
 .veil { position: relative; margin-top: 8px; border-radius: 10px; overflow: hidden; cursor: pointer; }
@@ -254,7 +255,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.24 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.25 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -279,13 +280,12 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.24";
+const VERSION = "2026.10.24.25";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
 const GET_URL = "https://cobaltpear.github.io/";
 const CATALOG_URL = "https://cobaltpear.github.io/packs/index.json";  // models anyone can start on RunPod in a few clicks — no GitHub, no build
-const KEEP = 300;  // newest prompts kept in the browser
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const STATUS = { IN_QUEUE: "In queue", IN_PROGRESS: "Generating", COMPLETED: "Done", FAILED: "Failed", CANCELLED: "Cancelled", TIMED_OUT: "Timed out", ERROR: "Error" };
@@ -509,7 +509,7 @@ async function makeEndpoints() {
 $("auto-go").addEventListener("click", makeEndpoints);
 // Simple takes one worker of your own, Plus any number (models from the catalog never count)
 const CATALOG_DIR = new URL(".", CATALOG_URL).href;
-const ownWorkers = () => packs.filter(p => !p.src?.startsWith(CATALOG_DIR)).length;
+const ownWorkers = () => packs.filter(p => !p.src?.startsWith(CATALOG_DIR) && !p.src?.startsWith("hf:")).length;
 // The catalog — models that start on RunPod without GitHub. Add one, follow the line under it, paste the endpoint ID.
 // Steps shared by many models live once in the catalog («setups»); a pack names them as "@<key>". A pack of your own can still carry its own text.
 let catalog = [], setups = {};
@@ -526,19 +526,65 @@ function renderCatalog() {
   $("kinds").hidden = kinds.length < 2;
   $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
-    `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.gated ? `<span class="gated">Gated</span>` : ""}
+    `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
     <button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
   findPacks();
 }
-fetch(CATALOG_URL, { cache: "no-cache" }).then(r => r.json()).then(j => {
+// The list is RunPod's own, made the way RunPod makes it: Hugging Face models by downloads, kept if vLLM-Omni runs them.
+// So the order follows popularity, new models come in and dropped ones go by themselves (models already added stay).
+// A model index.json knows keeps its values; a new one gets plain values and the server's defaults. Without Hugging Face, index.json alone is shown.
+const OMNI_ARCHS = "https://raw.githubusercontent.com/runpod-workers/worker-vllm-omni/main/scripts/omni_supported_archs.json";
+const HF_LIST = "https://huggingface.co/api/models?limit=300&expand=downloads&expand=tags&expand=pipeline_tag&expand=gated&expand=safetensors&sort=downloads&pipeline_tag=";
+const HF_TAGS = ["text-to-image", "text-to-video", "image-to-image", "image-text-to-image", "image-to-video"];
+const KIND_NAMES = { "text-to-image": "Text To Image", "text-to-video": "Text To Video", "image-to-image": "Image To Image", "image-to-video": "Image To Video" };
+const ARCH_KINDS = { LTX2Pipeline: "text-to-video", LTX2TwoStagePipeline: "text-to-video", LTX2DistilledOneStagePipeline: "text-to-video", LTX2DistilledTwoStagePipeline: "text-to-video",
+  WanPipeline: "text-to-video", WanImageToVideoPipeline: "image-to-video", SanaImageToVideoPipeline: "image-to-video", HunyuanVideo15ImageToVideoPipeline: "image-to-video",
+  QwenImageEditPipeline: "image-to-image", QwenImageEditPlusPipeline: "image-to-image", QwenImageLayeredPipeline: "image-to-image", LongCatImageEditPipeline: "image-to-image", FluxKontextPipeline: "image-to-image" };
+async function liveCatalog(known) {
+  const get = u => fetch(u).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+  const [archs, ...lists] = await Promise.all([get(OMNI_ARCHS), ...HF_TAGS.map(t => get(HF_LIST + t))]);
+  const ok = new Set(archs); ok.delete("Wan22S2VPipeline");  // RunPod leaves this one out too
+  const ours = new Map(known.map(c => [(c.setup_pick || "").toLowerCase(), c])), seen = new Set(), out = [];
+  for (const m of lists.flat().sort((a, b) => (b.downloads || 0) - (a.downloads || 0))) {
+    const name = m.id, tags = m.tags || [], low = name.toLowerCase();
+    if (seen.has(low)) continue;
+    seen.add(low);
+    if (["lora", "4-bit", "8-bit"].some(t => tags.includes(t))) continue;
+    const arch = tags.map(t => /^diffusers:(\w+)$/.exec(t)?.[1]).find(Boolean);
+    if (!ok.has(arch)) continue;
+    const params = m.safetensors?.total;
+    if (params !== undefined && params < 1e8) continue;  // test stubs
+    const pt = m.pipeline_tag || "";
+    const k = ARCH_KINDS[arch] || (pt.includes("-to-video") ? (pt.startsWith("image") ? "image-to-video" : "text-to-video") : pt.startsWith("image") ? "image-to-image" : "text-to-image");
+    const nsfw = tags.includes("not-for-all-audiences"), gated = !!m.gated;
+    const c = ours.get(low);
+    if (c) { out.push({ ...c, kind: KIND_NAMES[k], gated, nsfw }); continue; }
+    const gb = (params || 0) * 2 / 1024 ** 3, gpu = gb < 18 ? 24 : gb < 40 ? 48 : 80;  // weights at 16 bits
+    out.push({ id: low.replace(/[^a-z0-9]+/g, "-"), label: name.split("/").pop(), kind: KIND_NAMES[k], setup_pick: name, gpu, gated, nsfw,
+               note: `${name} on Hugging Face. Needs a ${gpu} GB GPU.`, url: "hf:" + name });
+  }
+  return out.sort((a, b) => Object.values(KIND_NAMES).indexOf(a.kind) - Object.values(KIND_NAMES).indexOf(b.kind));
+}
+// a pack for a model index.json does not know — the request shape of its tab, everything else left to the server
+function plainPack(c) {
+  const k = Object.keys(KIND_NAMES).find(x => KIND_NAMES[x] === c.kind), video = k.includes("video"), fromImage = k.startsWith("image");
+  const input = { ...(video ? { task: "video" } : fromImage ? { task: "image_edit" } : {}), prompt: "", ...(!fromImage && { size: video ? "832x480" : "1024x1024" }), seed: 0, ...(k !== "image-to-image" && { negative_prompt: "" }) };
+  return { format: "pack/1", engine: "json", id: c.id, label: c.label, note: c.note, setup_pick: c.setup_pick, setup: "@omni-" + k, input,
+    prompt: [["prompt"]], seed: [["seed"]], ...(input.negative_prompt !== undefined && { negative: [["negative_prompt"]] }),
+    ...(fromImage ? { image: [[video ? "input_reference_b64" : "image_b64"]] } : { size: [["size"]], size_step: 16,
+      sizes: video ? [[832, 480, "7:4"], [480, 832, "4:7"]] : [[1024, 1024, "1:1"], [1216, 832, "3:2"], [832, 1216, "2:3"]] }) };
+}
+fetch(CATALOG_URL, { cache: "no-cache" }).then(r => r.json()).then(async j => {
   setups = j.setups || {};
   catalog = (j.models || []).map(m => ({ ...m, url: new URL(m.pack, CATALOG_URL).href }));
   renderPacks();
+  try { catalog = await liveCatalog(catalog); renderPacks(); } catch {}  // Hugging Face out of reach — the fixed list stays
 }).catch(() => {});
 $("catalog").addEventListener("click", async e => {
   const url = e.target.dataset.cat;
   if (!url) return;
-  try { addPack(await fetchPack(url), url.split("/").pop(), url); } catch (err) { alert(err.message); }
+  const c = catalog.find(c => c.url === url);
+  try { addPack(url.startsWith("hf:") ? plainPack(c) : await fetchPack(url), url.split("/").pop(), url); } catch (err) { alert(err.message); }
 });
 function findPacks() {
   const q = $("pack-find").value.trim().toLowerCase();
@@ -559,7 +605,7 @@ $("pack-find").addEventListener("input", findPacks);
 // (marked «Updated» in Models). Endpoint IDs stay, so there is nothing to ask.
 async function findPackUpdates() {
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  const newPacks = (await Promise.all(packs.filter(p => p.src).map(async p => {
+  const newPacks = (await Promise.all(packs.filter(p => p.src && !p.src.startsWith("hf:")).map(async p => {
     try { const n = { ...checkPack(await fetchPack(p.src)), src: p.src }; return same(n, p) ? null : n; } catch { return null; }  // offline — try next time
   }))).filter(Boolean);
   if (!newPacks.length) return;
@@ -848,21 +894,50 @@ function idb(mode, fn) {
 async function keepTurn(t) {  // stores the finished items of a turn; a turn with none left is removed
   const items = t.items.filter(i => i.status === "COMPLETED").map(({ id, packId, label, seed, w, h, text, blobs, sent }) => ({ id, packId, label, seed, w, h, text, blobs, sent }));
   if (!items.length) return idb("readwrite", s => s.delete(t.created));
-  await idb("readwrite", s => s.put({ created: t.created, prompt: t.prompt, negative: t.negative, image: t.image, items }));
-  const keys = await idb("readonly", s => s.getAllKeys());
-  if (keys.length > KEEP) await idb("readwrite", s => { for (const k of keys.slice(0, keys.length - KEEP)) s.delete(k); });
+  const rec = { created: t.created, prompt: t.prompt, negative: t.negative, image: t.image, items };
+  for (;;) {  // nothing is removed by count — only when the browser has no room left, the oldest go first, and the chat says so
+    try { await idb("readwrite", s => s.put(rec)); break; }
+    catch (e) { if (e?.name !== "QuotaExceededError" || !(await dropOldest(t.created))) throw e; }
+  }
+  if (!askedToKeep) { askedToKeep = true; navigator.storage?.persist?.().catch(() => {}); }  // so the browser does not clear it to make room for other sites
+}
+let askedToKeep = false, storageFull = false;
+async function dropOldest(keep) {
+  const old = (await idb("readonly", s => s.getAllKeys())).filter(k => k !== keep).slice(0, 10);
+  if (!old.length) return false;
+  await idb("readwrite", s => { for (const k of old) s.delete(k); });
+  for (const k of old) { const i = turns.findIndex(t => t.created === k); if (i >= 0) turns.splice(i, 1); }
+  storageFull = true; render();
+  return true;
+}
+// a year of results is too many to draw at once: the newest come first, and older ones as the chat is scrolled to the top
+const PAGE = 30;
+let oldestShown = Infinity, allShownLoaded = false, loadingOlder = false;
+function olderTurns(before, n) {  // up to n stored turns older than `before`, newest first
+  const out = [];
+  return idb("readonly", s => { s.openCursor(IDBKeyRange.upperBound(before, true), "prev").onsuccess = e => { const c = e.target.result; if (c && out.length < n) { out.push(c.value); c.continue(); } }; }).then(() => out);
 }
 async function loadHistory() {
+  if (allShownLoaded || loadingOlder) return;
+  loadingOlder = true;
   let recs = [];
-  try { recs = await idb("readonly", s => s.getAll()); } catch { return; }  // private windows may have no IndexedDB
+  try { recs = (await olderTurns(oldestShown, PAGE)).reverse(); } catch { allShownLoaded = true; return; }  // private windows may have no IndexedDB
+  finally { loadingOlder = false; }
+  if (recs.length < PAGE) allShownLoaded = true;
+  if (!recs.length) return;
   for (const r of recs) for (const it of r.items) {
     it.status = "COMPLETED";
     it.media = (it.blobs || []).map(b => ({ url: URL.createObjectURL(b), kind: mediaKind(b.type) || "image", type: b.type }));
   }
+  const first = oldestShown === Infinity;
+  oldestShown = recs[0].created;
   lastCreated = Math.max(lastCreated, ...recs.map(r => r.created));
+  const below = document.body.scrollHeight - scrollY;  // keeps what is on screen in place as older turns come in above
   turns.unshift(...recs.filter(r => !turns.some(t => t.created === r.created)));
-  render(); if (!view) scrollTo(0, document.body.scrollHeight);
+  render();
+  if (!view) scrollTo(0, first ? document.body.scrollHeight : document.body.scrollHeight - below);
 }
+addEventListener("scroll", () => { if (!view && scrollY < 300) loadHistory(); }, { passive: true });
 function removeItems(ids) {
   for (const t of [...turns]) {
     const before = t.items.length;
@@ -891,7 +966,7 @@ function itemHtml(t, it) {
   return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${use}${edit}${det}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div>${sent}</div>`;
 }
 function render() {
-  $("feed").innerHTML = turns.length ? turns.map((t, ti) => {
+  $("feed").innerHTML = (storageFull ? `<p class="full">The browser ran out of room, so the oldest results were removed. Download the ones you want to keep.</p>` : "") + (turns.length ? turns.map((t, ti) => {
     const done = t.items.every(i => ["COMPLETED", "ERROR"].includes(i.status));
     const more = `<button type="button" data-four="${ti}" title="4 more with the same prompt and models">×4</button>`;
     if (t.image && !t.imageUrl) t.imageUrl = URL.createObjectURL(t.image);
@@ -899,7 +974,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="#news">News</a> · <a href="#guide">Setup guide</a></div>`;
+  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="#news">News</a> · <a href="#guide">Setup guide</a></div>`);
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
