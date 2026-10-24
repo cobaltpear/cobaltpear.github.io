@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About Cobalt Pear</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E">
+<style>
+:root { color-scheme: dark; --bg: #111; --panel: #1b1b1b; --line: #333; --text: #eee; --muted: #999; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, sans-serif; }
+header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+header b { margin-right: auto; display: flex; align-items: center; gap: 8px; }
+header b img { width: 22px; height: 22px; }
+header a { color: var(--text); font-size: 13px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
+main { max-width: 720px; margin: 0 auto; padding: 8px 16px 80px; }
+h1 { font-size: 26px; line-height: 1.3; margin: 24px 0 4px; }
+h2 { font-size: 18px; margin: 0; }
+.lead, .muted { color: var(--muted); }
+a { color: var(--text); }
+code, kbd { font: 14px ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; word-break: break-all; }
+b.ui { white-space: nowrap; }
+.step { margin: 14px 0; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.step > label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.step input { width: 20px; height: 20px; flex: none; accent-color: #8fb3ff; }
+.step.done { opacity: .55; }
+.step ol, .step ul { margin: 8px 0 0; padding-left: 22px; }
+.step li { margin: 4px 0; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+td { border-top: 1px solid var(--line); padding: 6px 8px 6px 0; vertical-align: top; }
+td:first-child { color: var(--muted); width: 42%; }
+.note { margin-top: 8px; font-size: 14px; color: var(--muted); }
+ul.points { padding-left: 22px; line-height: 1.8; }
+.news { margin: 10px 0; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.news time { color: var(--muted); font-size: 13px; display: block; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.links a { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
+</style>
+</head>
+<body>
+<header><b><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</b><a href="./">Open the app</a></header>
+<main>
+<h1>Prompt in, picture out — on your own RunPod.</h1>
+<p class="lead">Cobalt Pear is a one-page app for RunPod Serverless. Pick a model, paste your endpoint ID, and just type.</p>
+<ul class="points">
+<li>Just type — no GPU, no ComfyUI, no install.</li>
+<li>Your own RunPod: no filters, you pay only for the pictures you make.</li>
+<li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
+</ul>
+<div class="links"><a href="./">Open the app</a><a href="guide.html">Setup guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
+
+<h2>News</h2>
+<!-- newest first -->
+<div class="news"><time>2026-10-24</time>Cobalt Pear is out. Start with Z-Image Turbo from the Models list — no GitHub, no build.</div>
+</main>
+</body>
+</html>

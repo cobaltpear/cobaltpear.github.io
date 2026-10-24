@@ -3,10 +3,9 @@
   "engine": "json",
   "id": "z-image-turbo",
   "label": "Z-Image Turbo",
-  "note": "RunPod → Serverless → New endpoint → Deploy image or video API → Tongyi-MAI/Z-Image-Turbo. No GitHub, no build, no token.",
+  "note": "Fast, sharp text-to-image by Tongyi-MAI. No GitHub, no build, no token.",
   "setup_pick": "Tongyi-MAI/Z-Image-Turbo",
-  "setup": "Deploy image or video API → Text To Image → pick the model above → Deploy with vLLM Omni → Next → Create. Paste its ID above.",
-  "setup_url": "https://console.runpod.io/serverless/new-endpoint",
+  "setup": "@omni-text-to-image",
   "input": {
     "prompt": "",
     "size": "1536x960",

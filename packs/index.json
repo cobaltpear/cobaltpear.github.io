@@ -1,9 +1,16 @@
 {
   "format": "catalog/1",
+  "setups": {
+    "omni-text-to-image": {
+      "url": "https://console.runpod.io/serverless/new-endpoint",
+      "steps": "Deploy image or video API → Text To Image → pick the model → Deploy with vLLM Omni → Next → Create."
+    }
+  },
   "models": [
     {
       "id": "z-image-turbo",
       "label": "Z-Image Turbo",
+      "kind": "Text to image",
       "note": "Fast, sharp text-to-image by Tongyi-MAI. No GitHub, no build, no token.",
       "pack": "z-image-turbo.json"
     }
