@@ -255,7 +255,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.22 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.23 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
@@ -315,7 +315,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.22";
+const VERSION = "2026.10.24.23";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -655,6 +655,7 @@ function openSettings(then) {
   $("key").focus();
 }
 $("open-settings").addEventListener("click", () => openSettings());
+document.addEventListener("click", e => { if (e.target.closest(".open-settings")) { e.preventDefault(); openSettings(); } });  // the Settings link on the empty screen
 let afterModels = null;
 function openModels(then) {
   afterModels = typeof then === "function" ? then : null;
@@ -938,7 +939,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in Models, then send a prompt — the RunPod key is asked for on the first one.<br><a href="#about">About</a> · <a href="#news">News</a> · <a href="#guide">Setup guide</a></div>`;
+  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#" class="open-settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="#news">News</a> · <a href="#guide">Setup guide</a></div>`;
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
@@ -1046,7 +1047,7 @@ setNegative(draft.negative ?? null);
 render();
 showView();
 loadHistory();
-if (!view && usable().length) $("prompt").focus(); else if (!view) openModels();  // the key is asked for on the first send
+if (!view) $("prompt").focus();  // the chat comes first; the empty screen points to Models, and the key is asked for on the first send
 </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "479e20130ef140e8bff9197d9e22dca1"}'></script>
 </body>
