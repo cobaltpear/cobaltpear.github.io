@@ -251,7 +251,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.15 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.16 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
@@ -276,7 +276,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.15";
+const VERSION = "2026.10.24.16";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -482,7 +482,7 @@ async function makeEndpoints() {
     const c = catalogOf(p);
     $("auto-state").textContent = `Making ${p.label}…`;
     try {
-      const r = await fetch(RELAY_URL, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
+      const r = await fetch(RELAY_URL + "/create", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
                                          body: JSON.stringify({ model: p.setup_pick, gpu: c.gpu, video: /video/i.test(c.kind || "") }) });
       const j = await r.json().catch(() => ({}));
       if (r.status === 403 && j.error === "This key can't create endpoints.") { $("auto-key-row").hidden = false; $("auto-key").value = ""; $("auto-key").focus();
