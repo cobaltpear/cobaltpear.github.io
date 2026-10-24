@@ -52,7 +52,16 @@ form .right { display: flex; align-items: center; gap: 6px; min-width: 0; }
 #models { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
 .chip.on { color: #111; background: var(--accent); border-color: var(--accent); }
-#model-pick { width: 18ch; max-width: 100%; text-overflow: ellipsis; }  /* the open menu still shows full names */
+#models { position: relative; flex: none; max-width: 45%; }
+#model-btn { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 4px 12px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
+#model-menu { position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 3; width: min(360px, calc(100vw - 32px)); max-height: 55vh; display: flex; flex-direction: column; gap: 6px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; }
+#model-menu .list { overflow-y: auto; }
+#model-menu .kind { padding: 6px 6px 2px; font-size: 11px; font-weight: 600; color: var(--muted); }
+#model-menu button { display: flex; gap: 6px; width: 100%; padding: 4px 6px; border: 0; border-radius: 6px; background: none; font-size: 13px; text-align: left; cursor: pointer; }
+#model-menu button:hover { background: var(--bg); }
+#model-menu button::before { content: ""; width: 1.2em; flex: none; }
+#model-menu button.on::before { content: "✓"; }
+#model-find { padding: 4px 10px; border-radius: 999px; font-size: 13px; }
 #viewer { position: fixed; inset: 0; z-index: 10; background: #000; display: flex; cursor: zoom-out; }
 #viewer img { width: 100%; height: 100%; object-fit: contain; }
 #viewer .count { position: absolute; bottom: 12px; right: 16px; color: #fff8; font-size: 13px; }
@@ -155,7 +164,7 @@ body.all-shown .veil .full-btn { display: none; }
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
-<div class="news"><time>2026-10-24</time>Chat: all models sit in one menu, grouped like the Models tabs — pick one to tick it on or off, so the row stays short however many you have.</div>
+<div class="news"><time>2026-10-24</time>Chat: all models sit in one list, grouped like the Models tabs — click to tick them on or off, so the row stays short however many you have.</div>
 <div class="news"><time>2026-10-24</time>Make it: pick any of 127 models, tick «Let Cobalt Pear make it», and it's ready on your RunPod in a few minutes.</div>
 <div class="news"><time>2026-10-24</time>Cobalt Pear is out. Start with Z-Image Turbo from the Models list — no GitHub, no build.</div>
 </section>
@@ -256,7 +265,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.27 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.28 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -281,7 +290,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.27";
+const VERSION = "2026.10.24.28";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -353,11 +362,13 @@ const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values)
 const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
 const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
 const takesImage = p => !!p.image?.length;  // edit and image-to-video packs: a picture is needed
-// which Models tab a pack sits under: its own «kind», else a guess — a starting picture → Image To …, a video task or a video-saving node → … To Video
-const KINDS = ["Text To Image", "Text To Video", "Image To Image", "Image To Video"];
+// which Models tab a pack sits under: its own «kind», else a guess — a text or speech worker's own fields (vLLM / OpenAI style, a voice) → Other,
+// a starting picture → Image To …, a video task or a video-saving node → … To Video
+const KINDS = ["Text To Image", "Text To Video", "Image To Image", "Image To Video", "Other"];
 function packKind(p) {
   if (KINDS.includes(p.kind)) return p.kind;
   const s = JSON.stringify((p.engine === "json" ? p.input : p.workflow) || {});
+  if (/"(?:messages|sampling_params|max_tokens|max_new_tokens|openai_route|voice|speaker|speaker_id|speaker_wav|ref_audio)":/.test(s)) return "Other";
   const video = /"task":"video"|"class_type":"(?:SaveVideo|SaveWEBM|SaveAnimated\w*|VHS_VideoCombine|CreateVideo)"/.test(s);
   return (takesImage(p) ? "Image To " : "Text To ") + (video ? "Video" : "Image");
 }
@@ -734,29 +745,51 @@ const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
 const customAllowed = () => ownWorkers() < 1;
 
 // several models can be on at once — each prompt goes to every model that is on.
-// One menu holds them all: it names the ones on (two names, or «5 models»), and picking a model ticks it on or off — so a hundred models still fit in one row.
+// One button names the one on (or «3 models») and opens a list grouped like the Models tabs; a click ticks a model on or off
+// and the list stays open until a click outside or Esc — so a hundred models still fit in one row.
 let chosen = store.get("models", []);
 function fillModels() { fillChips(); fitNegative(); fitPicture(); }
+function modelsHead() {
+  const list = usable(), names = chosen.map(id => list.find(p => p.id === id)?.label).filter(Boolean);
+  return (names.length > 1 ? `${names.length} models` : names[0] || "") + " ▾";
+}
 function fillChips() {
-  const list = usable(), name = id => list.find(p => p.id === id).label;
+  const list = usable(), open = $("model-menu") && !$("model-menu").hidden, find = $("model-find")?.value || "";
   chosen = chosen.filter(id => list.some(p => p.id === id));
   if (!chosen.length && list.length) chosen = [list[0].id];
   if (!list.length) { $("models").innerHTML = `<a href="#" id="pick" class="meta">Pick a model</a>`; return; }
-  const head = chosen.length > 2 ? `${chosen.length} models` : chosen.map(name).join(" · ");
-  const opt = p => `<option value="${esc(p.id)}">${chosen.includes(p.id) ? "✓ " : "\u2003 "}${esc(p.label)}</option>`;
-  // grouped like the Models tabs — a list model under its own tab, your own worker by what its pack does (packKind)
-  const kindOf = p => catalogOf(p)?.kind || packKind(p), kinds = KINDS;
-  $("models").innerHTML = `<select id="model-pick" title="Pick a model to turn it on or off"><option value="">${esc(head)}</option>`
-    + kinds.map(k => list.filter(p => kindOf(p) === k)).map((ps, i) => ps.length ? `<optgroup label="${esc(kinds[i])}">${ps.map(opt).join("")}</optgroup>` : "").join("") + `</select>`;
+  // a list model under its own tab, your own worker by what its pack does (packKind)
+  const kindOf = p => catalogOf(p)?.kind || packKind(p);
+  const row = p => `<button type="button" data-model="${esc(p.id)}" data-name="${esc(p.label.toLowerCase())}"${chosen.includes(p.id) ? ` class="on"` : ""}>${esc(p.label)}</button>`;
+  $("models").innerHTML = `<button type="button" id="model-btn" aria-expanded="${open}" title="The models this prompt goes to">${esc(modelsHead())}</button>`
+    + `<div id="model-menu"${open ? "" : " hidden"}>${list.length > 8 ? `<input id="model-find" type="search" autocomplete="off" placeholder="Find" value="${esc(find)}">` : ""}<div class="list">`
+    + KINDS.map(k => [k, list.filter(p => kindOf(p) === k)]).filter(([, ps]) => ps.length).map(([k, ps]) => `<div class="kind">${esc(k)}</div>` + ps.map(row).join("")).join("")
+    + `</div></div>`;
+  findModels();
 }
-$("models").addEventListener("click", e => { if (e.target.id === "pick") { e.preventDefault(); openModels(); } });
-$("models").addEventListener("change", e => {  // the last model on stays on
-  const id = e.target.id === "model-pick" && e.target.value;
-  if (!id) return;
+function findModels() {  // a search hides the models that don't match and the group titles left empty
+  const q = ($("model-find")?.value || "").trim().toLowerCase();
+  document.querySelectorAll("#model-menu [data-model]").forEach(b => b.hidden = !!q && !b.dataset.name.includes(q));
+  document.querySelectorAll("#model-menu .kind").forEach(k => { let n = k.nextElementSibling, any = false; for (; n && !n.classList.contains("kind"); n = n.nextElementSibling) any ||= !n.hidden; k.hidden = !any; });
+}
+function modelMenu(open) {
+  const m = $("model-menu"); if (!m) return;
+  m.hidden = !open; $("model-btn").setAttribute("aria-expanded", open);
+  if (open) $("model-find")?.focus();
+}
+$("models").addEventListener("click", e => {
+  if (e.target.id === "pick") { e.preventDefault(); openModels(); return; }
+  if (e.target.id === "model-btn") { modelMenu($("model-menu").hidden); return; }
+  const id = e.target.dataset.model; if (!id) return;
   if (!chosen.includes(id)) chosen = [...chosen, id];
-  else if (chosen.length > 1) chosen = chosen.filter(x => x !== id);
-  store.set("models", chosen); fillModels();
+  else if (chosen.length > 1) chosen = chosen.filter(x => x !== id);  // the last model on stays on
+  store.set("models", chosen);
+  e.target.classList.toggle("on", chosen.includes(id)); $("model-btn").textContent = modelsHead();
+  fitNegative(); fitPicture();
 });
+$("models").addEventListener("input", e => { if (e.target.id === "model-find") findModels(); });
+document.addEventListener("click", e => { if (!e.target.closest("#models")) modelMenu(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && $("model-menu") && !$("model-menu").hidden) modelMenu(false); });
 const chosenPacks = () => chosen.map(id => usable().find(p => p.id === id)).filter(Boolean);
 function choose(ids) { const ok = ids.filter(id => usable().some(p => p.id === id)); if (ok.length) { chosen = ok; store.set("models", chosen); fillModels(); } }
 
