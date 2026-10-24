@@ -61,7 +61,7 @@ td:first-child { color: var(--muted); width: 42%; }
 <li><a href="./">Open Cobalt Pear</a> → <b class="ui">Models</b> → <b class="ui">Add</b> next to the model. The RunPod steps show in the same window.</li>
 <li>Do those steps on RunPod — for Z-Image Turbo: <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy image or video API</b> → <b class="ui">Text To Image</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → <b class="ui">Deploy with vLLM Omni</b> → <b class="ui">Next</b> → <b class="ui">Create Endpoint</b>.</li>
 <li>In the endpoint's settings set Max workers <code>1</code>, Execution timeout <code>600</code> → <b class="ui">Save</b>.</li>
-<li>Paste its endpoint ID next to the model in Cobalt Pear → <b class="ui">Done</b>. Then do step 6 and put the key in <b class="ui">Settings</b>.</li>
+<li>Paste its endpoint ID next to the model in Cobalt Pear. Then do step 6 and put the key in <b class="ui">Settings</b>.</li>
 </ol>
 <p class="note">No build to wait for. The first picture takes about a minute while RunPod starts it; then about 8 seconds each.</p></div>
 
@@ -107,8 +107,8 @@ td:first-child { color: var(--muted); width: 42%; }
 <div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
 <ol>
 <li><a href="./">Open Cobalt Pear</a> → <b class="ui">Models</b> → paste the <b>worker's page address</b> (from step 2) under «Your own worker» → <b class="ui">Add</b>.</li>
-<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>) → <b class="ui">Done</b>.</li>
-<li>Type what you want to see, press Enter. The first time it asks for the API key — paste it → <b class="ui">OK</b>.</li>
+<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>), then go to <b class="ui">Chat</b>.</li>
+<li>Type what you want to see, press Enter. The first time it asks for your RunPod API key — the one from step 6 — paste it → <b class="ui">OK</b>.</li>
 </ol>
 <p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p></div>
 

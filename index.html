@@ -80,7 +80,8 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack .new { font-size: 11px; color: var(--accent); }
 .sheet .pack .gated { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
 .sheet #auto { margin-top: 8px; font-size: 13px; }
-.sheet #auto label { display: inline; margin: 0; color: var(--text); font-size: 13px; }
+.sheet #auto label { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--text); font-size: 13px; cursor: pointer; }
+.sheet #auto label input { width: auto; flex: none; margin: 2px 0 0; }
 .sheet #auto label a { color: inherit; }
 .sheet #auto button { margin-top: 6px; }
 .sheet #auto button:disabled { opacity: .5; cursor: default; }
@@ -181,7 +182,7 @@ body.all-shown .veil .full-btn { display: none; }
 <li><a href="#">Open Cobalt Pear</a> → <b class="ui">Models</b> → <b class="ui">Add</b> next to the model. The RunPod steps show in the same window.</li>
 <li>Do those steps on RunPod — for Z-Image Turbo: <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy image or video API</b> → <b class="ui">Text To Image</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → <b class="ui">Deploy with vLLM Omni</b> → <b class="ui">Next</b> → <b class="ui">Create Endpoint</b>.</li>
 <li>In the endpoint's settings set Max workers <code>1</code>, Execution timeout <code>600</code> → <b class="ui">Save</b>.</li>
-<li>Paste its endpoint ID next to the model in Cobalt Pear → <b class="ui">Done</b>. Then do step 6 and put the key in <b class="ui">Settings</b>.</li>
+<li>Paste its endpoint ID next to the model in Cobalt Pear. Then do step 6 and put the key in <b class="ui">Settings</b>.</li>
 </ol>
 <p class="note">No build to wait for. The first picture takes about a minute while RunPod starts it; then about 8 seconds each.</p></div>
 
@@ -227,8 +228,8 @@ body.all-shown .veil .full-btn { display: none; }
 <div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
 <ol>
 <li><a href="#">Open Cobalt Pear</a> → <b class="ui">Models</b> → paste the <b>worker's page address</b> (from step 2) under «Your own worker» → <b class="ui">Add</b>.</li>
-<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>) → <b class="ui">Done</b>.</li>
-<li>Type what you want to see, press Enter. The first time it asks for the API key — paste it → <b class="ui">OK</b>.</li>
+<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>), then go to <b class="ui">Chat</b>.</li>
+<li>Type what you want to see, press Enter. The first time it asks for your RunPod API key — the one from step 6 — paste it → <b class="ui">OK</b>.</li>
 </ol>
 <p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p></div>
 
@@ -251,17 +252,18 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.18 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.20 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"></div>
   <div id="pack-list"></div>
-  <div id="auto" hidden><label><input id="auto-ok" type="checkbox"> Let Cobalt Pear make it on RunPod. Your key passes through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>), which keeps nothing.</label>
+  <div id="auto" hidden><label><input id="auto-ok" type="checkbox"><span>Let Cobalt Pear make it on RunPod. Your key passes through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>), which keeps nothing.</span></label>
   <div class="add" id="auto-hf-row" hidden><input id="auto-hf" type="password" autocomplete="off" placeholder="Hugging Face token (hf_...) for Gated models"></div>
   <div class="hint" id="auto-hf-how" hidden></div>
   <button id="auto-go" class="pill" type="button">Make it</button> <span class="hint" id="auto-state"></span></div>
+  <div class="hint" id="auto-or" hidden>or by hand:</div>
   <div id="pack-how"></div>
   <div id="catalog-box"><label>Add a model</label><div class="tabs" id="kinds"></div><div id="catalog"></div>
   <div class="hint" id="catalog-hint">Add one, do the RunPod steps shown above, then paste the endpoint ID.</div>
@@ -270,14 +272,13 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   </div></div>
-  <div class="actions"><button type="submit">Done</button></div>
 </form></div>
 <script>
 // Cobalt Pear — a serverless page: the browser calls the user's own RunPod Serverless endpoints directly.
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.18";
+const VERSION = "2026.10.24.20";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -470,6 +471,7 @@ function renderPacks() {
   $("auto-hf-row").hidden = $("auto-hf-how").hidden = !gated.length;
   $("auto-hf-how").innerHTML = gated.length ? `Gated: first press <b>Agree</b> on ${gated.map(p => `<a href="https://huggingface.co/${esc(p.setup_pick)}" target="_blank" rel="noopener">${esc(p.label)}</a>`).join(", ")}, then paste a <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener">Read token</a>.` : "";
   $("auto-go").disabled = !$("auto-ok").checked;
+  $("auto-or").hidden = $("auto").hidden || !how.size;
   renderCatalog();
 }
 // Make it: a model from the list gets its endpoint made by the relay (RunPod's create API can't be called from a page) — opt-in, ticked once
@@ -497,6 +499,7 @@ async function makeEndpoints() {
       if (r.status === 403 && j.error === "This key can't create endpoints.") throw new Error("This key can't make endpoints. Put a key with All access in Settings — or do the steps below by hand.");
       if (!r.ok || !j.id) throw new Error(j.error || `Error ${r.status}`);
       endpoints[p.id] = j.id; store.set("endpoints", endpoints);
+      store.set("made", [...store.get("made", []), j.id]);  // Remove deletes these on RunPod too
     } catch (err) { renderPacks(); $("auto-state").textContent = err.message; return; }
   }
   $("auto-state").textContent = "";
@@ -589,15 +592,23 @@ $("pack-file").addEventListener("change", async e => {
   for (const f of e.target.files) { try { addPack(JSON.parse(await f.text()), f.name); } catch (err) { alert(`${f.name}: ${err.message}`); } }
   e.target.value = "";
 });
+// a pasted endpoint ID is kept at once — no Done button; leaving the page fills the chat's model list
+$("pack-list").addEventListener("change", e => { if (e.target.dataset.ep !== undefined) { keepEndpointInputs(); store.set("endpoints", endpoints); setTimeout(renderPacks); } });  // not inside the input's own blur
 $("pack-list").addEventListener("click", e => {
   const pick = e.target.closest("[data-copy]");  // the whole «Model: …» line copies the name
   if (pick) { const hint = pick.querySelector(".hint-copy"); navigator.clipboard?.writeText(pick.dataset.copy).then(() => { hint.textContent = "copied ✓"; setTimeout(() => hint.textContent = "", 1200); }, () => {}); return; }
   const id = e.target.dataset.delPack;
   if (!id) return;
   keepEndpointInputs();
+  const ep = endpoints[id], made = store.get("made", []);
   packs = packs.filter(p => p.id !== id); delete endpoints[id];
   store.set(PACKS_KEY, packs); store.set("endpoints", endpoints);
   renderPacks();
+  // an endpoint Make it made goes too (one click makes it again); hand-made ones stay on RunPod
+  if (RELAY_URL && ep && made.includes(ep) && apiKey) {
+    store.set("made", made.filter(x => x !== ep));
+    fetch(RELAY_URL + "/delete", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey }, body: JSON.stringify({ id: ep }) }).catch(() => {});
+  }
 });
 let afterSettings = null;  // what was asked for before the key was given — runs on OK
 function openSettings(then) {
