@@ -42,17 +42,17 @@ form .row { display: flex; justify-content: space-between; align-items: center; 
 form select { border-radius: 999px; font-size: 13px; color: var(--muted); }
 #send { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--accent); color: #111; font-size: 18px; font-weight: 700; cursor: pointer; }
 #send:disabled { opacity: .5; cursor: default; }
-form .right { display: flex; align-items: center; gap: 6px; }
+form .right { display: flex; align-items: center; gap: 6px; min-width: 0; }
 #seed, #negative { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
 #negative { width: 26ch; min-width: 6ch; flex: 0 1 auto; }
 #pic { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
 #pic img, .turn .p img { height: 48px; border-radius: 6px; }
 .turn .p img { display: block; margin-bottom: 4px; }
 .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }
-#models { display: flex; flex-wrap: wrap; gap: 6px; }
+#models { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
 .chip.on { color: #111; background: var(--accent); border-color: var(--accent); }
-#add-model { width: 11ch; }  /* the open menu still shows full names */
+#model-pick { width: 18ch; max-width: 100%; text-overflow: ellipsis; }  /* the open menu still shows full names */
 #viewer { position: fixed; inset: 0; z-index: 10; background: #000; display: flex; cursor: zoom-out; }
 #viewer img { width: 100%; height: 100%; object-fit: contain; }
 #viewer .count { position: absolute; bottom: 12px; right: 16px; color: #fff8; font-size: 13px; }
@@ -155,6 +155,7 @@ body.all-shown .veil .full-btn { display: none; }
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
+<div class="news"><time>2026-10-24</time>Chat: all models sit in one menu, grouped like the Models tabs — pick one to tick it on or off, so the row stays short however many you have.</div>
 <div class="news"><time>2026-10-24</time>Make it: pick any of 127 models, tick «Let Cobalt Pear make it», and it's ready on your RunPod in a few minutes.</div>
 <div class="news"><time>2026-10-24</time>Cobalt Pear is out. Start with Z-Image Turbo from the Models list — no GitHub, no build.</div>
 </section>
@@ -255,7 +256,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.26 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.27 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -314,7 +315,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.26";
+const VERSION = "2026.10.24.27";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -386,6 +387,14 @@ const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values)
 const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
 const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
 const takesImage = p => !!p.image?.length;  // edit and image-to-video packs: a picture is needed
+// which Models tab a pack sits under: its own «kind», else a guess — a starting picture → Image To …, a video task or a video-saving node → … To Video
+const KINDS = ["Text To Image", "Text To Video", "Image To Image", "Image To Video"];
+function packKind(p) {
+  if (KINDS.includes(p.kind)) return p.kind;
+  const s = JSON.stringify((p.engine === "json" ? p.input : p.workflow) || {});
+  const video = /"task":"video"|"class_type":"(?:SaveVideo|SaveWEBM|SaveAnimated\w*|VHS_VideoCombine|CreateVideo)"/.test(s);
+  return (takesImage(p) ? "Image To " : "Text To ") + (video ? "Video" : "Image");
+}
 const hasSize = p => !!((p.width?.length || p.size?.length) && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
 // Get a pack by URL — a GitHub repo URL means pack.json on main
 async function fetchPack(url) {
@@ -611,8 +620,8 @@ function plainPack(c) {
 fetch(CATALOG_URL, { cache: "no-cache" }).then(r => r.json()).then(async j => {
   setups = j.setups || {};
   catalog = (j.models || []).map(m => ({ ...m, url: new URL(m.pack, CATALOG_URL).href }));
-  renderPacks();
-  try { catalog = await liveCatalog(catalog); liveOrder = true; renderPacks(); } catch {}  // Hugging Face out of reach — the fixed list stays
+  renderPacks(); fillChips();
+  try { catalog = await liveCatalog(catalog); liveOrder = true; renderPacks(); fillChips(); } catch {}  // Hugging Face out of reach — the fixed list stays
 }).catch(() => {});
 $("catalog").addEventListener("click", async e => {
   const url = e.target.dataset.cat;
@@ -759,28 +768,27 @@ const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
 const customAllowed = () => ownWorkers() < 1;
 
 // several models can be on at once — each prompt goes to every model that is on.
-// Only the ones on are shown, plus a menu to add another, so a hundred models still fit in one row.
+// One menu holds them all: it names the ones on (two names, or «5 models»), and picking a model ticks it on or off — so a hundred models still fit in one row.
 let chosen = store.get("models", []);
 function fillModels() { fillChips(); fitNegative(); fitPicture(); }
 function fillChips() {
-  const list = usable(), name = id => list.find(p => p.id === id).label, opt = p => `<option value="${esc(p.id)}">${esc(p.label)}</option>`;
+  const list = usable(), name = id => list.find(p => p.id === id).label;
   chosen = chosen.filter(id => list.some(p => p.id === id));
   if (!chosen.length && list.length) chosen = [list[0].id];
   if (!list.length) { $("models").innerHTML = `<a href="#" id="pick" class="meta">Pick a model</a>`; return; }
-  const rest = list.filter(p => !chosen.includes(p.id)), many = chosen.length > 1;
-  $("models").innerHTML = chosen.map(id => `<button type="button" class="chip on" data-model="${esc(id)}"${many ? ` title="Click to remove"` : ""}>${esc(name(id))}${many ? " ✕" : ""}</button>`).join("")
-    + (rest.length ? `<select id="add-model" title="Use one more model"><option value="">+ Model</option>${rest.map(opt).join("")}</select>` : "");
+  const head = chosen.length > 2 ? `${chosen.length} models` : chosen.map(name).join(" · ");
+  const opt = p => `<option value="${esc(p.id)}">${chosen.includes(p.id) ? "✓ " : "\u2003 "}${esc(p.label)}</option>`;
+  // grouped like the Models tabs — a list model under its own tab, your own worker by what its pack does (packKind)
+  const kindOf = p => catalogOf(p)?.kind || packKind(p), kinds = KINDS;
+  $("models").innerHTML = `<select id="model-pick" title="Pick a model to turn it on or off"><option value="">${esc(head)}</option>`
+    + kinds.map(k => list.filter(p => kindOf(p) === k)).map((ps, i) => ps.length ? `<optgroup label="${esc(kinds[i])}">${ps.map(opt).join("")}</optgroup>` : "").join("") + `</select>`;
 }
-$("models").addEventListener("click", e => {
-  if (e.target.id === "pick") { e.preventDefault(); openModels(); return; }
-  const id = e.target.dataset.model;
-  if (!id || chosen.length < 2) return;
-  chosen = chosen.filter(x => x !== id);
-  store.set("models", chosen); fillModels();
-});
-$("models").addEventListener("change", e => {
-  if (e.target.id !== "add-model" || !e.target.value) return;
-  chosen = [...chosen, e.target.value];
+$("models").addEventListener("click", e => { if (e.target.id === "pick") { e.preventDefault(); openModels(); } });
+$("models").addEventListener("change", e => {  // the last model on stays on
+  const id = e.target.id === "model-pick" && e.target.value;
+  if (!id) return;
+  if (!chosen.includes(id)) chosen = [...chosen, id];
+  else if (chosen.length > 1) chosen = chosen.filter(x => x !== id);
   store.set("models", chosen); fillModels();
 });
 const chosenPacks = () => chosen.map(id => usable().find(p => p.id === id)).filter(Boolean);
