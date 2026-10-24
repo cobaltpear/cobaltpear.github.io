@@ -105,7 +105,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.8 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.9 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
@@ -119,7 +119,6 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   </div>
-  <div class="hint" id="custom-plus" hidden></div>
   <div class="actions"><button type="submit">Done</button></div>
 </form></div>
 <script>
@@ -127,9 +126,9 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.8";
+const VERSION = "2026.10.24.9";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
-const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet, so adding your own worker stays free here too
+const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
 const GET_URL = "https://cobaltpear.github.io/";
 const CATALOG_URL = "https://cobaltpear.github.io/packs/index.json";  // models anyone can start on RunPod in a few clicks — no GitHub, no build
@@ -309,9 +308,10 @@ function renderPacks() {
   renderCatalog();
   const own = customAllowed();
   $("custom").hidden = !own;
-  $("custom-plus").hidden = own;
-  $("custom-plus").innerHTML = own ? "" : `Your own worker (Civitai and others): <a href="${esc(GET_PLUS)}" target="_blank" rel="noopener">Cobalt Pear Plus ↗</a>`;
 }
+// Simple takes one worker of your own, Plus any number (models from the catalog never count)
+const CATALOG_DIR = new URL(".", CATALOG_URL).href;
+const ownWorkers = () => packs.filter(p => !p.src?.startsWith(CATALOG_DIR)).length;
 // The catalog — models that start on RunPod without GitHub. Add one, follow the line under it, paste the endpoint ID.
 let catalog = [];
 function renderCatalog() {
@@ -417,8 +417,7 @@ $("settings-form").addEventListener("submit", async e => {
 
 // ---- Models ----
 const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
-const GET_PLUS = PLUS_URL;
-const customAllowed = () => !PLUS_URL;
+const customAllowed = () => ownWorkers() < 1;
 
 // several models can be on at once — each prompt goes to every model that is on.
 // Only the ones on are shown, plus a menu to add another, so a hundred models still fit in one row.
