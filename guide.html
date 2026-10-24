@@ -99,10 +99,10 @@ td:first-child { color: var(--muted); width: 42%; }
 <div class="step"><label><input type="checkbox"><h2>6. Make an API key</h2></label>
 <ol>
 <li>RunPod → <b class="ui">Settings</b> → <b class="ui">API Keys</b> → <b class="ui">Create API Key</b>.</li>
-<li>Choose <b>Restricted</b>. Leave <code>api.runpod.io/graphql</code> at <b>None</b>, and set <code>api.runpod.ai</code> to <b>Read / Write</b>. (Read only does not work.)</li>
+<li>Choose <b>All</b>.</li>
 <li>Copy the key now — RunPod shows it only once.</li>
 </ol>
-<p class="note">This key works for every endpoint you make later, too — no need to change it. It can only make pictures on your endpoints, so even if it leaked it could not touch the rest of your account.</p></div>
+<p class="note">One key does everything — making pictures and making endpoints — for every endpoint you add later. Cobalt Pear keeps it in your browser, so use a browser only you use. RunPod spends only the credit you added.</p></div>
 
 <div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
 <ol>
@@ -114,7 +114,7 @@ td:first-child { color: var(--muted); width: 42%; }
 
 <h2 style="margin-top:28px">When something is off</h2>
 <table>
-<tr><td>«Wrong RunPod key»</td><td>Check the key, and that <code>api.runpod.ai</code> is Read / Write.</td></tr>
+<tr><td>«Wrong RunPod key»</td><td>Check the key, and that it has All access.</td></tr>
 <tr><td>Waits a long time</td><td>Normal for the first picture, and after a long break. If it never starts, check the endpoint's page on RunPod.</td></tr>
 <tr><td>To stop paying entirely</td><td>Set Max workers to 0, or delete the endpoint. Idle endpoints with 0 active workers cost nothing.</td></tr>
 <tr><td>Anything else</td><td><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Ask in Discussions</a>.</td></tr>

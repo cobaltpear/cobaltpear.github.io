@@ -219,10 +219,10 @@ body.all-shown .veil .full-btn { display: none; }
 <div class="step"><label><input type="checkbox"><h2>6. Make an API key</h2></label>
 <ol>
 <li>RunPod → <b class="ui">Settings</b> → <b class="ui">API Keys</b> → <b class="ui">Create API Key</b>.</li>
-<li>Choose <b>Restricted</b>. Leave <code>api.runpod.io/graphql</code> at <b>None</b>, and set <code>api.runpod.ai</code> to <b>Read / Write</b>. (Read only does not work.)</li>
+<li>Choose <b>All</b>.</li>
 <li>Copy the key now — RunPod shows it only once.</li>
 </ol>
-<p class="note">This key works for every endpoint you make later, too — no need to change it. It can only make pictures on your endpoints, so even if it leaked it could not touch the rest of your account.</p></div>
+<p class="note">One key does everything — making pictures and making endpoints — for every endpoint you add later. Cobalt Pear keeps it in your browser, so use a browser only you use. RunPod spends only the credit you added.</p></div>
 
 <div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
 <ol>
@@ -234,7 +234,7 @@ body.all-shown .veil .full-btn { display: none; }
 
 <h2 style="margin-top:28px">When something is off</h2>
 <table>
-<tr><td>«Wrong RunPod key»</td><td>Check the key, and that <code>api.runpod.ai</code> is Read / Write.</td></tr>
+<tr><td>«Wrong RunPod key»</td><td>Check the key, and that it has All access.</td></tr>
 <tr><td>Waits a long time</td><td>Normal for the first picture, and after a long break. If it never starts, check the endpoint's page on RunPod.</td></tr>
 <tr><td>To stop paying entirely</td><td>Set Max workers to 0, or delete the endpoint. Idle endpoints with 0 active workers cost nothing.</td></tr>
 <tr><td>Anything else</td><td><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Ask in Discussions</a>.</td></tr>
@@ -250,16 +250,15 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="saved">Everything is saved <b>only in this browser</b> — your key, models, endpoint IDs and results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
-  <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.16 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.17 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"></div>
   <div id="pack-list"></div>
-  <div id="auto" hidden><label><input id="auto-ok" type="checkbox"> Let Cobalt Pear make it on RunPod. Your key passes once through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>) and is not stored.</label>
-  <div class="add" id="auto-key-row" hidden><input id="auto-key" type="password" autocomplete="off" placeholder="RunPod key with All access — used once, not saved"></div>
+  <div id="auto" hidden><label><input id="auto-ok" type="checkbox"> Let Cobalt Pear make it on RunPod. Your key passes through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>), which keeps nothing.</label>
   <button id="auto-go" class="pill" type="button">Make it</button> <span class="hint" id="auto-state"></span></div>
   <div id="pack-how"></div>
   <div id="catalog-box"><label>Add a model</label><div class="tabs" id="kinds"></div><div id="catalog"></div>
@@ -276,7 +275,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.16";
+const VERSION = "2026.10.24.17";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -414,7 +413,7 @@ function mediaHtml({ url, kind }, shown) {
   return `<div class="veil${shown ? " shown" : ""}" data-veil="${esc(url)}">${el}</div>`;
 }
 let apiKey = "";
-apiKey = store.get("key", "") || apiKey;  // kept in this browser like the models — a Restricted key limits what it can do; clear it to forget
+apiKey = store.get("key", "") || apiKey;  // kept in this browser like the models; clear it to forget
 let packs = store.get(PACKS_KEY, null) || store.get("packs", []);  // model packs
 let endpoints = store.get("endpoints", {});  // pack id → endpoint ID
 const turns = [];  // {created, prompt, items: [{id, packId, label, seed, w, h, status, error, media: [{url, kind, type}], blobs, text}]}
@@ -474,7 +473,7 @@ const waitingForAuto = () => packs.filter(p => !endpoints[p.id] && p.setup_pick 
 try { $("auto-ok").checked = localStorage.getItem("auto-ok") === "1"; } catch {}
 $("auto-ok").addEventListener("change", () => { $("auto-go").disabled = !$("auto-ok").checked; try { localStorage.setItem("auto-ok", $("auto-ok").checked ? "1" : ""); } catch {} });
 async function makeEndpoints() {
-  const key = $("auto-key").value.trim() || apiKey;  // a Restricted key can't create endpoints, so an All-access one can be given just for this
+  const key = apiKey;
   if (!key) { openSettings(makeEndpoints); return; }
   keepEndpointInputs();
   $("auto-go").disabled = true;
@@ -485,13 +484,12 @@ async function makeEndpoints() {
       const r = await fetch(RELAY_URL + "/create", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
                                          body: JSON.stringify({ model: p.setup_pick, gpu: c.gpu, video: /video/i.test(c.kind || "") }) });
       const j = await r.json().catch(() => ({}));
-      if (r.status === 403 && j.error === "This key can't create endpoints.") { $("auto-key-row").hidden = false; $("auto-key").value = ""; $("auto-key").focus();
-        throw new Error("Your key can only make pictures. Paste one with All access (RunPod → Settings → API Keys) — or do the steps below by hand."); }
+      if (r.status === 403 && j.error === "This key can't create endpoints.") throw new Error("This key can't make endpoints. Put a key with All access in Settings — or do the steps below by hand.");
       if (!r.ok || !j.id) throw new Error(j.error || `Error ${r.status}`);
       endpoints[p.id] = j.id; store.set("endpoints", endpoints);
     } catch (err) { renderPacks(); $("auto-state").textContent = err.message; return; }
   }
-  $("auto-state").textContent = ""; $("auto-key").value = ""; $("auto-key-row").hidden = true;
+  $("auto-state").textContent = "";
   renderPacks(); fillModels();  // the IDs are in their boxes now and the box goes away
 }
 $("auto-go").addEventListener("click", makeEndpoints);
