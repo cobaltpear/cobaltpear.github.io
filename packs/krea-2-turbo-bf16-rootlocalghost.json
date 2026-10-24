@@ -1,0 +1,44 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "krea-2-turbo-bf16-rootlocalghost",
+ "label": "Krea-2-Turbo-BF16 (rootlocalghost)",
+ "note": "Fast distilled photorealistic model; generates in 8 steps. Based on Krea 2 Turbo.",
+ "setup_pick": "rootlocalghost/Krea-2-Turbo-BF16",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1024x1024",
+  "seed": 0,
+  "num_inference_steps": 8,
+  "guidance_scale": 0.0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "sizes": [
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   2048,
+   2048,
+   "1:1"
+  ]
+ ],
+ "size_step": 16
+}

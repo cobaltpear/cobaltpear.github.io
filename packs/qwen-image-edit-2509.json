@@ -1,0 +1,38 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "qwen-image-edit-2509",
+ "label": "Qwen-Image-Edit 2509",
+ "note": "Edits a picture from a sentence. Needs an 80 GB GPU.",
+ "setup_pick": "Qwen/Qwen-Image-Edit-2509",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0,
+  "num_inference_steps": 40,
+  "guidance_scale": 1.0,
+  "true_cfg_scale": 4.0,
+  "negative_prompt": " "
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

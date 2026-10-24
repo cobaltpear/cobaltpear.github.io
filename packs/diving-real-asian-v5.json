@@ -1,0 +1,50 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "diving-real-asian-v5",
+ "label": "Diving Real Asian v5",
+ "note": "Photorealistic model focused on East Asian portraits. Its maker suggests starting the prompt with «masterpiece, ultra-HD, photorealistic, high detail, best quality, 8k, best quality, sharp focus, ray-tracing, realistic, depth of field, shallow depth of field, raw photo». Needs a 24 GB GPU.",
+ "setup_pick": "John6666/diving-illustrious-real-asian-v50-sdxl",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1152x896",
+  "seed": 0,
+  "num_inference_steps": 15,
+  "guidance_scale": 4.0,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1152,
+   896,
+   "5:4"
+  ],
+  [
+   896,
+   1152,
+   "4:5"
+  ]
+ ],
+ "size_step": 16
+}

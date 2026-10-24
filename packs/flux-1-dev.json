@@ -1,0 +1,49 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "flux-1-dev",
+ "label": "FLUX.1 dev",
+ "note": "High-quality general-purpose model with strong prompt following; slower than schnell. Needs a 48 GB GPU.",
+ "setup_pick": "black-forest-labs/FLUX.1-dev",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "guidance_scale": 3.5
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

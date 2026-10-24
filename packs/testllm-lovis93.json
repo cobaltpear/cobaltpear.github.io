@@ -1,0 +1,23 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "testllm-lovis93",
+ "label": "testllm (lovis93)",
+ "note": "Runs with RunPod's default settings.",
+ "setup_pick": "lovis93/testllm",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "seed": 0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ]
+}

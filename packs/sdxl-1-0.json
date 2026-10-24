@@ -1,0 +1,53 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "sdxl-1-0",
+ "label": "SDXL 1.0",
+ "note": "The original general-purpose SDXL base model. Needs a 24 GB GPU.",
+ "setup_pick": "stabilityai/stable-diffusion-xl-base-1.0",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

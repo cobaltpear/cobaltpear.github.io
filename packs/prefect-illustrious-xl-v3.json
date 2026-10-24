@@ -1,0 +1,54 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "prefect-illustrious-xl-v3",
+ "label": "Prefect Illustrious XL v3",
+ "note": "Anime-style illustration model. Its maker suggests starting the prompt with «masterpiece,best quality,amazing quality,absurdres,». Needs a 24 GB GPU.",
+ "setup_pick": "John6666/prefect-illustrious-xl-v3-sdxl",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "guidance_scale": 5.5,
+  "negative_prompt": "bad quality,worst quality,worst detail,sketch,censored,watermark, signature, artist name"
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

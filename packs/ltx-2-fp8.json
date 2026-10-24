@@ -1,0 +1,53 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "ltx-2-fp8",
+ "label": "LTX-2 (FP8)",
+ "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
+ "setup_pick": "unsloth/LTX-2-FP8",
+ "setup": "@omni-text-to-video",
+ "input": {
+  "task": "video",
+  "prompt": "",
+  "size": "768x512",
+  "seed": 0,
+  "num_inference_steps": 40,
+  "guidance_scale": 4.0,
+  "num_frames": 121,
+  "fps": 24,
+  "negative_prompt": "shaky, glitchy, low quality, worst quality, deformed, distorted, disfigured, motion smear, motion artifacts, fused fingers, bad anatomy, weird hand, ugly, transition, static."
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   768,
+   512,
+   "3:2"
+  ],
+  [
+   512,
+   768,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

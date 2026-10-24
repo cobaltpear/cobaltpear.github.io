@@ -1,0 +1,84 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "ssd-1b",
+ "label": "SSD-1B",
+ "note": "Smaller, faster general SDXL model. Needs a 24 GB GPU.",
+ "setup_pick": "segmind/SSD-1B",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "guidance_scale": 9.0,
+  "negative_prompt": "ugly, blurry, poor quality"
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1152,
+   896,
+   "5:4"
+  ],
+  [
+   1344,
+   768,
+   "7:4"
+  ],
+  [
+   1536,
+   640,
+   "12:5"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ],
+  [
+   896,
+   1152,
+   "4:5"
+  ],
+  [
+   768,
+   1344,
+   "4:7"
+  ],
+  [
+   640,
+   1536,
+   "5:12"
+  ]
+ ],
+ "size_step": 16
+}

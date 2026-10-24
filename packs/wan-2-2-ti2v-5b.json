@@ -1,0 +1,53 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "wan-2-2-ti2v-5b",
+ "label": "Wan 2.2 TI2V 5B",
+ "note": "Turns a sentence or a picture into a short video clip. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
+ "setup_pick": "Wan-AI/Wan2.2-TI2V-5B-Diffusers",
+ "setup": "@omni-text-to-video",
+ "input": {
+  "task": "video",
+  "prompt": "",
+  "size": "1280x704",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "guidance_scale": 5.0,
+  "num_frames": 121,
+  "fps": 24,
+  "negative_prompt": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1280,
+   704,
+   "16:9"
+  ],
+  [
+   704,
+   1280,
+   "9:16"
+  ]
+ ],
+ "size_step": 16
+}

@@ -1,0 +1,30 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "flux-1-kontext-dev-black-forest-labs",
+ "label": "FLUX.1 Kontext dev (black-forest-labs)",
+ "note": "Edits a picture from a sentence. Needs a 48 GB GPU. Another upload of FLUX.1 Kontext dev.",
+ "setup_pick": "black-forest-labs/FLUX.1-Kontext-dev",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0,
+  "guidance_scale": 2.5
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

@@ -1,0 +1,53 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "obsession-illustrious-v1-0",
+ "label": "Obsession Illustrious v1.0",
+ "note": "Anime-style illustration model. Needs a 24 GB GPU.",
+ "setup_pick": "John6666/obsession-illustriousxl-v10-sdxl",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}
