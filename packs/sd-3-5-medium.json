@@ -1,0 +1,55 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "sd-3-5-medium",
+ "label": "SD 3.5 Medium",
+ "note": "Mid-size Stable Diffusion model that runs on modest GPUs; moderate speed. Needs a 48 GB GPU.",
+ "setup_pick": "stabilityai/stable-diffusion-3.5-medium",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 40,
+  "guidance_scale": 4.5,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

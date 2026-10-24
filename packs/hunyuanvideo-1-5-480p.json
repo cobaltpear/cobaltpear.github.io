@@ -1,0 +1,52 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "hunyuanvideo-1-5-480p",
+ "label": "HunyuanVideo 1.5 480p",
+ "note": "Turns a sentence into a short video clip. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
+ "setup_pick": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_t2v",
+ "setup": "@omni-text-to-video",
+ "input": {
+  "task": "video",
+  "prompt": "",
+  "size": "848x480",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "num_frames": 121,
+  "fps": 24,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   848,
+   480,
+   "16:9"
+  ],
+  [
+   480,
+   848,
+   "9:16"
+  ]
+ ],
+ "size_step": 16
+}

@@ -1,0 +1,49 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "z-image-turbo-unsloth",
+ "label": "Z-Image Turbo (unsloth)",
+ "note": "Fast, sharp text-to-image by Tongyi-MAI. No GitHub, no build, no token. Another upload of Z-Image Turbo.",
+ "setup_pick": "unsloth/Z-Image-Turbo",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1536x960",
+  "seed": 0,
+  "num_inference_steps": 9,
+  "guidance_scale": 0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "sizes": [
+  [
+   1536,
+   960,
+   "16:10"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   960,
+   1536,
+   "10:16"
+  ]
+ ],
+ "size_step": 16
+}

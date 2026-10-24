@@ -1,0 +1,55 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "sd-3-5-large",
+ "label": "SD 3.5 Large",
+ "note": "Largest Stable Diffusion 3.5 model with good quality and prompt following; moderate speed. Needs an 80 GB GPU.",
+ "setup_pick": "stabilityai/stable-diffusion-3.5-large",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 28,
+  "guidance_scale": 3.5,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

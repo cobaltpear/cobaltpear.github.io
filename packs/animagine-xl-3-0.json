@@ -1,0 +1,85 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "animagine-xl-3-0",
+ "label": "Animagine XL 3.0",
+ "note": "Anime-style illustration model. Its maker suggests starting the prompt with «masterpiece, best quality». Needs a 24 GB GPU.",
+ "setup_pick": "cagliostrolab/animagine-xl-3.0",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 28,
+  "guidance_scale": 7.0,
+  "negative_prompt": "nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name"
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1152,
+   896,
+   "5:4"
+  ],
+  [
+   1344,
+   768,
+   "7:4"
+  ],
+  [
+   1536,
+   640,
+   "12:5"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ],
+  [
+   896,
+   1152,
+   "4:5"
+  ],
+  [
+   768,
+   1344,
+   "4:7"
+  ],
+  [
+   640,
+   1536,
+   "5:12"
+  ]
+ ],
+ "size_step": 16
+}

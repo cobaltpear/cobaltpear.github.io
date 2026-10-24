@@ -1,0 +1,39 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "qwen-image-layered-fargol83",
+ "label": "Qwen-Image-Layered (Fargol83)",
+ "note": "Splits a picture into separate see-through layers. Needs an 80 GB GPU. Another upload of Qwen-Image-Layered.",
+ "setup_pick": "Fargol83/Qwen-Image-Layered",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "true_cfg_scale": 4.0,
+  "layers": 4,
+  "resolution": 640,
+  "negative_prompt": " "
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

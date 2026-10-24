@@ -1,0 +1,31 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "bfl-flux-2-klein-base-4b-runware",
+ "label": "BFL-FLUX.2-klein-base-4B (Runware)",
+ "note": "Makes or edits a picture from a sentence. Needs a 24 GB GPU. Based on FLUX.2 klein base 4B.",
+ "setup_pick": "Runware/BFL-FLUX.2-klein-base-4B",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "guidance_scale": 4.0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

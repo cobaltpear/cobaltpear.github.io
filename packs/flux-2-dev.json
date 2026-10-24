@@ -1,0 +1,31 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "flux-2-dev",
+ "label": "FLUX.2 dev",
+ "note": "Makes or edits a picture from a sentence. Needs more than 80 GB of GPU memory (H200 or B200).",
+ "setup_pick": "unsloth/FLUX.2-dev",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "guidance_scale": 4.0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

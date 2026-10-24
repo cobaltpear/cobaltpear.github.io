@@ -1,0 +1,55 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "lustify-v2-0-theimposterimposters",
+ "label": "LUSTIFY v2.0 (TheImposterImposters)",
+ "note": "Photo-style SDXL model. Needs a 24 GB GPU. Another upload of LUSTIFY v2.0.",
+ "setup_pick": "TheImposterImposters/LUSTIFY-v2.0",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 30,
+  "guidance_scale": 5.5,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

@@ -1,0 +1,29 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "qwen-image-dodge-burn-hewei3",
+ "label": "qwen-image-dodge_burn (hewei3)",
+ "note": "Runs with RunPod's default settings.",
+ "setup_pick": "hewei3/qwen-image-dodge_burn",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

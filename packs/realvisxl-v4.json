@@ -1,0 +1,54 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "realvisxl-v4",
+ "label": "RealVisXL V4",
+ "note": "Photorealistic model focused on lifelike people and scenes. Needs a 24 GB GPU.",
+ "setup_pick": "SG161222/RealVisXL_V4.0",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 25,
+  "negative_prompt": "(face asymmetry, eyes asymmetry, deformed eyes, open mouth)"
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

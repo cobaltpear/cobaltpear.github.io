@@ -1,0 +1,39 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "qwen-image-layered-8bit-mzbac",
+ "label": "Qwen-Image-Layered-8bit (mzbac)",
+ "note": "Splits a picture into separate see-through layers. Based on Qwen-Image-Layered.",
+ "setup_pick": "mzbac/Qwen-Image-Layered-8bit",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "true_cfg_scale": 4.0,
+  "layers": 4,
+  "resolution": 640,
+  "negative_prompt": " "
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

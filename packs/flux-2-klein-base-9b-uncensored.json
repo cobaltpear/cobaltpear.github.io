@@ -1,0 +1,31 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "flux-2-klein-base-9b-uncensored",
+ "label": "FLUX.2 klein base 9B uncensored",
+ "note": "Makes or edits a picture from a sentence. Needs a 48 GB GPU.",
+ "setup_pick": "darknight9121/FLUX.2-klein-base-9B-bucket-uncensored",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "guidance_scale": 4.0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

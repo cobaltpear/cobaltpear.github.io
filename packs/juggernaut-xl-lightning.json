@@ -1,0 +1,55 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "juggernaut-xl-lightning",
+ "label": "Juggernaut XL Lightning",
+ "note": "Fast photorealistic model that needs only a few steps. Needs a 24 GB GPU.",
+ "setup_pick": "RunDiffusion/Juggernaut-XL-Lightning",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 6,
+  "guidance_scale": 1.8,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

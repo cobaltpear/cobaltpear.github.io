@@ -1,0 +1,50 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "z-image",
+ "label": "Z-Image",
+ "note": "Undistilled base model with high diversity and negative prompt control; slower than Turbo. Needs a 48 GB GPU.",
+ "setup_pick": "Tongyi-MAI/Z-Image",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1280x720",
+  "seed": 0,
+  "num_inference_steps": 50,
+  "guidance_scale": 4.0,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1280,
+   720,
+   "16:9"
+  ],
+  [
+   720,
+   1280,
+   "9:16"
+  ]
+ ],
+ "size_step": 16
+}

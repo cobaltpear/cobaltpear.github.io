@@ -1,0 +1,55 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "juggernaut-z-image",
+ "label": "Juggernaut Z-Image",
+ "note": "Z-Image fine-tune for polished portraits and cinematic scenes; moderate speed (35 steps). Needs a 48 GB GPU.",
+ "setup_pick": "RunDiffusion/Juggernaut-Z-Image",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 35,
+  "guidance_scale": 6.0,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

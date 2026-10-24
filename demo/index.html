@@ -11,7 +11,11 @@
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, sans-serif; }
 header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
-header b { margin-right: auto; display: flex; align-items: center; gap: 8px; }
+header { flex-wrap: wrap; }
+header b { display: flex; align-items: center; gap: 8px; }
+header nav { margin-right: auto; display: flex; gap: 2px; }
+header nav a { color: var(--muted); text-decoration: none; font-size: 13px; padding: 4px 8px; border-radius: 999px; }
+header nav a.on { color: var(--text); background: var(--panel); }
 header b img { width: 22px; height: 22px; }
 header a.plus, header a.about { color: var(--text); text-decoration: none; }
 header a.about { display: flex; align-items: center; gap: 8px; }
@@ -41,6 +45,9 @@ form select { border-radius: 999px; font-size: 13px; color: var(--muted); }
 form .right { display: flex; align-items: center; gap: 6px; }
 #seed, #negative { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
 #negative { width: 26ch; min-width: 6ch; flex: 0 1 auto; }
+#pic { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
+#pic img, .turn .p img { height: 48px; border-radius: 6px; }
+.turn .p img { display: block; margin-bottom: 4px; }
 .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }
 #models { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
@@ -71,6 +78,7 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 .sheet .pack [data-ep] { width: 16ch; }
 .sheet .pack .new { font-size: 11px; color: var(--accent); }
+.sheet .pack .gated { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
 .sheet .how { font-size: 12px; color: var(--muted); margin-top: 8px; }
 .sheet .how a, .sheet .how b { color: var(--text); font-weight: 500; }
 .sheet .kind { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
@@ -86,11 +94,35 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .file-add label { display: inline-block; margin: 0; background: var(--panel); border: 1px solid var(--line); }
 .sheet .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .sheet .actions button { padding: 6px 14px; cursor: pointer; }
+/* About and Guide — the same text as about.html and guide.html, shown in this page */
+.doc { max-width: 720px; margin: 0 auto; padding: 8px 16px 80px; font-size: 16px; line-height: 1.6; }
+.doc h1 { font-size: 26px; line-height: 1.3; margin: 24px 0 4px; }
+.doc h2 { font-size: 18px; margin: 0; }
+.doc .lead, .doc .muted { color: var(--muted); }
+.doc a { color: var(--text); }
+.doc code, .doc kbd { font: 14px ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; word-break: break-all; }
+.doc b.ui { white-space: nowrap; }
+.doc .step { margin: 14px 0; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.doc .step > label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.doc .step input { width: 20px; height: 20px; padding: 0; flex: none; accent-color: #8fb3ff; }
+.doc .step.done { opacity: .55; }
+.doc .step ol, .doc .step ul { margin: 8px 0 0; padding-left: 22px; }
+.doc .step li { margin: 4px 0; }
+.doc table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+.doc td { border-top: 1px solid var(--line); padding: 6px 8px 6px 0; vertical-align: top; }
+.doc td:first-child { color: var(--muted); width: 42%; }
+.doc .note { margin-top: 8px; font-size: 14px; color: var(--muted); }
+.doc ul.points { padding-left: 22px; line-height: 1.8; }
+.doc .news { margin: 10px 0; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.doc .news time { color: var(--muted); font-size: 13px; display: block; }
+.doc .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.doc .links a { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
 </style>
 </head>
 <body>
 <header>
-  <b><a class="about" href="https://cobaltpear.github.io/about.html" target="_blank" rel="noopener" title="About"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear <span class="meta">· demo</span></a></b>
+  <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear <span class="meta">· demo</span></a></b>
+  <nav><a href="#">Chat</a><a href="#about">About</a><a href="#guide">Guide</a></nav>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
@@ -98,17 +130,118 @@ body.all-shown .veil .full-btn { display: none; }
   <button id="open-settings" class="pill" type="button">Settings</button>
 </header>
 <main id="feed"></main>
+<section id="v-about" class="doc" hidden>
+<h1>Prompt in, picture out — on your own RunPod.</h1>
+<p class="lead">Cobalt Pear is a one-page app for RunPod Serverless. Pick a model, paste your endpoint ID, and just type.</p>
+<ul class="points">
+<li>Just type — no GPU, no ComfyUI, no install.</li>
+<li>Your own RunPod: no filters, you pay only for the pictures you make.</li>
+<li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
+</ul>
+<div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
+
+<h2>News</h2>
+<!-- newest first -->
+<div class="news"><time>2026-10-24</time>Cobalt Pear is out. Start with Z-Image Turbo from the Models list — no GitHub, no build.</div>
+</section>
+<section id="v-guide" class="doc" hidden>
+<h1>Set up your own image generator</h1>
+<p class="lead">About 15 minutes of clicking, then about 30 minutes of waiting. No coding. You need a card to add $10 of RunPod credit — you pay only while pictures are being made, nothing while it sits idle.</p>
+<p class="muted">Tick each step as you go — this page remembers where you are.</p>
+
+<div class="step"><label><input type="checkbox"><h2>1. Make three accounts</h2></label>
+<ul>
+<li><a href="https://github.com/signup" target="_blank" rel="noopener">GitHub</a> — holds your copy of the generator.</li>
+<li><a href="https://civitai.com" target="_blank" rel="noopener">Civitai</a> — where most models come from. Needed if the worker's page asks for a Civitai token.</li>
+<li><a href="https://runpod.io?ref=qpguwapm" target="_blank" rel="noopener">RunPod</a> — the computer that makes the pictures. Then <b class="ui">Billing</b> → add <b>$10</b>.
+  <div class="note">This is a referral link: after your first $10, RunPod gives you a bonus credit (usually $5–10) and Cobalt Pear a small credit.</div></li>
+</ul></div>
+
+<div class="step"><label><input type="checkbox"><h2>2. Copy the worker</h2></label>
+<p class="note">A «worker» is the model packed for RunPod. Each model has its own worker page on GitHub — its page links here.</p>
+<ol>
+<li>On the worker's GitHub page, click the green <b class="ui">Use this template</b> → <b class="ui">Create a new repository</b>.</li>
+<li>Any name is fine. Choose <b>Private</b> → <b class="ui">Create repository</b>.</li>
+</ol>
+<p class="note">Keep the worker's own page address — you will paste it into Cobalt Pear in step 7 (not the address of your copy).</p>
+<p class="note">No worker yet? Start with a model from the app's <b class="ui">Models</b> list (like Z-Image Turbo) — it needs no GitHub at all: skip steps 2–5 and do the box below instead.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>Quick start: a model from the list, without GitHub</h2></label>
+<ol>
+<li><a href="#">Open Cobalt Pear</a> → <b class="ui">Models</b> → <b class="ui">Add</b> next to the model. The RunPod steps show in the same window.</li>
+<li>Do those steps on RunPod — for Z-Image Turbo: <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy image or video API</b> → <b class="ui">Text To Image</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → <b class="ui">Deploy with vLLM Omni</b> → <b class="ui">Next</b> → <b class="ui">Create Endpoint</b>.</li>
+<li>In the endpoint's settings set Max workers <code>1</code>, Execution timeout <code>600</code> → <b class="ui">Save</b>.</li>
+<li>Paste its endpoint ID next to the model in Cobalt Pear → <b class="ui">Done</b>. Then do step 6 and put the key in <b class="ui">Settings</b>.</li>
+</ol>
+<p class="note">No build to wait for. The first picture takes about a minute while RunPod starts it; then about 8 seconds each.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>3. Put your Civitai token in your copy</h2></label>
+<p class="note">Only if the worker's page asks for it. It lets RunPod download the model with your account.</p>
+<ol>
+<li>Civitai → your picture (top right) → <b class="ui">Account settings</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → copy it.</li>
+<li>In your copy on GitHub, click <code>Dockerfile</code> → the pencil ✏️ (top right of the file).</li>
+<li>Replace <code>PASTE_YOUR_CIVITAI_TOKEN_HERE</code> with your token → <b class="ui">Commit changes</b>.</li>
+</ol></div>
+
+<div class="step"><label><input type="checkbox"><h2>4. Create the endpoint</h2></label>
+<p class="note">The «endpoint» is your generator on RunPod.</p>
+<ol>
+<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">GitHub Repo</b>.</li>
+<li>The first time, connect GitHub and allow your copy. Then pick your copy.</li>
+<li>Fill in the settings from the worker's page. They usually look like this:</li>
+</ol>
+<table>
+<tr><td>Branch · Dockerfile path · Build context</td><td><code>main</code> · <code>Dockerfile</code> · <code>.</code></td></tr>
+<tr><td>GPU</td><td>as the worker's page says (24 GB or more)</td></tr>
+<tr><td>Active workers · Max workers</td><td><code>0</code> · <code>1</code> — 0 active = nothing to pay while idle</td></tr>
+<tr><td>Idle timeout</td><td><code>5</code> seconds</td></tr>
+<tr><td>Execution timeout</td><td><code>600</code> seconds</td></tr>
+<tr><td>FlashBoot</td><td>On</td></tr>
+<tr><td>Container disk</td><td>as the worker's page says</td></tr>
+</table>
+<ol start="4"><li><b class="ui">Create</b>.</li></ol>
+<p class="note">RunPod may warn «runpod.serverless.start() handler not found in your repo». You can ignore it — the worker starts its handler from the image it builds on.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>5. Wait for the build</h2></label>
+<p>RunPod now builds your generator — about 30 minutes. The endpoint's page shows its progress. You can do step 6 meanwhile.</p>
+<p class="note">If it fails, open the build log, copy the last lines and ask in <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Discussions</a>.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>6. Make an API key</h2></label>
+<ol>
+<li>RunPod → <b class="ui">Settings</b> → <b class="ui">API Keys</b> → <b class="ui">Create API Key</b>.</li>
+<li>Choose <b>Restricted</b>. Leave <code>api.runpod.io/graphql</code> at <b>None</b>, and set <code>api.runpod.ai</code> to <b>Read / Write</b>. (Read only does not work.)</li>
+<li>Copy the key now — RunPod shows it only once.</li>
+</ol>
+<p class="note">This key works for every endpoint you make later, too — no need to change it. It can only make pictures on your endpoints, so even if it leaked it could not touch the rest of your account.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
+<ol>
+<li><a href="#">Open Cobalt Pear</a> → <b class="ui">Models</b> → paste the <b>worker's page address</b> (from step 2) under «Your own worker» → <b class="ui">Add</b>.</li>
+<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>) → <b class="ui">Done</b>.</li>
+<li>Type what you want to see, press Enter. The first time it asks for the API key — paste it → <b class="ui">OK</b>.</li>
+</ol>
+<p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p></div>
+
+<h2 style="margin-top:28px">When something is off</h2>
+<table>
+<tr><td>«Wrong RunPod key»</td><td>Check the key, and that <code>api.runpod.ai</code> is Read / Write.</td></tr>
+<tr><td>Waits a long time</td><td>Normal for the first picture, and after a long break. If it never starts, check the endpoint's page on RunPod.</td></tr>
+<tr><td>To stop paying entirely</td><td>Set Max workers to 0, or delete the endpoint. Idle endpoints with 0 active workers cost nothing.</td></tr>
+<tr><td>Anything else</td><td><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Ask in Discussions</a>.</td></tr>
+</table>
+</section>
 <form id="form"><div class="box">
+  <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button></div><input id="pic-file" type="file" accept="image/*" hidden>
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
-  <div class="row"><div id="models"></div><span class="right"><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — starts as the model's own" hidden><button id="neg-default" class="pill" type="button" title="Back to the model's own negative" hidden>Default</button><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+  <div class="row"><div id="models"></div><span class="right"><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — starts as the model's own" hidden><button id="neg-default" class="pill" type="button" title="Back to the model's own negative" hidden>Default</button><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
 <div id="settings" class="sheet" hidden><form class="card" id="settings-form">
   <b>Settings</b>
   <div class="saved">Everything is saved <b>only in this browser</b> — your key, models, endpoint IDs and results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
-  <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.12 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="#guide">Setup guide</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.14 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
@@ -164,7 +297,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.12";
+const VERSION = "2026.10.24.14";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -187,7 +320,7 @@ const store = {
 // The only engine-specific part is filling values into the template. Output is read whatever its shape: images, video, audio, text.
 // So video, TTS and LLM workers plug in with just a pack. A worker with a very different template gets one more entry in ENGINES.
 const PACK_FORMATS = ["pack/1", "comfy-pack/1"];  // first = current, the other is an old name (engine = comfyui)
-const SLOTS = ["prompt", "negative", "seed", "width", "height", "size"];  // size = "WxH" in one string (OpenAI-style workers)
+const SLOTS = ["prompt", "negative", "seed", "width", "height", "size", "image"];  // size = "WxH" in one string (OpenAI-style workers) · image = a picture as base64 (edit, image to video)
 const ENGINES = {
   // ComfyUI worker (runpod/worker-comfyui) — template = API-format workflow (pack.workflow), slot = [node id, input name]
   comfyui: {
@@ -222,7 +355,7 @@ const ENGINES = {
       return inp;
     },
     get: (p, k) => p[k]?.[0]?.reduce((o, s) => o?.[s], p.input),
-    describe: inp => [JSON.stringify(inp, null, 1)],
+    describe: inp => [JSON.stringify(inp, (k, v) => typeof v === "string" && v.length > 300 ? `(picture, ${Math.round(v.length * 3 / 4 / 1024)} KB)` : v, 1)],
   },
 };
 function checkPack(p) {
@@ -236,6 +369,7 @@ function checkPack(p) {
 const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values);
 const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
 const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
+const takesImage = p => !!p.image?.length;  // edit and image-to-video packs: a picture is needed
 const hasSize = p => !!((p.width?.length || p.size?.length) && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
 // Get a pack by URL — a GitHub repo URL means pack.json on main
 async function fetchPack(url) {
@@ -367,7 +501,7 @@ function renderCatalog() {
   const kinds = [...new Set(rest.map(c => c.kind || ""))];
   $("catalog-box").hidden = !rest.length;
   $("catalog").innerHTML = kinds.map(k => (kinds.length > 1 && k ? `<div class="kind">${esc(k)}</div>` : "") + rest.filter(c => (c.kind || "") === k).map(c =>
-    `<div class="pack cat" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>
+    `<div class="pack cat" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.gated ? `<span class="gated">Gated</span>` : ""}
     <button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
   findPacks();
 }
@@ -451,6 +585,34 @@ function openModels(then) {
 $("open-models").addEventListener("click", () => openModels());
 // a click beside the card (or Esc) works like OK / Done
 for (const id of ["settings", "models-sheet"]) $(id).addEventListener("click", e => { if (e.target.id === id) $(id).querySelector("form").requestSubmit(); });
+// Chat · About · Guide are views of this one page (#about, #guide) — nothing opens a new tab and Back works
+const views = { about: $("v-about"), guide: $("v-guide") }, scrollAt = {};
+let view = null;
+function showView() {
+  const v = location.hash.slice(1) in views ? location.hash.slice(1) : "";
+  if (v === view) return;
+  if (view !== null) scrollAt[view] = scrollY;
+  view = v;
+  for (const [k, el] of Object.entries(views)) el.hidden = k !== v;
+  $("feed").hidden = $("form").hidden = $("reveal-all").hidden = $("open-models").hidden = !!v;
+  document.querySelectorAll("header nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + v));
+  scrollTo(0, scrollAt[v] ?? (v ? 0 : document.body.scrollHeight));
+}
+addEventListener("hashchange", showView);
+// a link to a view from inside Settings or Models closes the window first
+document.addEventListener("click", e => { const a = e.target.closest(".sheet a[href^='#']"); if (a) a.closest(".sheet").querySelector("form").requestSubmit(); });
+// the guide's ticks are remembered in this browser (shared with guide.html)
+const guideSteps = [...document.querySelectorAll("#v-guide .step input")];
+let guideDone = [];
+try { guideDone = JSON.parse(localStorage.getItem("guide-done") || "[]"); } catch {}
+guideSteps.forEach((c, i) => {
+  c.checked = !!guideDone[i];
+  c.closest(".step").classList.toggle("done", c.checked);
+  c.addEventListener("change", () => {
+    c.closest(".step").classList.toggle("done", c.checked);
+    try { localStorage.setItem("guide-done", JSON.stringify(guideSteps.map(s => s.checked))); } catch {}
+  });
+});
 document.addEventListener("keydown", e => { if (e.key === "Escape") for (const id of ["settings", "models-sheet"]) if (!$(id).hidden) $(id).querySelector("form").requestSubmit(); });
 $("models-form").addEventListener("submit", e => {
   e.preventDefault();
@@ -477,7 +639,7 @@ const customAllowed = () => ownWorkers() < 1;
 // several models can be on at once — each prompt goes to every model that is on.
 // Only the ones on are shown, plus a menu to add another, so a hundred models still fit in one row.
 let chosen = store.get("models", []);
-function fillModels() { fillChips(); fitNegative(); }
+function fillModels() { fillChips(); fitNegative(); fitPicture(); }
 function fillChips() {
   const list = usable(), name = id => list.find(p => p.id === id).label, opt = p => `<option value="${esc(p.id)}">${esc(p.label)}</option>`;
   chosen = chosen.filter(id => list.some(p => p.id === id));
@@ -514,6 +676,46 @@ function fitNegative() {
 function setNegative(v) { negEdited = v != null && v.trim() !== negDefault(); if (negEdited) $("negative").value = v; fitNegative(); }
 $("neg-default").addEventListener("click", () => { setNegative(null); keepDraft(); });
 
+// The Picture button shows only when a chosen model starts from a picture (edit, image to video). Models that don't just ignore it.
+let picture = null, picUrl = "";  // Blob
+const needsPicture = () => chosenPacks().some(takesImage);
+function fitPicture() {
+  $("attach").hidden = !needsPicture();
+  $("pic").hidden = !picture || $("attach").hidden;
+  $("attach").textContent = picture ? "Change picture" : "Picture";
+}
+function setPicture(blob) {
+  if (picUrl) URL.revokeObjectURL(picUrl);
+  picture = blob || null; picUrl = picture ? URL.createObjectURL(picture) : "";
+  $("pic").querySelector("img").src = picUrl;
+  fitPicture();
+}
+// big photos are made smaller first (longest side 2048) so the request stays well under RunPod's size limit
+async function fitFile(file) {
+  const bmp = await createImageBitmap(file), k = Math.min(1, 2048 / Math.max(bmp.width, bmp.height));
+  if (k === 1 && file.size < 4e6) return file;
+  const c = Object.assign(document.createElement("canvas"), { width: Math.round(bmp.width * k), height: Math.round(bmp.height * k) });
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return new Promise(res => c.toBlob(res, "image/jpeg", 0.92));
+}
+const toB64 = blob => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result.split(",")[1]); fr.onerror = () => rej(fr.error); fr.readAsDataURL(blob); });
+let afterPick = null;
+const pickPicture = then => { afterPick = then || null; $("pic-file").value = ""; $("pic-file").click(); };
+async function takeFile(file) {
+  if (!file?.type.startsWith("image/")) return false;
+  try { setPicture(await fitFile(file)); } catch { alert("Could not read that picture"); return false; }
+  return true;
+}
+$("attach").addEventListener("click", () => pickPicture());
+$("pic-x").addEventListener("click", () => setPicture(null));
+$("pic-file").addEventListener("change", async () => { if (await takeFile($("pic-file").files[0])) afterPick?.(); afterPick = null; });
+$("form").addEventListener("dragover", e => { if (needsPicture()) e.preventDefault(); });
+$("form").addEventListener("drop", e => { if (!needsPicture()) return; e.preventDefault(); takeFile(e.dataTransfer.files[0]); });
+$("prompt").addEventListener("paste", e => {
+  const f = [...e.clipboardData.files].find(f => f.type.startsWith("image/"));
+  if (f && needsPicture()) { e.preventDefault(); takeFile(f); }
+});
+
 // ---- Generate ----
 async function runpod(path, body) {
   const r = await fetch(`${RUNPOD_API}/${path}`, { method: body ? "POST" : "GET", body: body && JSON.stringify(body),
@@ -545,8 +747,8 @@ function newItem(pack, created, n, seed) {
   return { id: `${created}-${n}`, packId: pack.id, label: pack.label, seed: seed ?? randSeed(), w, h, status: "IN_QUEUE", media: [], text: "" };
 }
 // one prompt → one turn; every chosen model × count gets its own job (a given seed is used for all of them)
-function run(prompt, use, count = 1, seed, negative = "") {
-  const created = newCreated(), t = { created, prompt, negative, items: [] };
+function run(prompt, use, count = 1, seed, negative = "", image = null) {
+  const created = newCreated(), t = { created, prompt, negative, image: use.some(takesImage) ? image : null, items: [] };
   for (const pack of use) for (let i = 0; i < count; i++) t.items.push(newItem(pack, created, t.items.length, seed));
   turns.push(t);
   render(); scrollTo(0, document.body.scrollHeight);
@@ -556,7 +758,9 @@ async function runItem(t, it) {
   const pack = packs.find(p => p.id === it.packId);
   try {
     if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
-    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}` });
+    if (takesImage(pack) && !t.image) throw new Error("This model starts from a picture — add one with Picture");
+    const image = takesImage(pack) ? await toB64(t.image) : undefined;
+    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image });
     it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
     const out = await runAndWait(endpoints[pack.id], input, st => { it.status = st; render(); }) || {};
     if (out.error) throw new Error(out.error);
@@ -577,9 +781,10 @@ $("form").addEventListener("submit", e => {
   if (!text) return;
   if (sv && !/^\d{1,15}$/.test(sv)) { alert("The seed is a whole number (or leave it empty for random)"); $("seed").focus(); return; }
   if (!use.length) { openModels(() => $("form").requestSubmit()); return; }
+  if (use.some(takesImage) && !picture) { pickPicture(() => $("form").requestSubmit()); return; }
   if (!apiKey) { openSettings(() => $("form").requestSubmit()); return; }
   $("prompt").value = ""; keepDraft();
-  run(text, use, 1, sv ? Number(sv) : undefined, neg);
+  run(text, use, 1, sv ? Number(sv) : undefined, neg, picture);
 });
 // what is typed in the box survives a reload too
 const keepDraft = () => store.set("draft", { prompt: $("prompt").value, negative: negEdited ? $("negative").value : null, seed: $("seed").value });
@@ -602,7 +807,7 @@ function idb(mode, fn) {
 async function keepTurn(t) {  // stores the finished items of a turn; a turn with none left is removed
   const items = t.items.filter(i => i.status === "COMPLETED").map(({ id, packId, label, seed, w, h, text, blobs, sent }) => ({ id, packId, label, seed, w, h, text, blobs, sent }));
   if (!items.length) return idb("readwrite", s => s.delete(t.created));
-  await idb("readwrite", s => s.put({ created: t.created, prompt: t.prompt, negative: t.negative, items }));
+  await idb("readwrite", s => s.put({ created: t.created, prompt: t.prompt, negative: t.negative, image: t.image, items }));
   const keys = await idb("readonly", s => s.getAllKeys());
   if (keys.length > KEEP) await idb("readwrite", s => { for (const k of keys.slice(0, keys.length - KEEP)) s.delete(k); });
 }
@@ -615,7 +820,7 @@ async function loadHistory() {
   }
   lastCreated = Math.max(lastCreated, ...recs.map(r => r.created));
   turns.unshift(...recs.filter(r => !turns.some(t => t.created === r.created)));
-  render(); scrollTo(0, document.body.scrollHeight);
+  render(); if (!view) scrollTo(0, document.body.scrollHeight);
 }
 function removeItems(ids) {
   for (const t of [...turns]) {
@@ -637,30 +842,41 @@ function itemHtml(t, it) {
   const media = it.media.map(m => mediaHtml(m, allShown || revealed.has(m.url))).join("") + (it.text ? `<div class="text">${esc(it.text)}</div>` : "");
   const st = (it.status === "COMPLETED" ? "" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
   const dl = it.media.map((m, i) => `<a href="${esc(m.url)}" download="${fileName(t, it, i, m.type)}">Download</a>`).join(" ");
+  // a finished picture can be the start of the next one, once a model that takes a picture is in Models
+  const use = usable().some(takesImage) ? it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use</button>` : "").join("") : "";
   const edit = it.status === "COMPLETED" ? `<button type="button" data-edit="${esc(it.id)}" title="Put the prompt and this seed back in the box">Edit</button>` : "";
   const det = it.sent ? `<button type="button" data-details="${esc(it.id)}" title="Everything that was sent to the model">Details</button>` : "";
   const sent = it.sent && opened.has(it.id) ? `<div class="sent">${esc(it.sent.join("\n"))}</div>` : "";
-  return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${edit}${det}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div>${sent}</div>`;
+  return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${use}${edit}${det}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div>${sent}</div>`;
 }
 function render() {
   $("feed").innerHTML = turns.length ? turns.map((t, ti) => {
     const done = t.items.every(i => ["COMPLETED", "ERROR"].includes(i.status));
     const more = `<button type="button" data-four="${ti}" title="4 more with the same prompt and models">×4</button>`;
-    return `<section class="turn"><div class="p">${esc(t.prompt)}</div>
+    if (t.image && !t.imageUrl) t.imageUrl = URL.createObjectURL(t.image);
+    return `<section class="turn"><div class="p">${t.imageUrl ? `<img src="${esc(t.imageUrl)}" alt="">` : ""}${esc(t.prompt)}</div>
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in Models, then send a prompt — the RunPod key is asked for on the first one.<br><a href="https://cobaltpear.github.io/about.html" target="_blank" rel="noopener">About &amp; news</a> · <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>`;
+  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in Models, then send a prompt — the RunPod key is asked for on the first one.<br><a href="#about">About &amp; news</a> · <a href="#guide">Setup guide</a></div>`;
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
   const d = e.target.dataset;
   if (d.details) { opened.has(d.details) ? opened.delete(d.details) : opened.add(d.details); render(); return; }
+  if (d.use) {  // this result becomes the picture; if no chosen model takes one, the first such model is chosen
+    const it = turns.flatMap(t => t.items).find(i => i.id === d.use);
+    if (!it?.blobs?.[+d.i]) return;
+    setPicture(it.blobs[+d.i]);
+    if (!needsPicture()) choose([usable().find(takesImage).id]);
+    $("prompt").focus();
+    return;
+  }
   if (d.edit) {  // one result: its prompt, model and seed go back into the box
     const t = turns.find(t => t.items.some(i => i.id === d.edit)), it = t?.items.find(i => i.id === d.edit);
     if (!it) return;
     $("prompt").value = t.prompt; $("seed").value = it.seed;
-    choose([it.packId]); setNegative(t.negative || null); keepDraft();
+    choose([it.packId]); setNegative(t.negative || null); setPicture(t.image || null); keepDraft();
     $("prompt").focus();
     return;
   }
@@ -669,7 +885,7 @@ $("feed").addEventListener("click", e => {
   if (d.again || d.four) {
     const use = turnPacks(t);
     if (!use.length) { alert("Those models or their endpoints are gone"); return; }
-    const go = () => run(t.prompt, use, d.four ? 4 : Math.max(1, Math.round(t.items.length / use.length)), undefined, t.negative);
+    const go = () => run(t.prompt, use, d.four ? 4 : Math.max(1, Math.round(t.items.length / use.length)), undefined, t.negative, t.image);
     if (apiKey) go(); else openSettings(go);
   } else if (d.forget) removeItems(new Set(t.items.map(i => i.id)));
 });
@@ -748,8 +964,9 @@ const draft = store.get("draft", {});
 $("prompt").value = draft.prompt || ""; $("seed").value = draft.seed || "";
 setNegative(draft.negative ?? null);
 render();
+showView();
 loadHistory();
-if (usable().length) $("prompt").focus(); else openModels();  // the key is asked for on the first send
+if (!view && usable().length) $("prompt").focus(); else if (!view) openModels();  // the key is asked for on the first send
 </script>
 </body>
 </html>

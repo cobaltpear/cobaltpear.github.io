@@ -1,0 +1,50 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "proteus-v0-3",
+ "label": "Proteus v0.3",
+ "note": "General model with strong prompt following across photo and art styles. Needs a 24 GB GPU.",
+ "setup_pick": "dataautogpt3/ProteusV0.3",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1024x1024",
+  "seed": 0,
+  "num_inference_steps": 20,
+  "guidance_scale": 7.0,
+  "negative_prompt": "nsfw, bad quality, bad anatomy, worst quality, low quality, low resolutions, extra fingers, blur, blurry, ugly, wrongs proportions, watermark, image artifacts, lowres, ugly, jpeg artifacts, deformed, noisy image"
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   1280,
+   1280,
+   "1:1"
+  ]
+ ],
+ "size_step": 16
+}

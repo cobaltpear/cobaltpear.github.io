@@ -1,0 +1,29 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "qwen-image-edit-2511-lightning-nunchaku-tonera",
+ "label": "Qwen-Image-Edit-2511-Lightning-Nunchaku (tonera)",
+ "note": "Runs with RunPod's default settings.",
+ "setup_pick": "tonera/Qwen-Image-Edit-2511-Lightning-Nunchaku",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

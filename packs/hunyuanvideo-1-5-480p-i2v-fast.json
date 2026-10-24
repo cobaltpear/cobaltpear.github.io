@@ -1,0 +1,38 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "hunyuanvideo-1-5-480p-i2v-fast",
+ "label": "HunyuanVideo 1.5 480p I2V (fast)",
+ "note": "Turns a picture into a short clip, quickly. Needs a 48 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
+ "setup_pick": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_i2v_step_distilled",
+ "setup": "@omni-image-to-video",
+ "input": {
+  "task": "video",
+  "prompt": "",
+  "seed": 0,
+  "num_inference_steps": 12,
+  "num_frames": 121,
+  "fps": 24,
+  "negative_prompt": ""
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "image": [
+  [
+   "input_reference_b64"
+  ]
+ ]
+}

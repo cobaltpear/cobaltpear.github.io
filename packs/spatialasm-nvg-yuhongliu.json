@@ -1,0 +1,29 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "spatialasm-nvg-yuhongliu",
+ "label": "SpatialASM-NVG (YuhongLiu)",
+ "note": "Runs with RunPod's default settings.",
+ "setup_pick": "YuhongLiu/SpatialASM-NVG",
+ "setup": "@omni-image-to-image",
+ "input": {
+  "task": "image_edit",
+  "prompt": "",
+  "seed": 0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "image": [
+  [
+   "image_b64"
+  ]
+ ]
+}

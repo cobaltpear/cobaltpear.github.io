@@ -1,0 +1,53 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "ltx-2-3",
+ "label": "LTX-2.3",
+ "note": "Turns a sentence into a short video clip with sound. Needs an 80 GB GPU. Set Execution timeout to 1800 s — a clip takes minutes.",
+ "setup_pick": "diffusers/LTX-2.3-Diffusers",
+ "setup": "@omni-text-to-video",
+ "input": {
+  "task": "video",
+  "prompt": "",
+  "size": "768x512",
+  "seed": 0,
+  "num_inference_steps": 30,
+  "guidance_scale": 3.0,
+  "num_frames": 121,
+  "fps": 24,
+  "negative_prompt": "blurry, out of focus, overexposed, underexposed, low contrast, washed out colors, excessive noise, grainy texture, poor lighting, flickering, motion blur, distorted proportions, unnatural skin tones, deformed facial features, asymmetrical face, missing facial features, extra limbs, disfigured hands, wrong hand count, artifacts around text, inconsistent perspective, camera shake, incorrect depth of field, background too sharp, background clutter, distracting reflections, harsh shadows, inconsistent lighting direction, color banding, cartoonish rendering, 3D CGI look, unrealistic materials, uncanny valley effect, incorrect ethnicity, wrong gender, exaggerated expressions, wrong gaze direction, mismatched lip sync, silent or muted audio, distorted voice, robotic voice, echo, background noise, off-sync audio, incorrect dialogue, added dialogue, repetitive speech, jittery movement, awkward pauses, incorrect timing, unnatural transitions, inconsistent framing, tilted camera, flat lighting, inconsistent tone, cinematic oversaturation, stylized filters, or AI artifacts."
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "negative": [
+  [
+   "negative_prompt"
+  ]
+ ],
+ "sizes": [
+  [
+   768,
+   512,
+   "3:2"
+  ],
+  [
+   512,
+   768,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}

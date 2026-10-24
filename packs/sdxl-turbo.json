@@ -1,0 +1,39 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "sdxl-turbo",
+ "label": "SDXL Turbo",
+ "note": "Very fast general model that makes an image in one to four steps. Needs a 24 GB GPU.",
+ "setup_pick": "stabilityai/sdxl-turbo",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "512x512",
+  "seed": 0,
+  "num_inference_steps": 1,
+  "guidance_scale": 0.0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "sizes": [
+  [
+   512,
+   512,
+   "1:1"
+  ]
+ ],
+ "size_step": 16
+}

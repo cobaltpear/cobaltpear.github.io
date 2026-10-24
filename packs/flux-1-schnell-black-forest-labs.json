@@ -1,0 +1,49 @@
+{
+ "format": "pack/1",
+ "engine": "json",
+ "id": "flux-1-schnell-black-forest-labs",
+ "label": "FLUX.1 schnell (black-forest-labs)",
+ "note": "Very fast model that makes good images in 1 to 4 steps. Needs a 48 GB GPU. Another upload of FLUX.1 schnell.",
+ "setup_pick": "black-forest-labs/FLUX.1-schnell",
+ "setup": "@omni-text-to-image",
+ "input": {
+  "prompt": "",
+  "size": "1216x832",
+  "seed": 0,
+  "num_inference_steps": 4,
+  "guidance_scale": 0.0
+ },
+ "prompt": [
+  [
+   "prompt"
+  ]
+ ],
+ "seed": [
+  [
+   "seed"
+  ]
+ ],
+ "size": [
+  [
+   "size"
+  ]
+ ],
+ "sizes": [
+  [
+   1216,
+   832,
+   "3:2"
+  ],
+  [
+   1024,
+   1024,
+   "1:1"
+  ],
+  [
+   832,
+   1216,
+   "2:3"
+  ]
+ ],
+ "size_step": 16
+}
