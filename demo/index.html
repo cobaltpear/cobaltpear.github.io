@@ -72,6 +72,7 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack .how { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .sheet .pack .how a { color: var(--text); }
 .sheet .pack .pick { margin-top: 6px; font-size: 13px; }
+.sheet .pack .pick .hint-copy { font-size: 11px; color: var(--muted); }
 .sheet .pack .pick code { font: 600 14px ui-monospace, monospace; color: var(--accent); cursor: copy; }
 .sheet .pack.cat b { color: var(--muted); }
 .sheet .card > b { font-size: 16px; }
@@ -104,7 +105,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.6 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.7 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
@@ -160,7 +161,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.6";
+const VERSION = "2026.10.24.7";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet, so adding your own worker stays free here too
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -336,7 +337,7 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Any text (demo)">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div>${!endpoints[p.id] && p.setup ? `${p.setup_pick ? `<div class="pick">Model: <code data-copy="${esc(p.setup_pick)}" title="Click to copy">${esc(p.setup_pick)}</code></div>` : ""}<div class="how">${p.setup_url ? `<a href="${esc(p.setup_url)}" target="_blank" rel="noopener">Open RunPod ↗</a> → ` : ""}${esc(p.setup)}</div>` : ""}</div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div>${!endpoints[p.id] && p.setup ? `${p.setup_pick ? `<div class="pick">Model: <code data-copy="${esc(p.setup_pick)}" title="Click to copy">${esc(p.setup_pick)}</code> <span class="hint-copy">click to copy</span></div>` : ""}<div class="how">${p.setup_url ? `<a href="${esc(p.setup_url)}" target="_blank" rel="noopener">Open RunPod ↗</a> → ` : ""}${esc(p.setup)}</div>` : ""}</div>`).join("");
   $("pack-tools").hidden = packs.length < 6;
   findPacks();
   renderCatalog();
