@@ -86,7 +86,6 @@ body.all-shown .veil .full-btn { display: none; }
   <b><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</b>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
-  <button id="pack-update" class="pill plus" type="button" hidden>Update models</button>
   <button id="reveal-all" class="pill" type="button">Show all</button>
   <button id="open-models" class="pill" type="button">Models</button>
   <button id="open-settings" class="pill" type="button">Settings</button>
@@ -102,7 +101,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
@@ -124,7 +123,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.3";
+const VERSION = "2026.10.24.4";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet, so adding your own worker stays free here too
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -328,18 +327,14 @@ function findPacks() {
   document.querySelectorAll("#pack-list .pack").forEach(d => { d.hidden = !!q && !d.dataset.name.includes(q); });
 }
 $("pack-find").addEventListener("input", findPacks);
-// packs added by repo URL remember it: on load their newest pack.json is fetched, and if one changed «Update models» shows in the header.
-// Endpoint IDs stay.
-let newPacks = [];
+// packs added by repo URL remember it: on load their newest pack.json is fetched and a changed one replaces the old by itself
+// (marked «Updated» in Models). Endpoint IDs stay, so there is nothing to ask.
 async function findPackUpdates() {
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  newPacks = (await Promise.all(packs.filter(p => p.src).map(async p => {
+  const newPacks = (await Promise.all(packs.filter(p => p.src).map(async p => {
     try { const n = { ...checkPack(await fetchPack(p.src)), src: p.src }; return same(n, p) ? null : n; } catch { return null; }  // offline — try next time
   }))).filter(Boolean);
-  Object.assign($("pack-update"), { hidden: !newPacks.length, title: "New settings for " + newPacks.map(p => p.label).join(", ") });
-}
-$("pack-update").addEventListener("click", () => {
-  freshPacks.clear();
+  if (!newPacks.length) return;
   for (const n of newPacks) {
     const i = packs.findIndex(p => p.src === n.src), p = packs[i];
     if (i < 0) continue;
@@ -347,9 +342,8 @@ $("pack-update").addEventListener("click", () => {
     packs[i] = n; freshPacks.add(n.id);
   }
   store.set(PACKS_KEY, packs); store.set("endpoints", endpoints);
-  newPacks = []; $("pack-update").hidden = true;
   fillModels(); renderPacks();
-});
+}
 function keepEndpointInputs() {
   document.querySelectorAll("#pack-list [data-ep]").forEach(i => { if (i.value.trim()) endpoints[i.dataset.ep] = i.value.trim(); else delete endpoints[i.dataset.ep]; });
 }
