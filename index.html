@@ -108,7 +108,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.11 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.12 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
@@ -130,7 +130,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.11";
+const VERSION = "2026.10.24.12";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -701,7 +701,8 @@ async function checkUpdate() {
     if (!newer(v, VERSION)) return;
     // opened from the site itself = the browser kept an old copy (Pages lets it cache 10 min) — fetch the new one once, by a new address
     const u = new URL(location.href);
-    if (u.origin === new URL(UPDATE_URL).origin && u.searchParams.get("v") !== v) { u.searchParams.set("v", v); location.replace(u); return; }
+    // the site never shows the button: if the new copy is not there yet (just published), the next visit gets it
+    if (u.origin === new URL(UPDATE_URL).origin) { if (u.searchParams.get("v") !== v) { u.searchParams.set("v", v); location.replace(u); } return; }
     Object.assign($("update"), { href: GET_URL || UPDATE_URL, title: `Version ${v} is out — this one is ${VERSION}`, hidden: false });
   } catch {}
 }
