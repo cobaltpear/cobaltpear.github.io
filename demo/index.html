@@ -50,6 +50,8 @@ form .right { display: flex; align-items: center; gap: 6px; }
 #viewer .count { position: absolute; bottom: 12px; right: 16px; color: #fff8; font-size: 13px; }
 .empty { color: var(--muted); text-align: center; margin-top: 40px; }
 .empty a { color: var(--text); }
+.empty b.intro { display: block; color: var(--text); font-size: 20px; margin-bottom: 12px; }
+.empty ul.intro { display: inline-block; text-align: left; margin: 0 0 20px; padding-left: 20px; line-height: 1.8; }
 /* Veil — click to show */
 .veil { position: relative; margin-top: 8px; border-radius: 10px; overflow: hidden; cursor: pointer; }
 .veil:not(.shown) { background: #1c1c1f; }
@@ -105,7 +107,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.9 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.10 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
@@ -160,7 +162,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.9";
+const VERSION = "2026.10.24.10";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -629,7 +631,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty">Pick a model in Models, then send a prompt — the RunPod key is asked for on the first one.<br>New to RunPod? <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Step-by-step setup guide</a></div>`;
+  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b><ul class="intro"><li>Just type — no GPU, no ComfyUI, no install.</li><li>Your own RunPod: your own GPU, your own rules — you pay only for the pictures you make.</li><li>Your key and pictures stay in this browser.</li></ul><br>Pick a model in Models, then send a prompt — the RunPod key is asked for on the first one.<br>New to RunPod? <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Step-by-step setup guide</a></div>`;
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
