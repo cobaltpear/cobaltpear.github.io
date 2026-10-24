@@ -41,6 +41,10 @@ form .right { display: flex; align-items: center; gap: 6px; }
 #seed, #negative { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
 #negative { width: 26ch; min-width: 6ch; flex: 0 1 auto; }
 .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }
+#models { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.chip.on { color: #111; background: var(--accent); border-color: var(--accent); }
+#add-model { width: 11ch; }  /* the open menu still shows full names */
 #viewer { position: fixed; inset: 0; z-index: 10; background: #000; display: flex; cursor: zoom-out; }
 #viewer img { width: 100%; height: 100%; object-fit: contain; }
 #viewer .count { position: absolute; bottom: 12px; right: 16px; color: #fff8; font-size: 13px; }
@@ -55,65 +59,77 @@ form .right { display: flex; align-items: center; gap: 6px; }
 .veil.shown .full-btn { display: block; }
 body.all-shown .veil .full-btn { display: none; }
 /* Settings */
-#settings { position: fixed; inset: 0; z-index: 5; background: rgba(0,0,0,.7); display: flex; align-items: flex-start; justify-content: center; padding: 60px 16px; overflow: auto; }
-#settings .card { width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
-#settings label { display: block; margin: 12px 0 4px; font-size: 13px; color: var(--muted); }
-#settings .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
-#settings .hint a { color: inherit; }
-#settings .pack { border-top: 1px solid var(--line); padding: 8px 0; margin-top: 8px; }
-#settings .pack .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
-#settings .pack b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
-#settings .pack [data-ep] { width: 16ch; }
-#settings .pack .new { font-size: 11px; color: var(--accent); }
-#settings .saved { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
-#settings .saved b { color: var(--text); font-weight: 600; }
-#settings .add { display: flex; gap: 6px; margin-top: 8px; }
-#settings .file-add { align-items: center; }
-#settings .file-add label { display: inline-block; margin: 0; background: var(--panel); border: 1px solid var(--line); }
-#settings .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-#settings .actions button { padding: 6px 14px; cursor: pointer; }
+.sheet { position: fixed; inset: 0; z-index: 5; background: rgba(0,0,0,.7); display: flex; align-items: flex-start; justify-content: center; padding: 60px 16px; overflow: auto; }
+.sheet .card { width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.sheet label { display: block; margin: 12px 0 4px; font-size: 13px; color: var(--muted); }
+.sheet .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.sheet .hint a { color: inherit; }
+.sheet .pack { border-top: 1px solid var(--line); padding: 8px 0; margin-top: 8px; }
+.sheet .pack .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.sheet .pack b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.sheet .pack [data-ep] { width: 16ch; }
+.sheet .pack .new { font-size: 11px; color: var(--accent); }
+.sheet .pack .how { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.sheet .pack.cat b { color: var(--muted); }
+.sheet .card > b { font-size: 16px; }
+.sheet .saved { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
+.sheet .saved b { color: var(--text); font-weight: 600; }
+.sheet .add { display: flex; gap: 6px; margin-top: 8px; }
+.sheet .file-add { align-items: center; }
+.sheet .file-add label { display: inline-block; margin: 0; background: var(--panel); border: 1px solid var(--line); }
+.sheet .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.sheet .actions button { padding: 6px 14px; cursor: pointer; }
 </style>
 </head>
 <body>
 <header>
   <b><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</b>
-  <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Several models at once">Cobalt Pear Plus ↗</a>
+  <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="pack-update" class="pill plus" type="button" hidden>Update models</button>
   <button id="reveal-all" class="pill" type="button">Show all</button>
+  <button id="open-models" class="pill" type="button">Models</button>
   <button id="open-settings" class="pill" type="button">Settings</button>
 </header>
 <main id="feed"></main>
 <form id="form"><div class="box">
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
-  <div class="row"><span id="model" class="meta"></span><span class="right"><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — starts as the model's own" hidden><button id="neg-default" class="pill" type="button" title="Back to the model's own negative" hidden>Default</button><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+  <div class="row"><div id="models"></div><span class="right"><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — starts as the model's own" hidden><button id="neg-default" class="pill" type="button" title="Back to the model's own negative" hidden>Default</button><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
-<div id="settings" hidden><form class="card" id="settings-form">
+<div id="settings" class="sheet" hidden><form class="card" id="settings-form">
   <b>Settings</b>
   <div class="saved">Everything is saved <b>only in this browser</b> — your key, models, endpoint IDs and results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser — to forget it, clear it and press OK. A Restricted key allowing only your endpoints is recommended. <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Setup guide</a></div>
-  <label for="pack-url">Models</label>
+  <div class="hint">Cobalt Pear 2026.10.24.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="actions"><button type="submit">OK</button></div>
+</form></div>
+<div id="models-sheet" class="sheet" hidden><form class="card" id="models-form">
+  <b>Models</b>
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"></div>
   <div id="pack-list"></div>
+  <div id="catalog-box"><label>Add a model</label><div id="catalog"></div>
+  <div class="hint">Add one, do the steps under it on RunPod, then paste the endpoint ID.</div></div>
+  <div id="custom">
+  <label for="pack-url">Your own worker</label>
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
-  <div class="hint">No endpoint yet? On RunPod: Serverless → New endpoint → <b>Deploy image or video API</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → Create — no GitHub, no build. Then <a href="#" id="starter">add Z-Image Turbo here</a> and paste its endpoint ID.</div>
-  <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it. Cobalt Pear uses one model — adding another replaces it.</div>
-  <div class="hint">Cobalt Pear 2026.10.24.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
-  <div class="actions"><button type="submit">OK</button></div>
+  </div>
+  <div class="hint" id="custom-plus" hidden></div>
+  <div class="actions"><button type="submit">Done</button></div>
 </form></div>
 <script>
 // Cobalt Pear — a serverless page: the browser calls the user's own RunPod Serverless endpoints directly.
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.2";
+const VERSION = "2026.10.24.3";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
-const PLUS_URL = "";  // sales page of Plus — empty hides the Plus links until the store is ready
-const PACKS_KEY = "simple-packs", MAX_MODELS = 1;  // Simple holds one model, in its own list so Plus's list on the same site stays as it is
+const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet, so adding your own worker stays free here too
+const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
 const GET_URL = "https://cobaltpear.github.io/";
+const CATALOG_URL = "https://cobaltpear.github.io/packs/index.json";  // models anyone can start on RunPod in a few clicks — no GitHub, no build
 const KEEP = 300;  // newest prompts kept in the browser
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -246,7 +262,7 @@ function mediaHtml({ url, kind }, shown) {
 }
 let apiKey = "";
 apiKey = store.get("key", "") || apiKey;  // kept in this browser like the models — a Restricted key limits what it can do; clear it to forget
-let packs = store.get(PACKS_KEY, null) || store.get("packs", []).slice(0, MAX_MODELS);  // model packs
+let packs = store.get(PACKS_KEY, null) || store.get("packs", []);  // model packs
 let endpoints = store.get("endpoints", {});  // pack id → endpoint ID
 const turns = [];  // {created, prompt, items: [{id, packId, label, seed, w, h, status, error, media: [{url, kind, type}], blobs, text}]}
 let allShown = store.get("all-shown", true);  // Show all / Hide all is remembered; new users see their results right away
@@ -284,10 +300,29 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div></div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div>${!endpoints[p.id] && p.setup ? `<div class="how">${esc(p.setup)}</div>` : ""}</div>`).join("");
   $("pack-tools").hidden = packs.length < 6;
   findPacks();
+  renderCatalog();
+  const own = customAllowed();
+  $("custom").hidden = !own;
+  $("custom-plus").hidden = own;
+  $("custom-plus").innerHTML = own ? "" : `Your own worker (Civitai and others): <a href="${esc(GET_PLUS)}" target="_blank" rel="noopener">Cobalt Pear Plus ↗</a>`;
 }
+// The catalog — models that start on RunPod without GitHub. Add one, follow the line under it, paste the endpoint ID.
+let catalog = [];
+function renderCatalog() {
+  const rest = catalog.filter(c => !packs.some(p => p.src === c.url));
+  $("catalog-box").hidden = !rest.length;
+  $("catalog").innerHTML = rest.map(c => `<div class="pack cat"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>
+    <button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("");
+}
+fetch(CATALOG_URL).then(r => r.json()).then(j => { catalog = (j.models || []).map(m => ({ ...m, url: new URL(m.pack, CATALOG_URL).href })); renderCatalog(); }).catch(() => {});
+$("catalog").addEventListener("click", async e => {
+  const url = e.target.dataset.cat;
+  if (!url) return;
+  try { addPack(await fetchPack(url), url.split("/").pop(), url); } catch (err) { alert(err.message); }
+});
 function findPacks() {
   const q = $("pack-find").value.trim().toLowerCase();
   document.querySelectorAll("#pack-list .pack").forEach(d => { d.hidden = !!q && !d.dataset.name.includes(q); });
@@ -323,7 +358,6 @@ function addPack(data, name, src) {
   const p = checkPack(data.format ? data : detectPack(data.prompt && !data.class_type && typeof data.prompt === "object" ? data.prompt : data, name));
   if (src) p.src = src;
   keepEndpointInputs();
-  packs = [];
   packs = packs.filter(x => x.id !== p.id).concat(p);
   store.set(PACKS_KEY, packs);
   renderPacks();
@@ -333,7 +367,6 @@ $("pack-add").addEventListener("click", async () => {
   if (!url) return;
   try { addPack(await fetchPack(url), url.split("/").pop(), url); $("pack-url").value = ""; } catch (err) { alert(err.message); }
 });
-$("starter").addEventListener("click", e => { e.preventDefault(); $("pack-url").value = "https://cobaltpear.github.io/packs/z-image-turbo.json"; $("pack-add").click(); });
 $("pack-file").addEventListener("change", async e => {
   for (const f of e.target.files) { try { addPack(JSON.parse(await f.text()), f.name); } catch (err) { alert(`${f.name}: ${err.message}`); } }
   e.target.value = "";
@@ -350,16 +383,29 @@ let afterSettings = null;  // what was asked for before the key was given — ru
 function openSettings(then) {
   afterSettings = typeof then === "function" ? then : null;
   $("key").value = apiKey;
-  renderPacks();
   $("settings").hidden = false;
   $("key").focus();
 }
 $("open-settings").addEventListener("click", () => openSettings());
+let afterModels = null;
+function openModels(then) {
+  afterModels = typeof then === "function" ? then : null;
+  renderPacks();
+  $("models-sheet").hidden = false;
+}
+$("open-models").addEventListener("click", () => openModels());
+$("models-form").addEventListener("submit", e => {
+  e.preventDefault();
+  keepEndpointInputs(); store.set("endpoints", endpoints);
+  $("models-sheet").hidden = true;
+  fillModels();
+  const then = afterModels; afterModels = null;
+  if (usable().length && then) then();
+});
 $("settings-form").addEventListener("submit", async e => {
   e.preventDefault();
   apiKey = $("key").value.trim();
   store.set("key", apiKey);
-  keepEndpointInputs(); store.set("endpoints", endpoints);
   $("settings").hidden = true;
   fillModels();
   const then = afterSettings; afterSettings = null;
@@ -368,13 +414,36 @@ $("settings-form").addEventListener("submit", async e => {
 
 // ---- Models ----
 const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
-function fillModels() {
-  const p = usable()[0];
-  $("model").textContent = p ? p.label : "Add a model and endpoint in Settings";
-  fitNegative();
+const GET_PLUS = PLUS_URL;
+const customAllowed = () => !PLUS_URL;
+
+// several models can be on at once — each prompt goes to every model that is on.
+// Only the ones on are shown, plus a menu to add another, so a hundred models still fit in one row.
+let chosen = store.get("models", []);
+function fillModels() { fillChips(); fitNegative(); }
+function fillChips() {
+  const list = usable(), name = id => list.find(p => p.id === id).label, opt = p => `<option value="${esc(p.id)}">${esc(p.label)}</option>`;
+  chosen = chosen.filter(id => list.some(p => p.id === id));
+  if (!chosen.length && list.length) chosen = [list[0].id];
+  if (!list.length) { $("models").innerHTML = `<a href="#" id="pick" class="meta">Pick a model</a>`; return; }
+  const rest = list.filter(p => !chosen.includes(p.id)), many = chosen.length > 1;
+  $("models").innerHTML = chosen.map(id => `<button type="button" class="chip on" data-model="${esc(id)}"${many ? ` title="Click to remove"` : ""}>${esc(name(id))}${many ? " ✕" : ""}</button>`).join("")
+    + (rest.length ? `<select id="add-model" title="Use one more model"><option value="">+ Model</option>${rest.map(opt).join("")}</select>` : "");
 }
-const chosenPacks = () => usable().slice(0, 1);
-function choose() {}  // one model — nothing to choose
+$("models").addEventListener("click", e => {
+  if (e.target.id === "pick") { e.preventDefault(); openModels(); return; }
+  const id = e.target.dataset.model;
+  if (!id || chosen.length < 2) return;
+  chosen = chosen.filter(x => x !== id);
+  store.set("models", chosen); fillModels();
+});
+$("models").addEventListener("change", e => {
+  if (e.target.id !== "add-model" || !e.target.value) return;
+  chosen = [...chosen, e.target.value];
+  store.set("models", chosen); fillModels();
+});
+const chosenPacks = () => chosen.map(id => usable().find(p => p.id === id)).filter(Boolean);
+function choose(ids) { const ok = ids.filter(id => usable().some(p => p.id === id)); if (ok.length) { chosen = ok; store.set("models", chosen); fillModels(); } }
 
 // The Negative box shows only when a chosen model takes one. It starts as the model's own negative (so nothing is hidden);
 // once changed it is sent instead of it, and Default puts the model's own back.
@@ -450,7 +519,8 @@ $("form").addEventListener("submit", e => {
   const text = $("prompt").value.trim(), use = chosenPacks(), sv = $("seed").value.trim(), neg = negEdited && !$("negative").hidden ? $("negative").value.trim() : "";
   if (!text) return;
   if (sv && !/^\d{1,15}$/.test(sv)) { alert("The seed is a whole number (or leave it empty for random)"); $("seed").focus(); return; }
-  if (!apiKey || !use.length) { openSettings(() => $("form").requestSubmit()); return; }
+  if (!use.length) { openModels(() => $("form").requestSubmit()); return; }
+  if (!apiKey) { openSettings(() => $("form").requestSubmit()); return; }
   $("prompt").value = ""; keepDraft();
   run(text, use, 1, sv ? Number(sv) : undefined, neg);
 });
@@ -523,9 +593,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty">Add your RunPod key, a worker repo URL and its endpoint in Settings, then send a prompt.<br>New to RunPod? <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Step-by-step setup guide</a>`
-    + (PLUS_URL ? `<br><br>Several models at once: <a href="${PLUS_URL}" target="_blank" rel="noopener">Cobalt Pear Plus</a>` : "")
-    + `</div>`;
+  }).join("") : `<div class="empty">Pick a model in Models, then send a prompt — the RunPod key is asked for on the first one.<br>New to RunPod? <a href="https://cobaltpear.github.io/guide.html" target="_blank" rel="noopener">Step-by-step setup guide</a></div>`;
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
@@ -623,7 +691,7 @@ $("prompt").value = draft.prompt || ""; $("seed").value = draft.seed || "";
 setNegative(draft.negative ?? null);
 render();
 loadHistory();
-if (usable().length) $("prompt").focus(); else openSettings();  // the key is asked for on the first send
+if (usable().length) $("prompt").focus(); else openModels();  // the key is asked for on the first send
 </script>
 </body>
 </html>

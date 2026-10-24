@@ -1,0 +1,11 @@
+{
+  "format": "catalog/1",
+  "models": [
+    {
+      "id": "z-image-turbo",
+      "label": "Z-Image Turbo",
+      "note": "Fast, sharp text-to-image by Tongyi-MAI. No GitHub, no build, no token.",
+      "pack": "z-image-turbo.json"
+    }
+  ]
+}

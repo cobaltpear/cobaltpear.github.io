@@ -54,14 +54,14 @@ td:first-child { color: var(--muted); width: 42%; }
 <li>Any name is fine. Choose <b>Private</b> → <b class="ui">Create repository</b>.</li>
 </ol>
 <p class="note">Keep the worker's own page address — you will paste it into Cobalt Pear in step 7 (not the address of your copy).</p>
-<p class="note">No worker yet? Start with Z-Image Turbo — it needs no GitHub at all: skip steps 2–5 and do the box below instead.</p></div>
+<p class="note">No worker yet? Start with a model from the app's <b class="ui">Models</b> list (like Z-Image Turbo) — it needs no GitHub at all: skip steps 2–5 and do the box below instead.</p></div>
 
-<div class="step"><label><input type="checkbox"><h2>Quick start: Z-Image Turbo without GitHub</h2></label>
+<div class="step"><label><input type="checkbox"><h2>Quick start: a model from the list, without GitHub</h2></label>
 <ol>
-<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy image or video API</b>.</li>
-<li><b class="ui">Text To Image</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → <b class="ui">Deploy with vLLM Omni</b> → <b class="ui">Next</b> → <b class="ui">Create Endpoint</b>.</li>
+<li><a href="./">Open Cobalt Pear</a> → <b class="ui">Models</b> → <b class="ui">Add</b> next to the model. A line of RunPod steps shows under it.</li>
+<li>Do those steps on RunPod — for Z-Image Turbo: <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy image or video API</b> → <b class="ui">Text To Image</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → <b class="ui">Deploy with vLLM Omni</b> → <b class="ui">Next</b> → <b class="ui">Create Endpoint</b>.</li>
 <li>In the endpoint's settings set Max workers <code>1</code>, Execution timeout <code>600</code> → <b class="ui">Save</b>.</li>
-<li>Go to step 6. In step 7 press <b class="ui">add Z-Image Turbo here</b> under the Settings box instead of pasting a page address.</li>
+<li>Paste its endpoint ID next to the model in Cobalt Pear → <b class="ui">Done</b>. Then do step 6 and put the key in <b class="ui">Settings</b>.</li>
 </ol>
 <p class="note">No build to wait for. The first picture takes about a minute while RunPod starts it; then about 8 seconds each.</p></div>
 
@@ -106,11 +106,9 @@ td:first-child { color: var(--muted); width: 42%; }
 
 <div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
 <ol>
-<li><a href="./">Open Cobalt Pear</a> → <b class="ui">Settings</b>.</li>
-<li>Paste the API key.</li>
-<li>Paste the <b>worker's page address</b> (from step 2) → <b class="ui">Add</b>.</li>
-<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>).</li>
-<li><b class="ui">OK</b>, type what you want to see, press Enter.</li>
+<li><a href="./">Open Cobalt Pear</a> → <b class="ui">Models</b> → paste the <b>worker's page address</b> (from step 2) under «Your own worker» → <b class="ui">Add</b>.</li>
+<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>) → <b class="ui">Done</b>.</li>
+<li>Type what you want to see, press Enter. The first time it asks for the API key — paste it → <b class="ui">OK</b>.</li>
 </ol>
 <p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p></div>
 

@@ -4,10 +4,45 @@
   "id": "z-image-turbo",
   "label": "Z-Image Turbo",
   "note": "RunPod → Serverless → New endpoint → Deploy image or video API → Tongyi-MAI/Z-Image-Turbo. No GitHub, no build, no token.",
-  "input": { "prompt": "", "size": "1536x960", "seed": 0, "num_inference_steps": 9, "guidance_scale": 0 },
-  "prompt": [["prompt"]],
-  "seed": [["seed"]],
-  "size": [["size"]],
-  "sizes": [[1536, 960, "16:10"], [1024, 1024, "1:1"], [960, 1536, "10:16"]],
+  "setup": "On RunPod: Serverless → New Endpoint → Deploy image or video API → Text To Image → Tongyi-MAI/Z-Image-Turbo → Deploy with vLLM Omni → Next → Create Endpoint. Copy its endpoint ID into the box above.",
+  "input": {
+    "prompt": "",
+    "size": "1536x960",
+    "seed": 0,
+    "num_inference_steps": 9,
+    "guidance_scale": 0
+  },
+  "prompt": [
+    [
+      "prompt"
+    ]
+  ],
+  "seed": [
+    [
+      "seed"
+    ]
+  ],
+  "size": [
+    [
+      "size"
+    ]
+  ],
+  "sizes": [
+    [
+      1536,
+      960,
+      "16:10"
+    ],
+    [
+      1024,
+      1024,
+      "1:1"
+    ],
+    [
+      960,
+      1536,
+      "10:16"
+    ]
+  ],
   "size_step": 16
 }
