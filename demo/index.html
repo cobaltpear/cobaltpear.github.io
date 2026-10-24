@@ -99,8 +99,9 @@ body.all-shown .veil .full-btn { display: none; }
   <div id="pack-list"></div>
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
+  <div class="hint">No endpoint yet? On RunPod: Serverless → New endpoint → <b>Deploy image or video API</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → Create — no GitHub, no build. Then <a href="#" id="starter">add Z-Image Turbo here</a> and paste its endpoint ID.</div>
   <div class="hint">Add a worker repo URL, then the ID of the RunPod endpoint you built from it. Cobalt Pear uses one model — adding another replaces it.</div>
-  <div class="hint">Cobalt Pear 2026.10.23.11 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.24.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
   <div class="actions"><button type="submit">OK</button></div>
 </form></div>
 <script>
@@ -125,8 +126,10 @@ body.all-shown .veil .full-btn { display: none; }
     await new Promise(r => setTimeout(r, 300));
     const json = o => new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json" } });
     if (String(url).endsWith("/run")) {
-      const id = "demo" + Math.random().toString(36).slice(2), wf = JSON.parse(opt.body).input.workflow || {};
-      jobs[id] = { t: Date.now(), p: draw(pick(wf, "text") || "(no prompt)", pick(wf, "seed") ?? pick(wf, "noise_seed") ?? 0, pick(wf, "width"), pick(wf, "height")) };
+      const id = "demo" + Math.random().toString(36).slice(2), inp = JSON.parse(opt.body).input, wf = inp.workflow;
+      const [w, h] = String(inp.size || "").split("x").map(Number);  // json-engine packs: {prompt, size: "WxH", seed}
+      jobs[id] = { t: Date.now(), p: wf ? draw(pick(wf, "text") || "(no prompt)", pick(wf, "seed") ?? pick(wf, "noise_seed") ?? 0, pick(wf, "width"), pick(wf, "height"))
+                                        : draw(inp.prompt || "(no prompt)", inp.seed ?? 0, w, h) };
       return json({ id, status: "IN_QUEUE" });
     }
     const j = jobs[String(url).split("/").pop()], age = Date.now() - j.t;
@@ -140,7 +143,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.23.11";
+const VERSION = "2026.10.24.1";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty hides the Plus links until the store is ready
 const PACKS_KEY = "simple-packs", MAX_MODELS = 1;  // Simple holds one model, in its own list so Plus's list on the same site stays as it is
@@ -162,7 +165,7 @@ const store = {
 // The only engine-specific part is filling values into the template. Output is read whatever its shape: images, video, audio, text.
 // So video, TTS and LLM workers plug in with just a pack. A worker with a very different template gets one more entry in ENGINES.
 const PACK_FORMATS = ["pack/1", "comfy-pack/1"];  // first = current, the other is an old name (engine = comfyui)
-const SLOTS = ["prompt", "negative", "seed", "width", "height"];
+const SLOTS = ["prompt", "negative", "seed", "width", "height", "size"];  // size = "WxH" in one string (OpenAI-style workers)
 const ENGINES = {
   // ComfyUI worker (runpod/worker-comfyui) — template = API-format workflow (pack.workflow), slot = [node id, input name]
   comfyui: {
@@ -184,6 +187,7 @@ const ENGINES = {
     },
   },
   // Any other worker — template = the RunPod input as is (pack.input), slot = path inside it (["prompt"], ["openai_input", "messages", 0, "content"])
+  // e.g. RunPod «Deploy image or video API» (vLLM-Omni): input {prompt, size: "1536x960", seed} → output data[0].b64_json
   json: {
     valid: p => p.input && typeof p.input === "object",
     input(p, v) {
@@ -210,7 +214,7 @@ function checkPack(p) {
 const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values);
 const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
 const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
-const hasSize = p => !!(p.width?.length && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
+const hasSize = p => !!((p.width?.length || p.size?.length) && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
 // Get a pack by URL — a GitHub repo URL means pack.json on main
 async function fetchPack(url) {
   const m = url.trim().match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/);
@@ -365,6 +369,7 @@ $("pack-add").addEventListener("click", async () => {
   if (!url) return;
   try { addPack(await fetchPack(url), url.split("/").pop(), url); $("pack-url").value = ""; } catch (err) { alert(err.message); }
 });
+$("starter").addEventListener("click", e => { e.preventDefault(); $("pack-url").value = "https://cobaltpear.github.io/packs/z-image-turbo.json"; $("pack-add").click(); });
 $("pack-file").addEventListener("change", async e => {
   for (const f of e.target.files) { try { addPack(JSON.parse(await f.text()), f.name); } catch (err) { alert(`${f.name}: ${err.message}`); } }
   e.target.value = "";
@@ -461,7 +466,7 @@ async function runItem(t, it) {
   const pack = packs.find(p => p.id === it.packId);
   try {
     if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
-    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h });
+    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}` });
     it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
     const out = await runAndWait(endpoints[pack.id], input, st => { it.status = st; render(); }) || {};
     if (out.error) throw new Error(out.error);

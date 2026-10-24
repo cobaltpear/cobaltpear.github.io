@@ -53,7 +53,17 @@ td:first-child { color: var(--muted); width: 42%; }
 <li>On the worker's GitHub page, click the green <b class="ui">Use this template</b> → <b class="ui">Create a new repository</b>.</li>
 <li>Any name is fine. Choose <b>Private</b> → <b class="ui">Create repository</b>.</li>
 </ol>
-<p class="note">Keep the worker's own page address — you will paste it into Cobalt Pear in step 7 (not the address of your copy).</p></div>
+<p class="note">Keep the worker's own page address — you will paste it into Cobalt Pear in step 7 (not the address of your copy).</p>
+<p class="note">No worker yet? Start with Z-Image Turbo — it needs no GitHub at all: skip steps 2–5 and do the box below instead.</p></div>
+
+<div class="step"><label><input type="checkbox"><h2>Quick start: Z-Image Turbo without GitHub</h2></label>
+<ol>
+<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy image or video API</b>.</li>
+<li><b class="ui">Text To Image</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → <b class="ui">Deploy with vLLM Omni</b> → <b class="ui">Next</b> → <b class="ui">Create Endpoint</b>.</li>
+<li>In the endpoint's settings set Max workers <code>1</code>, Execution timeout <code>600</code> → <b class="ui">Save</b>.</li>
+<li>Go to step 6. In step 7 press <b class="ui">add Z-Image Turbo here</b> under the Settings box instead of pasting a page address.</li>
+</ol>
+<p class="note">No build to wait for. The first picture takes about a minute while RunPod starts it; then about 8 seconds each.</p></div>
 
 <div class="step"><label><input type="checkbox"><h2>3. Put your Civitai token in your copy</h2></label>
 <p class="note">Only if the worker's page asks for it. It lets RunPod download the model with your account.</p>
