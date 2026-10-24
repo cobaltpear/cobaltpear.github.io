@@ -4,7 +4,7 @@
   "id": "z-image-turbo",
   "label": "Z-Image Turbo",
   "note": "RunPod → Serverless → New endpoint → Deploy image or video API → Tongyi-MAI/Z-Image-Turbo. No GitHub, no build, no token.",
-  "setup": "On RunPod: Serverless → New Endpoint → Deploy image or video API → Text To Image → Tongyi-MAI/Z-Image-Turbo → Deploy with vLLM Omni → Next → Create Endpoint. Copy its endpoint ID into the box above.",
+  "setup": "RunPod → New Endpoint → Deploy image or video API → Z-Image-Turbo → Create. Paste its ID above.",
   "input": {
     "prompt": "",
     "size": "1536x960",
