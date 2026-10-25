@@ -125,9 +125,15 @@ const ENGINES = {
   comfyui: {
     valid: p => p.workflow && typeof p.workflow === "object",
     input(p, v) {
-      const wf = structuredClone(p.workflow);
-      for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) wf[n].inputs[name] = v[k];
-      return { workflow: wf };
+      const wf = structuredClone(p.workflow), images = [];
+      for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) {
+        if (k !== "image") { wf[n].inputs[name] = v[k]; continue; }
+        // the worker takes pictures as input.images; LoadImage keeps the template's file name and reads it from there
+        const file = typeof wf[n].inputs[name] === "string" && wf[n].inputs[name] || `input_${n}.png`;
+        wf[n].inputs[name] = file;
+        images.push({ name: file, image: v[k] });
+      }
+      return images.length ? { workflow: wf, images } : { workflow: wf };
     },
     get: (p, k) => { const [n, name] = p[k]?.[0] || []; return p.workflow[n]?.inputs[name]; },  // the template's own value of a slot
     // every plain value of the workflow (links to other nodes left out): "KSampler · steps: 30".
