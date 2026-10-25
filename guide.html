@@ -48,7 +48,7 @@ td:first-child { color: var(--muted); width: 42%; }
 </ul></div>
 
 <div class="step"><label><input type="checkbox"><h2>2. Copy the worker</h2></label>
-<p class="note">A «worker» is the model packed for RunPod. Each model has its own worker page on GitHub — its page links here.</p>
+<p class="note">A «worker» is the model packed for RunPod. Each model has its own worker page on GitHub — its page links here. Made your own worker? <a href="pack.html">Make a pack</a> for it.</p>
 <ol>
 <li>On the worker's GitHub page, click the green <b class="ui">Use this template</b> → <b class="ui">Create a new repository</b>.</li>
 <li>Any name is fine. Choose <b>Private</b> → <b class="ui">Create repository</b>.</li>
@@ -68,28 +68,31 @@ td:first-child { color: var(--muted); width: 42%; }
 <div class="step"><label><input type="checkbox"><h2>3. Put your Civitai token in your copy</h2></label>
 <p class="note">Only if the worker's page asks for it. It lets RunPod download the model with your account.</p>
 <ol>
-<li>Civitai → your picture (top right) → <b class="ui">Account settings</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → copy it.</li>
+<li>Civitai → your picture (top right) → <b class="ui">Account settings</b> → <b class="ui">Security &amp; Apps</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → Permission preset <b class="ui">Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model: next time, reuse it.</li>
 <li>In your copy on GitHub, click <code>Dockerfile</code> → the pencil ✏️ (top right of the file).</li>
-<li>Replace <code>PASTE_YOUR_CIVITAI_TOKEN_HERE</code> with your token → <b class="ui">Commit changes</b>.</li>
+<li>Replace <code>PASTE_YOUR_CIVITAI_TOKEN_HERE</code> with your token → <b class="ui">Commit changes…</b> → <b class="ui">Commit changes</b> again.</li>
 </ol></div>
 
-<div class="step"><label><input type="checkbox"><h2>4. Create the endpoint</h2></label>
+<div class="step" id="endpoint"><label><input type="checkbox"><h2>4. Create the endpoint</h2></label>
 <p class="note">The «endpoint» is your generator on RunPod.</p>
 <ol>
-<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">GitHub Repo</b>.</li>
-<li>The first time, connect GitHub and allow your copy. Then pick your copy.</li>
-<li>Fill in the settings from the worker's page. They usually look like this:</li>
+<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy from a GitHub repository</b>.</li>
+<li>Pick your copy. The first time, click <b class="ui">Edit connection</b> and let RunPod see it.</li>
+<li>Fill in the page from top to bottom. Some settings are folded away — the arrows show what to click open:</li>
 </ol>
 <table>
-<tr><td>Branch · Dockerfile path · Build context</td><td><code>main</code> · <code>Dockerfile</code> · <code>.</code></td></tr>
-<tr><td>GPU</td><td>as the worker's page says (24 GB or more)</td></tr>
-<tr><td>Active workers · Max workers</td><td><code>0</code> · <code>1</code> — 0 active = nothing to pay while idle</td></tr>
-<tr><td>Idle timeout</td><td><code>5</code> seconds</td></tr>
-<tr><td>Execution timeout</td><td><code>600</code> seconds</td></tr>
-<tr><td>FlashBoot</td><td>On</td></tr>
-<tr><td>Container disk</td><td>as the worker's page says</td></tr>
+<tr><td><b class="ui">Endpoint name</b></td><td>anything — your copy's name is fine</td></tr>
+<tr><td><b class="ui">GPU configuration</b></td><td>tick <b>16 GB</b> for SDXL, Pony, Illustrious and NoobAI models (every Civitai link) · <b>24 GB</b> for Krea 2, Flux and bigger · more boxes = easier to get a GPU</td></tr>
+<tr><td><b class="ui">Max workers</b></td><td><code>1</code></td></tr>
+<tr><td colspan="2">Click <b class="ui">Advanced settings</b> to open it:</td></tr>
+<tr><td>→ <b class="ui">Active workers</b></td><td><code>0</code> — nothing to pay while idle</td></tr>
+<tr><td>→ <b class="ui">GPU count</b></td><td><code>1</code></td></tr>
+<tr><td>→ <b class="ui">Idle timeout</b></td><td><code>5</code> sec</td></tr>
+<tr><td>→ <b class="ui">Enable FlashBoot</b></td><td>switch on · <b class="ui">Standard</b></td></tr>
+<tr><td>→ <b class="ui">Enable execution timeout</b></td><td>switch on · <b class="ui">Execution timeout</b> <code>600</code> sec</td></tr>
+<tr><td>→ click <b class="ui">Container configuration</b> → <b class="ui">Container disk</b></td><td><code>20</code> GB for SDXL, Pony, Illustrious and NoobAI (every Civitai link) · <code>30</code> GB for A1111 workers · <code>40</code> GB for Krea 2, Flux and bigger</td></tr>
 </table>
-<ol start="4"><li><b class="ui">Create</b>.</li></ol>
+<ol start="4"><li>Leave the rest as it is → <b class="ui">Deploy</b> at the bottom.</li></ol>
 <p class="note">RunPod may warn «runpod.serverless.start() handler not found in your repo». You can ignore it — the worker starts its handler from the image it builds on.</p></div>
 
 <div class="step"><label><input type="checkbox"><h2>5. Wait for the build</h2></label>

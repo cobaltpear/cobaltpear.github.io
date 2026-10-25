@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make a pack</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E">
+<style>
+:root { color-scheme: dark; --bg: #111; --panel: #1b1b1b; --line: #333; --text: #eee; --muted: #999; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, sans-serif; }
+header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+header b { margin-right: auto; display: flex; align-items: center; gap: 8px; }
+header b img { width: 22px; height: 22px; }
+header a { color: var(--text); font-size: 13px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
+main { max-width: 720px; margin: 0 auto; padding: 8px 16px 80px; }
+h1 { font-size: 26px; line-height: 1.3; margin: 24px 0 4px; }
+h2 { font-size: 18px; margin: 0; }
+.lead, .muted { color: var(--muted); }
+a { color: var(--text); }
+code, kbd { font: 14px ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; word-break: break-all; }
+b.ui { white-space: nowrap; }
+.step { margin: 14px 0; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.step > label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.step input { width: 20px; height: 20px; flex: none; accent-color: #8fb3ff; }
+.step.done { opacity: .55; }
+.step ol, .step ul { margin: 8px 0 0; padding-left: 22px; }
+.step li { margin: 4px 0; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+td { border-top: 1px solid var(--line); padding: 6px 8px 6px 0; vertical-align: top; }
+td:first-child { color: var(--muted); width: 42%; }
+.note { margin-top: 8px; font-size: 14px; color: var(--muted); }
+ul.points { padding-left: 22px; line-height: 1.8; }
+.news { margin: 10px 0; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.news time { color: var(--muted); font-size: 13px; display: block; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.links a { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
+pre { font: 13px/1.5 ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; overflow-x: auto; }
+.form label.f { display: block; margin: 12px 0 4px; font-size: 14px; color: var(--muted); }
+.form input, .form select, .form textarea { width: 100%; font: 14px system-ui, sans-serif; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.form textarea { font: 13px/1.4 ui-monospace, monospace; min-height: 120px; resize: vertical; }
+.form .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fields { margin-top: 6px; max-height: 420px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; }
+.fields .row { display: grid; grid-template-columns: 1fr 130px; gap: 8px; align-items: center; padding: 6px 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.fields .row:first-child { border-top: 0; }
+.fields .row.on { background: #1f2533; }
+.fields .row small { display: block; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fields .row span { overflow-wrap: anywhere; }
+.form .msg { margin: 10px 0 0; font-size: 14px; color: #f0b36b; }
+.form .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.form button { font: 14px system-ui, sans-serif; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.form button:disabled { opacity: .4; cursor: default; }
+details summary { cursor: pointer; }
+#out { max-height: 360px; overflow: auto; }
+</style>
+</head>
+<body>
+<header><b><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</b><a href="./">Open the app</a></header>
+<main>
+<h1>Make a pack for your worker</h1>
+<p class="lead">A pack is one small file, <code>pack.json</code>, that tells Cobalt Pear how to call your RunPod Serverless worker. You need a working endpoint first — the pack only says what to send it. Fill in the boxes and the file is made below.</p>
+
+<div class="step form">
+<h2>1. What your worker takes</h2>
+<label class="f" for="src">Paste a ComfyUI workflow (ComfyUI → <b class="ui">Workflow</b> → <b class="ui">Export (API)</b>), or the JSON your worker takes as <code>input</code></label>
+<textarea id="src" spellcheck="false" placeholder='{ "prompt": "a cat", "negative_prompt": "", "seed": 1, "width": 1024, "height": 1024 }'></textarea>
+<div class="btns"><button type="button" id="pick">Or choose a .json file…</button><input id="file" type="file" accept=".json,application/json" hidden></div>
+<p class="msg" id="src-msg" hidden></p>
+
+<div id="rest" hidden>
+<h2 style="margin-top:18px">2. Name it</h2>
+<div class="two">
+<div><label class="f" for="label">Name</label><input id="label" autocomplete="off" placeholder="My model"></div>
+<div><label class="f" for="kind">Kind</label><select id="kind"><option value="">Guess</option></select></div>
+</div>
+<label class="f" for="note">Tips shown under the model (optional)</label><input id="note" autocomplete="off" placeholder="25 steps, CFG 6. Start with «masterpiece, best quality»">
+
+<h2 style="margin-top:18px">3. Where things go</h2>
+<p class="note">Found by itself where it could — change any that are wrong. Only Prompt is needed.</p>
+<div class="fields" id="fields"></div>
+<div class="two" id="size-row">
+<div><label class="f" for="sizes">Sizes (width x height, first = default)</label><input id="sizes" autocomplete="off" placeholder="1216x832, 832x1216, 1024x1024"></div>
+<div><label class="f" for="step">Sizes must be a multiple of</label><input id="step" inputmode="numeric" placeholder="64"></div>
+</div>
+
+<h2 style="margin-top:18px">4. Your pack.json</h2>
+<p class="msg" id="out-msg" hidden></p>
+<pre id="out"></pre>
+<div class="btns"><button type="button" id="save">Save pack.json</button><button type="button" id="copy">Copy</button></div>
+</div>
+</div>
+
+<div class="step"><h2>5. Put it in your repo and try it</h2>
+<ol>
+<li>Save it as <code>pack.json</code> at the top of your worker's GitHub repo, on the <code>main</code> branch.</li>
+<li><a href="./">Open Cobalt Pear</a> → <b class="ui">Models</b> → <b class="ui">Custom</b> → paste the repo's address under «Your own worker» → <b class="ui">Add</b>. No repo? <b class="ui">Choose a pack or ComfyUI workflow</b> takes the file itself.</li>
+<li>Paste your endpoint ID and send a prompt. The app reads the pack again each time it opens, so a fix shows at once.</li>
+</ol></div>
+
+<div class="step"><h2>6. Let people find it</h2>
+<p>Add the topic <code>cobalt-pear</code> to your repo (the ⚙️ next to About on its GitHub page). Every worker with a pack is listed at <a href="https://github.com/topics/cobalt-pear" target="_blank" rel="noopener">github.com/topics/cobalt-pear</a>.</p></div>
+
+<div class="step"><details><summary><h2 style="display:inline">What each field means</h2></summary>
+<table>
+<tr><td><code>format</code> · <code>engine</code></td><td><code>pack/1</code> · <code>comfyui</code> (a ComfyUI workflow) or <code>json</code> (any other worker)</td></tr>
+<tr><td><code>id</code> · <code>label</code> · <code>note</code></td><td>a short id · the name shown · tips shown under the model</td></tr>
+<tr><td><code>kind</code></td><td>the group it sits under in the model menu</td></tr>
+<tr><td><code>workflow</code> · <code>input</code></td><td>what is sent — the ComfyUI workflow, or the RunPod <code>input</code></td></tr>
+<tr><td><code>prompt</code> · <code>negative</code> · <code>seed</code> · <code>width</code> · <code>height</code> · <code>size</code> · <code>image</code></td><td>where each value goes, as a list of places. comfyui = <code>[node id, input name]</code>, json = the path inside <code>input</code>. <code>size</code> = <code>"1536x960"</code> in one string · <code>image</code> = a starting picture as base64</td></tr>
+<tr><td><code>sizes</code> · <code>size_step</code></td><td>sizes as <code>[width, height, name]</code> · the step sizes must be a multiple of</td></tr>
+</table>
+<p>What your worker sends back can have any shape — the app looks through the whole <code>output</code> for files (<code>{type: "base64", data}</code>, <code>data:…</code>, base64, <code>https://…</code> links) and for text under <code>content</code>, <code>text</code>, <code>response</code>, <code>output</code> or <code>caption</code>.</p>
+</details></div>
+
+<div class="links"><a href="./">Open the app</a><a href="guide.html">Setup guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
+<script>
+// ---- Model packs · engines · output ----
+// A pack tells how to call one worker: engine, request template, where prompt/seed/width/height go, size list. Format: PACK.md.
+// The only engine-specific part is filling values into the template. Output is read whatever its shape: images, video, audio, text.
+// So video, TTS and LLM workers plug in with just a pack. A worker with a very different template gets one more entry in ENGINES.
+const PACK_FORMATS = ["pack/1", "comfy-pack/1"];  // first = current, the other is an old name (engine = comfyui)
+const SLOTS = ["prompt", "negative", "seed", "width", "height", "size", "image"];  // size = "WxH" in one string (OpenAI-style workers) · image = a picture as base64 (edit, image to video)
+const ENGINES = {
+  // ComfyUI worker (runpod/worker-comfyui) — template = API-format workflow (pack.workflow), slot = [node id, input name]
+  comfyui: {
+    valid: p => p.workflow && typeof p.workflow === "object",
+    input(p, v) {
+      const wf = structuredClone(p.workflow);
+      for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) wf[n].inputs[name] = v[k];
+      return { workflow: wf };
+    },
+    get: (p, k) => { const [n, name] = p[k]?.[0] || []; return p.workflow[n]?.inputs[name]; },  // the template's own value of a slot
+    // every plain value of the workflow (links to other nodes left out): "KSampler · steps: 30".
+    // A node fed into a positive/negative input is named that, so the two prompt boxes can be told apart.
+    describe(inp) {
+      const wf = inp.workflow || {}, role = {};
+      for (const n of Object.values(wf)) for (const [k, v] of Object.entries(n.inputs || {}))
+        if (Array.isArray(v) && /^(positive|negative)$/.test(k)) role[v[0]] ??= k;
+      return Object.entries(wf).flatMap(([id, n]) => Object.entries(n.inputs || {})
+        .filter(([, v]) => !Array.isArray(v)).map(([k, v]) => `${role[id] || n.class_type} · ${k}: ${v}`));
+    },
+  },
+  // Any other worker — template = the RunPod input as is (pack.input), slot = path inside it (["prompt"], ["openai_input", "messages", 0, "content"])
+  // e.g. RunPod «Deploy image or video API» (vLLM-Omni): input {prompt, size: "1536x960", seed} → output data[0].b64_json
+  json: {
+    valid: p => p.input && typeof p.input === "object",
+    input(p, v) {
+      const inp = structuredClone(p.input);
+      for (const k of SLOTS) if (v[k] != null) for (const path of p[k] || []) {
+        let o = inp;
+        for (const s of path.slice(0, -1)) o = o[s] ??= {};
+        o[path.at(-1)] = v[k];
+      }
+      return inp;
+    },
+    get: (p, k) => p[k]?.[0]?.reduce((o, s) => o?.[s], p.input),
+    describe: inp => [JSON.stringify(inp, (k, v) => typeof v === "string" && v.length > 300 ? `(picture, ${Math.round(v.length * 3 / 4 / 1024)} KB)` : v, 1)],
+  },
+};
+function checkPack(p) {
+  if (!PACK_FORMATS.includes(p?.format)) throw new Error("Not a model pack");
+  const engine = p.engine || "comfyui";
+  if (!ENGINES[engine]) throw new Error(`Unknown engine (${engine}) — get the latest version of this page`);
+  if (!ENGINES[engine].valid(p) || !p.prompt?.length) throw new Error("The pack has no request template or prompt slot");
+  if (!p.id) throw new Error("The pack has no id");
+  return { ...p, engine, label: p.label || p.id, sizes: p.sizes || [], size_step: p.size_step || 16 };
+}
+const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values);
+const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
+const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
+const takesImage = p => !!p.image?.length;  // edit and image-to-video packs: a picture is needed
+// which Models tab a pack sits under: its own «kind», else a guess — a text or speech worker's own fields (vLLM / OpenAI style, a voice) → Other,
+// a starting picture → Image To …, a video task or a video-saving node → … To Video
+const KINDS = ["Text To Image", "Text To Video", "Image To Image", "Image To Video", "Other"];
+function packKind(p) {
+  if (KINDS.includes(p.kind)) return p.kind;
+  const s = JSON.stringify((p.engine === "json" ? p.input : p.workflow) || {});
+  if (/"(?:messages|sampling_params|max_tokens|max_new_tokens|openai_route|voice|speaker|speaker_id|speaker_wav|ref_audio)":/.test(s)) return "Other";
+  const video = /"task":"video"|"class_type":"(?:SaveVideo|SaveWEBM|SaveAnimated\w*|VHS_VideoCombine|CreateVideo)"/.test(s);
+  return (takesImage(p) ? "Image To " : "Text To ") + (video ? "Video" : "Image");
+}
+// A plain ComfyUI API workflow becomes a pack: the text nodes feeding the sampler's positive and negative, seed/noise_seed, width/height of the empty latent
+function detectPack(wf, name) {
+  const ref = v => Array.isArray(v) && typeof v[0] === "string" ? v[0] : null;
+  const prompt = [], negative = [];
+  const textOf = (start, into) => {
+    let id = start;  // follow conditioning nodes a few steps up to the one with a text input
+    for (let i = 0; i < 5 && wf[id]; i++) {
+      const key = ["text", "prompt"].find(k => typeof wf[id].inputs[k] === "string");
+      if (key) { if (!into.some(p => p[0] === id)) into.push([id, key]); return; }
+      id = ref(Object.values(wf[id].inputs).find(ref));
+    }
+  };
+  for (const n of Object.values(wf)) {
+    if (!/Sampler|Guider/.test(n.class_type)) continue;
+    const pos = ref(n.inputs?.positive) || ref(n.inputs?.conditioning), neg = ref(n.inputs?.negative);
+    if (pos) textOf(pos, prompt);
+    if (neg) textOf(neg, negative);
+  }
+  const negOnly = negative.filter(x => !prompt.some(p => p[0] === x[0]));  // one text node feeding both is the prompt
+  const seed = [], width = [], height = [];
+  for (const [id, n] of Object.entries(wf)) {
+    for (const k of ["seed", "noise_seed"]) if (typeof n.inputs?.[k] === "number") seed.push([id, k]);
+    if (/Latent/.test(n.class_type) && typeof n.inputs?.width === "number") { width.push([id, "width"]); height.push([id, "height"]); }
+  }
+  if (!prompt.length) throw new Error("No prompt slot found");
+  const w0 = width.length ? wf[width[0][0]].inputs.width : 1024, h0 = width.length ? wf[height[0][0]].inputs.height : 1024;
+  return { format: PACK_FORMATS[0], engine: "comfyui", id: name.replace(/\.json$/i, "").replace(/[^\w.-]+/g, "-").toLowerCase(), label: name.replace(/\.json$/i, ""),
+           note: "Found automatically in the workflow.", workflow: wf, sizes: [[w0, h0]], prompt, ...(negOnly.length && { negative: negOnly }), seed, width, height };
+}
+const hasSize = p => !!((p.width?.length || p.size?.length) && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
+// Get a pack by URL — a GitHub repo URL means pack.json on main
+async function fetchPack(url) {
+  const m = url.trim().match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/);
+  const r = await fetch(m ? `https://raw.githubusercontent.com/${m[1]}/${m[2]}/main/pack.json` : url.trim(), { cache: "no-cache" });  // ask the server each time, so a changed pack shows at once
+  if (!r.ok) throw new Error(`Could not get the pack (${r.status})`);
+  return r.json();
+}
+
+// Read the output — workers differ, so look for all the common shapes:
+// ComfyUI worker [{type:"base64"|"s3_url", data}], "data:...;base64,...", bare base64 and "https://..." are files;
+// strings under keys like content/text (LLM) are text. File type comes from the first bytes.
+const TEXT_KEYS = ["content", "text", "response", "output", "caption"];
+async function readOutput(out) {
+  const files = [], texts = [];
+  (function walk(v, key) {
+    if (typeof v === "string") {
+      if (/^data:[\w.+-]+\/[\w.+-]+;base64,/.test(v) || /^[A-Za-z0-9+/]{256}/.test(v) || /^https?:\/\/\S+$/.test(v)) files.push(v);
+      else if (TEXT_KEYS.includes(key) && v.trim()) texts.push(v.replace(/<think>[\s\S]*?<\/think>/g, "").trim());
+    } else if (Array.isArray(v)) v.forEach(x => walk(x, key));
+    else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) walk(x, k);
+  })(out, "output");
+  const media = [];
+  for (const s of files) {
+    try {
+      const blob = /^https?:/.test(s) ? await retype(await (await fetch(s)).blob()) : b64ToBlob(s.replace(/^data:[^,]*,/, ""));
+      const kind = mediaKind(blob.type);
+      if (kind) media.push({ blob, kind });
+    } catch {}  // skip URLs that are not files or cannot be fetched
+  }
+  return { media, text: texts.filter(Boolean).join("\n\n") };
+}
+const mediaKind = type => ["image", "video", "audio"].find(k => type.startsWith(k + "/"));
+const EXT = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif", "video/mp4": "mp4", "video/webm": "webm",
+              "audio/wav": "wav", "audio/mpeg": "mp3", "audio/ogg": "ogg", "audio/flac": "flac" };
+const extOf = type => EXT[type] || "bin";
+function sniff(b) {  // b = first 16 bytes as a string
+  if (b.startsWith("\x89PNG")) return "image/png";
+  if (b.startsWith("\xff\xd8\xff")) return "image/jpeg";
+  if (b.startsWith("GIF8")) return "image/gif";
+  if (b.startsWith("RIFF")) return { WEBP: "image/webp", WAVE: "audio/wav" }[b.slice(8, 12)] || "";
+  if (b.slice(4, 8) === "ftyp") return "video/mp4";
+  if (b.startsWith("\x1a\x45\xdf\xa3")) return "video/webm";
+  if (b.startsWith("OggS")) return "audio/ogg";
+  if (b.startsWith("fLaC")) return "audio/flac";
+  if (b.startsWith("ID3") || (b.charCodeAt(0) === 0xff && (b.charCodeAt(1) & 0xe0) === 0xe0)) return "audio/mpeg";
+  return "";
+}
+function b64ToBlob(data) {
+  const bin = atob(data.replace(/\s/g, "")), buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return new Blob([buf], { type: sniff(bin.slice(0, 16)) || "application/octet-stream" });
+}
+async function retype(blob) {  // if the type is missing or generic, decide it from the first bytes
+  if (mediaKind(blob.type)) return blob;
+  const head = String.fromCharCode(...new Uint8Array(await blob.slice(0, 16).arrayBuffer()));
+  return new Blob([blob], { type: sniff(head) || blob.type });
+}
+// One result on screen — images and video go behind the veil, audio as is
+function mediaHtml({ url, kind }, shown) {
+  if (kind === "audio") return `<audio class="media" controls src="${esc(url)}"></audio>`;
+  const el = kind === "video" ? `<video src="${esc(url)}" controls loop playsinline></video>` : `<img src="${esc(url)}" alt=""><button class="full-btn pill" type="button">Full screen</button>`;
+  return `<div class="veil${shown ? " shown" : ""}" data-veil="${esc(url)}">${el}</div>`;
+}
+// ---- Make a pack: paste what the worker takes, pick where things go, get pack.json ----
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ROLES = { "": "—", prompt: "Prompt", negative: "Negative", seed: "Seed", width: "Width", height: "Height", size: "Size (WxH)", image: "Picture" };
+let tpl = null, engine = "", rows = [];  // rows = every plain value of the template: { path, name, value, role }
+for (const k of KINDS) $("kind").add(new Option(k, k));
+
+function leaves(o, path = [], out = []) {
+  if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) leaves(v, [...path, Array.isArray(o) ? +k : k], out);
+  else if (typeof o === "string" || typeof o === "number") out.push({ path, name: path.join(" › "), value: o, role: "" });
+  return out;
+}
+// a json worker's fields are guessed from their names
+function guess(r) {
+  const k = String(r.path.at(-1)), str = typeof r.value === "string";
+  if (/negative/i.test(k) && str) return "negative";
+  if (/^(prompt|text|positive(_prompt)?|content|caption|input_text|query)$/i.test(k) && str) return "prompt";
+  if (/^(noise_)?seed$/i.test(k)) return "seed";
+  if (/^(width|height)$/i.test(k) && !str) return k.toLowerCase();
+  if (/^size$/i.test(k) && str && /^\d+x\d+$/.test(r.value)) return "size";
+  if (/image|img|reference/i.test(k) && str && !/^https?:/.test(r.value)) return "image";
+  return "";
+}
+function load(text) {
+  let data; tpl = null; rows = [];
+  $("src-msg").hidden = true; $("rest").hidden = true;
+  if (!text.trim()) return;
+  try { data = JSON.parse(text); } catch { return msg("src-msg", "This is not JSON — paste the whole file."); }
+  if (data?.input && typeof data.input === "object") data = data.input;  // a whole RunPod request
+  if (data?.prompt && typeof data.prompt === "object" && !Array.isArray(data.prompt)) data = data.prompt;  // a ComfyUI request
+  if (!data || typeof data !== "object" || Array.isArray(data)) return msg("src-msg", "Paste a JSON object — { … }.");
+  const comfy = Object.values(data).some(n => n?.class_type);
+  engine = comfy ? "comfyui" : "json"; tpl = data;
+  if (comfy) {
+    for (const [id, n] of Object.entries(data)) for (const [k, v] of Object.entries(n.inputs || {}))
+      if (typeof v === "string" || typeof v === "number") rows.push({ path: [id, k], name: `${id} · ${n.class_type} · ${k}`, value: v, role: "" });
+    try { const d = detectPack(data, "x"); for (const r of rows) r.role = Object.keys(ROLES).find(k => k && (d[k] || []).some(p => p[0] === r.path[0] && p[1] === r.path[1])) || ""; } catch {}
+  } else {
+    rows = leaves(data); const used = new Set();
+    for (const r of rows) { const g = guess(r); if (g && !(used.has(g) && ["prompt", "negative"].includes(g))) { r.role = g; used.add(g); } }
+  }
+  const w = rows.find(r => r.role === "width"), h = rows.find(r => r.role === "height"), sz = rows.find(r => r.role === "size");
+  if (!$("sizes").value) $("sizes").value = w && h ? `${w.value}x${h.value}` : sz ? sz.value : "";
+  $("rest").hidden = false; drawRows(); make();
+}
+function drawRows() {
+  const short = v => { const s = String(v); return s.length > 60 ? s.slice(0, 60) + "…" : s; };
+  $("fields").innerHTML = rows.map((r, i) => `<div class="row${r.role ? " on" : ""}"><span>${esc(r.name)}<small>${esc(short(r.value)) || "(empty)"}</small></span>
+    <select data-i="${i}">${Object.entries(ROLES).map(([k, t]) => `<option value="${k}"${k === r.role ? " selected" : ""}>${t}</option>`).join("")}</select></div>`).join("");
+}
+function msg(id, text) { $(id).textContent = text; $(id).hidden = !text; }
+const slug = s => s.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-|-$/g, "") || "my-model";
+function pack() {
+  const label = $("label").value.trim() || "My model";
+  const p = { format: PACK_FORMATS[0], engine, id: slug(label), label };
+  if ($("note").value.trim()) p.note = $("note").value.trim();
+  p[engine === "comfyui" ? "workflow" : "input"] = tpl;
+  for (const k of Object.keys(ROLES)) if (k) { const at = rows.filter(r => r.role === k).map(r => r.path); if (at.length) p[k] = at; }
+  const sizes = [...$("sizes").value.matchAll(/(\d+)\s*[x×]\s*(\d+)/g)].map(m => [+m[1], +m[2]]);
+  if ((p.width && p.height || p.size) && sizes.length) p.sizes = sizes;
+  if (+$("step").value > 1 && p.sizes) p.size_step = +$("step").value;
+  p.kind = $("kind").value || packKind(p);
+  const { format, id, kind } = p;
+  return { format, engine, id, label, kind, ...p };
+}
+function make() {
+  const p = pack(), problem = !p.prompt ? "Pick which field is the Prompt (step 3)." : p.width && !p.height || p.height && !p.width ? "Pick both Width and Height, or neither." : "";
+  msg("out-msg", problem);
+  $("out").textContent = JSON.stringify(p, null, 2);
+  $("save").disabled = $("copy").disabled = !!problem;
+  $("size-row").hidden = !(p.width || p.size);
+}
+$("src").addEventListener("input", () => load($("src").value));
+$("pick").addEventListener("click", () => $("file").click());
+$("file").addEventListener("change", async e => { const f = e.target.files[0]; if (!f) return; $("src").value = await f.text(); if (!$("label").value) $("label").value = f.name.replace(/\.json$/i, ""); load($("src").value); e.target.value = ""; });
+$("fields").addEventListener("change", e => { const i = e.target.dataset.i; if (i == null) return; rows[i].role = e.target.value; drawRows(); make(); });
+for (const id of ["label", "kind", "note", "sizes", "step"]) $(id).addEventListener("input", make);
+$("save").addEventListener("click", () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([$("out").textContent + "\n"], { type: "application/json" }));
+  a.download = "pack.json"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+$("copy").addEventListener("click", () => navigator.clipboard?.writeText($("out").textContent).then(() => { $("copy").textContent = "Copied ✓"; setTimeout(() => $("copy").textContent = "Copy", 1200); }));
+</script>
+</main>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "479e20130ef140e8bff9197d9e22dca1"}'></script>
+</body>
+</html>

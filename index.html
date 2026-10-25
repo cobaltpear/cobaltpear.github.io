@@ -96,6 +96,7 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack [data-ep] { width: 16ch; }
 .sheet .pack .new { font-size: 11px; color: var(--accent); }
 .sheet .pack .gated { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
+.sheet .pack .save-pack { background: none; font: inherit; font-size: 11px; color: var(--text); cursor: pointer; }
 .sheet #auto { margin-top: 8px; font-size: 13px; }
 .sheet #auto label { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--text); font-size: 13px; cursor: pointer; }
 .sheet #auto label input { width: auto; flex: none; margin: 2px 0 0; }
@@ -165,12 +166,14 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Your own RunPod: your own GPU, your own rules — you pay only for the pictures you make.</li>
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
-<div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
+<div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
+<p class="muted">Version 2026.10.25.1 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
+<div class="news"><time>2026-10-25</time>Add any SDXL model from Civitai with its link, make a pack by filling in boxes, and clearer setup steps for RunPod and Civitai</div>
 <div class="news"><time>2026-10-24</time>Models: each model you added shows what it is — Text To Image, Image To Video…, NSFW, Gated, or Custom for your own worker. «Use as picture» no longer changes your models; with none that takes a picture, the picture says it is left out.</div>
 <div class="news"><time>2026-10-24</time>Picture: pick one you made here, right from the Picture button — and «Use as picture» under every result, even before you have a model that takes one.</div>
 <div class="news"><time>2026-10-24</time>Negative: with several models chosen, leave it empty and each gets its own — type words to send the same to all, ✕ to go back. Feedback is now in the top menu.</div>
@@ -192,7 +195,7 @@ body.all-shown .veil .full-btn { display: none; }
 </ul></div>
 
 <div class="step"><label><input type="checkbox"><h2>2. Copy the worker</h2></label>
-<p class="note">A «worker» is the model packed for RunPod. Each model has its own worker page on GitHub — its page links here.</p>
+<p class="note">A «worker» is the model packed for RunPod. Each model has its own worker page on GitHub — its page links here. Made your own worker? <a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a> for it.</p>
 <ol>
 <li>On the worker's GitHub page, click the green <b class="ui">Use this template</b> → <b class="ui">Create a new repository</b>.</li>
 <li>Any name is fine. Choose <b>Private</b> → <b class="ui">Create repository</b>.</li>
@@ -212,28 +215,31 @@ body.all-shown .veil .full-btn { display: none; }
 <div class="step"><label><input type="checkbox"><h2>3. Put your Civitai token in your copy</h2></label>
 <p class="note">Only if the worker's page asks for it. It lets RunPod download the model with your account.</p>
 <ol>
-<li>Civitai → your picture (top right) → <b class="ui">Account settings</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → copy it.</li>
+<li>Civitai → your picture (top right) → <b class="ui">Account settings</b> → <b class="ui">Security &amp; Apps</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → Permission preset <b class="ui">Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model: next time, reuse it.</li>
 <li>In your copy on GitHub, click <code>Dockerfile</code> → the pencil ✏️ (top right of the file).</li>
-<li>Replace <code>PASTE_YOUR_CIVITAI_TOKEN_HERE</code> with your token → <b class="ui">Commit changes</b>.</li>
+<li>Replace <code>PASTE_YOUR_CIVITAI_TOKEN_HERE</code> with your token → <b class="ui">Commit changes…</b> → <b class="ui">Commit changes</b> again.</li>
 </ol></div>
 
-<div class="step"><label><input type="checkbox"><h2>4. Create the endpoint</h2></label>
+<div class="step" id="endpoint"><label><input type="checkbox"><h2>4. Create the endpoint</h2></label>
 <p class="note">The «endpoint» is your generator on RunPod.</p>
 <ol>
-<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">GitHub Repo</b>.</li>
-<li>The first time, connect GitHub and allow your copy. Then pick your copy.</li>
-<li>Fill in the settings from the worker's page. They usually look like this:</li>
+<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy from a GitHub repository</b>.</li>
+<li>Pick your copy. The first time, click <b class="ui">Edit connection</b> and let RunPod see it.</li>
+<li>Fill in the page from top to bottom. Some settings are folded away — the arrows show what to click open:</li>
 </ol>
 <table>
-<tr><td>Branch · Dockerfile path · Build context</td><td><code>main</code> · <code>Dockerfile</code> · <code>.</code></td></tr>
-<tr><td>GPU</td><td>as the worker's page says (24 GB or more)</td></tr>
-<tr><td>Active workers · Max workers</td><td><code>0</code> · <code>1</code> — 0 active = nothing to pay while idle</td></tr>
-<tr><td>Idle timeout</td><td><code>5</code> seconds</td></tr>
-<tr><td>Execution timeout</td><td><code>600</code> seconds</td></tr>
-<tr><td>FlashBoot</td><td>On</td></tr>
-<tr><td>Container disk</td><td>as the worker's page says</td></tr>
+<tr><td><b class="ui">Endpoint name</b></td><td>anything — your copy's name is fine</td></tr>
+<tr><td><b class="ui">GPU configuration</b></td><td>tick <b>16 GB</b> for SDXL, Pony, Illustrious and NoobAI models (every Civitai link) · <b>24 GB</b> for Krea 2, Flux and bigger · more boxes = easier to get a GPU</td></tr>
+<tr><td><b class="ui">Max workers</b></td><td><code>1</code></td></tr>
+<tr><td colspan="2">Click <b class="ui">Advanced settings</b> to open it:</td></tr>
+<tr><td>→ <b class="ui">Active workers</b></td><td><code>0</code> — nothing to pay while idle</td></tr>
+<tr><td>→ <b class="ui">GPU count</b></td><td><code>1</code></td></tr>
+<tr><td>→ <b class="ui">Idle timeout</b></td><td><code>5</code> sec</td></tr>
+<tr><td>→ <b class="ui">Enable FlashBoot</b></td><td>switch on · <b class="ui">Standard</b></td></tr>
+<tr><td>→ <b class="ui">Enable execution timeout</b></td><td>switch on · <b class="ui">Execution timeout</b> <code>600</code> sec</td></tr>
+<tr><td>→ click <b class="ui">Container configuration</b> → <b class="ui">Container disk</b></td><td><code>20</code> GB for SDXL, Pony, Illustrious and NoobAI (every Civitai link) · <code>30</code> GB for A1111 workers · <code>40</code> GB for Krea 2, Flux and bigger</td></tr>
 </table>
-<ol start="4"><li><b class="ui">Create</b>.</li></ol>
+<ol start="4"><li>Leave the rest as it is → <b class="ui">Deploy</b> at the bottom.</li></ol>
 <p class="note">RunPod may warn «runpod.serverless.start() handler not found in your repo». You can ignore it — the worker starts its handler from the image it builds on.</p></div>
 
 <div class="step"><label><input type="checkbox"><h2>5. Wait for the build</h2></label>
@@ -275,7 +281,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.24.33 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.25.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -286,13 +292,15 @@ body.all-shown .veil .full-btn { display: none; }
   <div class="hint" id="auto-hf-how" hidden></div>
   <button id="auto-go" class="pill" type="button">Make it</button> <span class="hint" id="auto-state"></span></div>
   <div class="hint" id="auto-or" hidden>or by hand:</div>
+  <div class="add" id="gh-row" hidden><input id="gh-name" autocomplete="off" spellcheck="false" placeholder="Your GitHub name — for the «Add your token» links below"></div>
   <div id="pack-how"></div>
   <div id="catalog-box"><label>Add a model</label><div class="tabs" id="kinds"></div><div class="hint" id="catalog-order" hidden>Listed live from Hugging Face, most downloaded first.</div><div id="catalog"></div>
   <div class="hint" id="catalog-hint">Add one, do the RunPod steps shown above, then paste the endpoint ID.</div>
   <div id="custom">
   <label for="pack-url">Your own worker</label>
-  <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL (https://github.com/…)"><button id="pack-add" class="pill" type="button">Add</button></div>
-  <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack file (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
+  <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL or Civitai model link"><button id="pack-add" class="pill" type="button">Add</button></div>
+  <div class="hint">A Civitai model link (an SDXL, Pony, Illustrious or NoobAI checkpoint, e.g. <code>https://civitai.com/models/257749?modelVersionId=290640</code> — copy it from the address bar on the model's page. The <code>?modelVersionId=290640</code> part shows once you click a version there; without it you get the newest version) takes its settings from Civitai and gives you a ready worker to copy.</div>
+  <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack or ComfyUI workflow (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   </div></div>
 </form></div>
 <script>
@@ -300,7 +308,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.24.33";
+const VERSION = "2026.10.25.1";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -382,6 +390,35 @@ function packKind(p) {
   const video = /"task":"video"|"class_type":"(?:SaveVideo|SaveWEBM|SaveAnimated\w*|VHS_VideoCombine|CreateVideo)"/.test(s);
   return (takesImage(p) ? "Image To " : "Text To ") + (video ? "Video" : "Image");
 }
+// A plain ComfyUI API workflow becomes a pack: the text nodes feeding the sampler's positive and negative, seed/noise_seed, width/height of the empty latent
+function detectPack(wf, name) {
+  const ref = v => Array.isArray(v) && typeof v[0] === "string" ? v[0] : null;
+  const prompt = [], negative = [];
+  const textOf = (start, into) => {
+    let id = start;  // follow conditioning nodes a few steps up to the one with a text input
+    for (let i = 0; i < 5 && wf[id]; i++) {
+      const key = ["text", "prompt"].find(k => typeof wf[id].inputs[k] === "string");
+      if (key) { if (!into.some(p => p[0] === id)) into.push([id, key]); return; }
+      id = ref(Object.values(wf[id].inputs).find(ref));
+    }
+  };
+  for (const n of Object.values(wf)) {
+    if (!/Sampler|Guider/.test(n.class_type)) continue;
+    const pos = ref(n.inputs?.positive) || ref(n.inputs?.conditioning), neg = ref(n.inputs?.negative);
+    if (pos) textOf(pos, prompt);
+    if (neg) textOf(neg, negative);
+  }
+  const negOnly = negative.filter(x => !prompt.some(p => p[0] === x[0]));  // one text node feeding both is the prompt
+  const seed = [], width = [], height = [];
+  for (const [id, n] of Object.entries(wf)) {
+    for (const k of ["seed", "noise_seed"]) if (typeof n.inputs?.[k] === "number") seed.push([id, k]);
+    if (/Latent/.test(n.class_type) && typeof n.inputs?.width === "number") { width.push([id, "width"]); height.push([id, "height"]); }
+  }
+  if (!prompt.length) throw new Error("No prompt slot found");
+  const w0 = width.length ? wf[width[0][0]].inputs.width : 1024, h0 = width.length ? wf[height[0][0]].inputs.height : 1024;
+  return { format: PACK_FORMATS[0], engine: "comfyui", id: name.replace(/\.json$/i, "").replace(/[^\w.-]+/g, "-").toLowerCase(), label: name.replace(/\.json$/i, ""),
+           note: "Found automatically in the workflow.", workflow: wf, sizes: [[w0, h0]], prompt, ...(negOnly.length && { negative: negOnly }), seed, width, height };
+}
 const hasSize = p => !!((p.width?.length || p.size?.length) && p.sizes?.length);  // packs without a size slot (LLM, TTS) hide size and test
 // Get a pack by URL — a GitHub repo URL means pack.json on main
 async function fetchPack(url) {
@@ -455,29 +492,51 @@ let allShown = store.get("all-shown", true);  // Show all / Hide all is remember
 const revealed = new Set();
 
 // ---- Settings ----
-// A plain ComfyUI API workflow becomes a pack: the text node feeding the sampler's positive, seed/noise_seed, width/height of the empty latent
-function detectPack(wf, name) {
-  const ref = v => Array.isArray(v) && typeof v[0] === "string" ? v[0] : null;
-  const prompt = [];
+// A Civitai model link in «Your own worker» = the any-SDXL Civitai worker set up for that model:
+// its name, and the settings most of its example pictures were made with (Civitai's API allows pages to ask)
+const CIVITAI_PACK = "https://cobaltpear.github.io/packs/civitai-sdxl.json", CIVITAI_WORKER = "https://github.com/cobaltpear/civitai-sdxl";
+const civitaiLink = s => /^https:\/\/civitai\.(com|green|red)\/models\/\d+/.test(s);
+async function civitaiInfo(link) {
+  const api = path => fetch("https://civitai.com/api/v1/" + path).then(r => { if (!r.ok) throw new Error(`Civitai answered ${r.status} for this link`); return r.json(); });
+  const m = link.match(/modelVersionId=(\d+)/);
+  const v = await api("model-versions/" + (m ? m[1] : (await api("models/" + link.match(/\/models\/(\d+)/)[1])).modelVersions[0].id));
+  const base = v.baseModel || "", type = v.model?.type;
+  if (type !== "Checkpoint") throw new Error(`This is a ${type}, not a checkpoint`);
+  if (!(base.startsWith("SDXL") || ["Pony", "Illustrious", "NoobAI"].includes(base))) throw new Error(`This is a ${base} model — a Civitai link works for SDXL, Pony, Illustrious and NoobAI checkpoints. For other models, paste the address of a worker repo made for them`);
+  const metas = (v.images || []).map(i => i.meta).filter(m => m?.steps);
+  const most = k => { const n = {}; for (const m of metas) if (m[k] != null && m[k] !== "") n[m[k]] = (n[m[k]] || 0) + 1; return Object.entries(n).sort((a, b) => b[1] - a[1])[0]?.[0]; };
+  return { version: String(v.id), name: v.model.name, version_name: v.name, base, nsfw: !!v.model.nsfw,
+           sampler: most("sampler") || "Euler a", schedule: most("Schedule type") || "", steps: +most("steps") || 25, cfg: +most("cfgScale") || 6,
+           clip: +most("clipSkip") || (base === "SDXL 1.0" ? 1 : 2), negative: most("negativePrompt") || "", words: v.trainedWords || [] };
+}
+// A1111 sampler names (as Civitai shows them) → ComfyUI sampler and scheduler
+const SAMPLERS = { "Euler a": "euler_ancestral", "Euler": "euler", "DPM++ 2M": "dpmpp_2m", "DPM++ 2M SDE": "dpmpp_2m_sde", "DPM++ SDE": "dpmpp_sde", "DPM++ 2S a": "dpmpp_2s_ancestral",
+                   "DPM++ 3M SDE": "dpmpp_3m_sde", "DPM2": "dpm_2", "DPM2 a": "dpm_2_ancestral", "Heun": "heun", "LMS": "lms", "DDIM": "ddim", "UniPC": "uni_pc", "LCM": "lcm" };
+const SCHEDULERS = { karras: "karras", exponential: "exponential", "sgm uniform": "sgm_uniform", simple: "simple", beta: "beta", normal: "normal" };
+function comfySampler(sampler, schedule) {
+  const m = sampler.match(/^(.*?)(?: (Karras|Exponential))?$/);
+  return [SAMPLERS[m[1]] || "euler_ancestral", SCHEDULERS[(m[2] || schedule).toLowerCase()] || "normal"];
+}
+function civitaiPack(base, c) {
+  const wf = structuredClone(base.workflow);
   for (const n of Object.values(wf)) {
-    const pos = ref(n.inputs?.positive) || ref(n.inputs?.conditioning);
-    if (!pos || !/Sampler|Guider/.test(n.class_type)) continue;
-    let id = pos;  // follow conditioning nodes a few steps up to the one with a text input
-    for (let i = 0; i < 5 && wf[id]; i++) {
-      const key = ["text", "prompt"].find(k => typeof wf[id].inputs[k] === "string");
-      if (key) { if (!prompt.some(p => p[0] === id)) prompt.push([id, key]); break; }
-      id = ref(Object.values(wf[id].inputs).find(ref));
-    }
+    if (n.class_type === "KSampler") { const [s, k] = comfySampler(c.sampler, c.schedule); Object.assign(n.inputs, { steps: c.steps, cfg: c.cfg, sampler_name: s, scheduler: k }); }
+    if (n.class_type === "CLIPSetLastLayer") n.inputs.stop_at_clip_layer = -c.clip;
   }
-  const seed = [], width = [], height = [];
-  for (const [id, n] of Object.entries(wf)) {
-    for (const k of ["seed", "noise_seed"]) if (typeof n.inputs?.[k] === "number") seed.push([id, k]);
-    if (/Latent/.test(n.class_type) && typeof n.inputs?.width === "number") { width.push([id, "width"]); height.push([id, "height"]); }
-  }
-  if (!prompt.length) throw new Error("No prompt slot found");
-  const w0 = width.length ? wf[width[0][0]].inputs.width : 1024, h0 = width.length ? wf[height[0][0]].inputs.height : 1024;
-  return { format: PACK_FORMATS[0], engine: "comfyui", id: name.replace(/\.json$/i, "").replace(/[^\w.-]+/g, "-").toLowerCase(), label: name.replace(/\.json$/i, ""),
-           note: "Found automatically in the workflow.", workflow: wf, sizes: [[w0, h0]], prompt, seed, width, height };
+  if (c.negative && base.negative?.[0]) wf[base.negative[0][0]].inputs[base.negative[0][1]] = c.negative;
+  return { ...base, id: `civitai-${c.version}`, label: c.name, nsfw: c.nsfw || undefined, workflow: wf, civitai: c,
+           note: `${c.name} ${c.version_name} (${c.base}) — ${c.steps} steps, CFG ${c.cfg}, ${c.sampler}${c.clip > 1 ? `, clip skip ${c.clip}` : ""}, as in its example pictures.${c.words.length ? ` Trigger words: ${c.words.join(", ")}` : ""}`,
+           setup_url: CIVITAI_WORKER, setup: "Use this template → Create a new repository (private), paste your Civitai token and this model's number at the top of its Dockerfile, then connect your copy on RunPod as the guide shows.",
+           setup_pick: c.version };
+}
+// the name of a Civitai model's worker copy: «cyberrealistic-pony-worker»
+const civitaiRepo = p => (p.label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "civitai") + "-worker";
+// your own pack as a pack.json to put at the top of the worker's repo (Make a pack)
+function savePack(p) {
+  const { src, ...rest } = p, out = { format: rest.format, engine: rest.engine, id: rest.id, label: rest.label, kind: packKind(rest), ...rest };
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 2) + "\n"], { type: "application/json" }));
+  a.download = "pack.json"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 const byLabel = list => [...list].sort((a, b) => a.label.localeCompare(b.label));
 const freshPacks = new Set();  // packs changed by the last update check
@@ -490,15 +549,24 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}</div>${!endpoints[p.id] && p.setup_pick && !byRelay(p) ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
-  // models waiting for an endpoint ID that start the same way share one line of RunPod steps
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}</div>${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
+  // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
   for (const p of byLabel(packs)) {
-    const s = !endpoints[p.id] && !byRelay(p) && setupOf(p);  // ticked Make it does these by itself
+    const s = !endpoints[p.id] && !p.civitai && setupOf(p);  // shown whether Make it is ticked or not, so nothing jumps under the pointer
     if (s) how.set(s.url + "\n" + s.steps, [...(how.get(s.url + "\n" + s.steps) || []), p.label]);
   }
-  $("pack-how").innerHTML = [...how].map(([k, labels]) => { const [url, steps] = k.split("\n");
-    return `<div class="how">${how.size > 1 ? `<b>${esc(labels.join(", "))}</b>: ` : ""}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">Open RunPod ↗</a> → ` : ""}${esc(steps)} Then paste ${labels.length > 1 ? "each ID next to its model" : "its ID above"}.</div>`; }).join("");
+  // a Civitai model gets its own two links: a private copy of the worker, then civitai.env with the model filled in
+  const civ = byLabel(packs).filter(p => !endpoints[p.id] && p.civitai), gh = $("gh-name").value.trim().replace(/^@/, "");
+  $("gh-row").hidden = !civ.length;
+  const make = p => `https://github.com/new?template_owner=cobaltpear&template_name=civitai-sdxl&owner=%40me&name=${civitaiRepo(p)}&visibility=private`;
+  const add = p => `https://github.com/${encodeURIComponent(gh)}/${civitaiRepo(p)}/new/main?filename=civitai.env&value=${encodeURIComponent(`CIVITAI_MODEL=${p.setup_pick}\nCIVITAI_TOKEN=`)}`;
+  // the steps once for all of them; only the links differ, one per model
+  const one = civ.length === 1, links = (url, text) => one ? `<a href="${esc(url(civ[0]))}" target="_blank" rel="noopener">${text} ↗</a>`
+    : `${text}: ${civ.map(p => `<a href="${esc(url(p))}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(" · ")}`;
+  $("pack-how").innerHTML = (civ.length ? `<div class="how"><b>${esc(civ.map(p => p.label).join(", "))}</b>: 1. ${links(make, "Make your copy")} → <b>Create repository</b>. 2. Make a Civitai token: <a href="https://civitai.com/user/account" target="_blank" rel="noopener">Civitai settings ↗</a> → <b>Security &amp; Apps</b> → <b>API Keys</b> → <b>Add API key</b> → Permission preset <b>Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model, so next time skip this step and reuse it. 3. ${gh ? `${links(add, "Add your token")} → paste it after <code>CIVITAI_TOKEN=</code> → <b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «Add your token» link${one ? "" : "s"}.`} 4. On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} with the settings in <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide step 4 ↗</a> (it shows where each one is on the page) — GPU <b>16 GB</b>, Container disk <b>20 GB</b> — the first build takes about 15 minutes, the first picture up to 10 more. Then paste ${one ? "its ID above" : "each ID next to its model"}.</div>` : "")
+    + [...how].map(([k, labels]) => { const [url, steps] = k.split("\n");
+    return `<div class="how"><b>${esc(labels.join(", "))}</b>: ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${url.startsWith("https://github.com/") ? "Open the worker" : "Open RunPod"} ↗</a> → ` : ""}${esc(steps).replace("as the guide shows", `as the <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide ↗</a> shows`)} Then paste ${labels.length > 1 ? "each ID next to its model" : "its ID above"}.</div>`; }).join("");
   $("pack-tools").hidden = packs.length + catalog.length < 8;
   $("auto").hidden = !RELAY_URL || !waitingForAuto().length;
   // a Gated model needs the customer's own HF token and its license accepted on HF — asked only while one is waiting
@@ -515,7 +583,6 @@ const catalogOf = p => catalog.find(c => c.url === p.src);
 const waitingForAuto = () => packs.filter(p => !endpoints[p.id] && p.setup_pick && catalogOf(p));
 try { $("auto-hf").value = localStorage.getItem("hf-token") || ""; } catch {}
 $("auto-hf").addEventListener("change", () => { try { localStorage.setItem("hf-token", $("auto-hf").value.trim()); } catch {} });
-const byRelay = p => RELAY_URL && $("auto-ok").checked && !!p.setup_pick && !!catalogOf(p);
 try { $("auto-ok").checked = localStorage.getItem("auto-ok") === "1"; } catch {}
 $("auto-ok").addEventListener("change", () => { renderPacks(); try { localStorage.setItem("auto-ok", $("auto-ok").checked ? "1" : ""); } catch {} });
 async function makeEndpoints() {
@@ -543,7 +610,8 @@ async function makeEndpoints() {
 $("auto-go").addEventListener("click", makeEndpoints);
 // Simple takes one worker of your own, Plus any number (models from the catalog never count)
 const CATALOG_DIR = new URL(".", CATALOG_URL).href;
-const ownWorkers = () => packs.filter(p => !p.src?.startsWith(CATALOG_DIR) && !p.src?.startsWith("hf:")).length;
+// a Civitai model is your own worker too (its pack sits in the catalog folder, but the worker is your copy)
+const ownWorkers = () => packs.filter(p => p.civitai || !p.src?.startsWith(CATALOG_DIR) && !p.src?.startsWith("hf:")).length;
 // The catalog — models that start on RunPod without GitHub. Add one, follow the line under it, paste the endpoint ID.
 // Steps shared by many models live once in the catalog («setups»); a pack names them as "@<key>". A pack of your own can still carry its own text.
 let catalog = [], setups = {}, liveOrder = false;  // liveOrder: the list came from Hugging Face, most downloaded first
@@ -640,13 +708,13 @@ $("pack-find").addEventListener("input", findPacks);
 // (marked «Updated» in Models). Endpoint IDs stay, so there is nothing to ask.
 async function findPackUpdates() {
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  const newPacks = (await Promise.all(packs.filter(p => p.src && !p.src.startsWith("hf:")).map(async p => {
-    try { const n = { ...checkPack(await fetchPack(p.src)), src: p.src }; return same(n, p) ? null : n; } catch { return null; }  // offline — try next time
+  const newPacks = (await Promise.all(packs.map(async (p, i) => {
+    if (!p.src || p.src.startsWith("hf:")) return null;
+    try { const f = checkPack(await fetchPack(p.src)), n = { ...(typeof p.civitai === "object" ? civitaiPack(f, p.civitai) : f), src: p.src }; return same(n, p) ? null : [i, n]; } catch { return null; }  // offline — try next time
   }))).filter(Boolean);
   if (!newPacks.length) return;
-  for (const n of newPacks) {
-    const i = packs.findIndex(p => p.src === n.src), p = packs[i];
-    if (i < 0) continue;
+  for (const [i, n] of newPacks) {
+    const p = packs[i];
     if (n.id !== p.id && endpoints[p.id]) { endpoints[n.id] = endpoints[p.id]; delete endpoints[p.id]; }
     packs[i] = n; freshPacks.add(n.id);
   }
@@ -668,17 +736,25 @@ function addPack(data, name, src) {
 $("pack-add").addEventListener("click", async () => {
   const url = $("pack-url").value.trim();
   if (!url) return;
-  try { addPack(await fetchPack(url), url.split("/").pop(), url); $("pack-url").value = ""; } catch (err) { alert(err.message); }
+  try {
+    if (civitaiLink(url)) addPack(civitaiPack(checkPack(await fetchPack(CIVITAI_PACK)), await civitaiInfo(url)), "", CIVITAI_PACK);
+    else addPack(await fetchPack(url), url.split("/").pop(), url);
+    $("pack-url").value = "";
+  } catch (err) { alert(err.message); }
 });
 $("pack-file").addEventListener("change", async e => {
   for (const f of e.target.files) { try { addPack(JSON.parse(await f.text()), f.name); } catch (err) { alert(`${f.name}: ${err.message}`); } }
   e.target.value = "";
 });
 // a pasted endpoint ID is kept at once — no Done button; leaving the page fills the chat's model list
+try { $("gh-name").value = localStorage.getItem("github-name") || ""; } catch {}
+$("gh-name").addEventListener("input", () => { try { localStorage.setItem("github-name", $("gh-name").value.trim()); } catch {} renderPacks(); });
 $("pack-list").addEventListener("change", e => { if (e.target.dataset.ep !== undefined) { keepEndpointInputs(); store.set("endpoints", endpoints); setTimeout(renderPacks); } });  // not inside the input's own blur
 $("pack-list").addEventListener("click", e => {
   const pick = e.target.closest("[data-copy]");  // the whole «Model: …» line copies the name
   if (pick) { const hint = pick.querySelector(".hint-copy"); navigator.clipboard?.writeText(pick.dataset.copy).then(() => { hint.textContent = "copied ✓"; setTimeout(() => hint.textContent = "", 1200); }, () => {}); return; }
+  const save = packs.find(p => p.id === e.target.dataset.savePack);
+  if (save) return savePack(save);
   const id = e.target.dataset.delPack;
   if (!id) return;
   keepEndpointInputs();
@@ -1037,7 +1113,7 @@ const fileName = (t, it, i, type) => `cobaltpear_${stamp(t.created)}_${it.seed}_
 const opened = new Set();  // results whose Details are open
 function itemHtml(t, it) {
   const media = it.media.map(m => mediaHtml(m, allShown || revealed.has(m.url))).join("") + (it.text ? `<div class="text">${esc(it.text)}</div>` : "");
-  const st = (it.status === "COMPLETED" ? "" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
+  const st = (it.status === "COMPLETED" ? "" : it.status === "IN_QUEUE" ? "In queue — a sleeping endpoint takes a minute or two to wake, a new one up to 10" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
   const dl = it.media.map((m, i) => `<a href="${esc(m.url)}" download="${fileName(t, it, i, m.type)}">Download</a>`).join(" ");
   // a finished picture can be the start of the next one (Image To Image / Image To Video)
   const use = it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use as picture</button>` : "").join("");
