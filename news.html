@@ -33,6 +33,8 @@ td:first-child { color: var(--muted); width: 42%; }
 ul.points { padding-left: 22px; line-height: 1.8; }
 .news { margin: 10px 0; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
 .news time { color: var(--muted); font-size: 13px; display: block; }
+.news ul { margin: 6px 0 0; padding-left: 18px; }
+.news li + li { margin-top: 6px; }
 .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
 .links a { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
 </style>
@@ -42,14 +44,21 @@ ul.points { padding-left: 22px; line-height: 1.8; }
 <main>
 <h1>News</h1>
 <!-- newest first -->
-<div class="news"><time>2026-10-25</time>Edit and picture-to-video templates: your picture now reaches the worker.</div>
-<div class="news"><time>2026-10-25</time>Add any SDXL model from Civitai with its link, make a pack by filling in boxes, and clearer setup steps for RunPod and Civitai</div>
-<div class="news"><time>2026-10-24</time>Models: each model you added shows what it is — Text To Image, Image To Video…, NSFW, Gated, or Custom for your own worker. «Use as picture» no longer changes your models; with none that takes a picture, the picture says it is left out.</div>
-<div class="news"><time>2026-10-24</time>Picture: pick one you made here, right from the Picture button — and «Use as picture» under every result, even before you have a model that takes one.</div>
-<div class="news"><time>2026-10-24</time>Negative: with several models chosen, leave it empty and each gets its own — type words to send the same to all, ✕ to go back. Feedback is now in the top menu.</div>
-<div class="news"><time>2026-10-24</time>Chat: all models sit in one list, grouped like the Models tabs — click to tick them on or off, so the row stays short however many you have.</div>
-<div class="news"><time>2026-10-24</time>Make it: pick any of 127 models, tick «Let Cobalt Pear make it», and it's ready on your RunPod in a few minutes.</div>
-<div class="news"><time>2026-10-24</time>Cobalt Pear is out. Start with Z-Image Turbo from the Models list — no GitHub, no build.</div>
+<div class="news"><time>2026-10-26</time><ul>
+<li>News is grouped by day.</li>
+</ul></div>
+<div class="news"><time>2026-10-25</time><ul>
+<li>Edit and picture-to-video templates: your picture now reaches the worker.</li>
+<li>Add any SDXL model from Civitai with its link, make a pack by filling in boxes, and clearer setup steps for RunPod and Civitai</li>
+</ul></div>
+<div class="news"><time>2026-10-24</time><ul>
+<li>Models: each model you added shows what it is — Text To Image, Image To Video…, NSFW, Gated, or Custom for your own worker. «Use as picture» no longer changes your models; with none that takes a picture, the picture says it is left out.</li>
+<li>Picture: pick one you made here, right from the Picture button — and «Use as picture» under every result, even before you have a model that takes one.</li>
+<li>Negative: with several models chosen, leave it empty and each gets its own — type words to send the same to all, ✕ to go back. Feedback is now in the top menu.</li>
+<li>Chat: all models sit in one list, grouped like the Models tabs — click to tick them on or off, so the row stays short however many you have.</li>
+<li>Make it: pick any of 127 models, tick «Let Cobalt Pear make it», and it's ready on your RunPod in a few minutes.</li>
+<li>Cobalt Pear is out. Start with Z-Image Turbo from the Models list — no GitHub, no build.</li>
+</ul></div>
 </main>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "479e20130ef140e8bff9197d9e22dca1"}'></script>
 </body>
