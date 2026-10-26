@@ -46,6 +46,7 @@ form select { border-radius: 999px; font-size: 13px; color: var(--muted); }
 form .right { display: flex; align-items: center; gap: 6px; min-width: 0; }
 #seed, #negative { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
 #negative { width: 26ch; min-width: 6ch; flex: 0 1 auto; }
+#seed { min-width: 6ch; flex: 0 1 auto; }
 #pic { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
 #pic img, .turn .p img { height: 48px; border-radius: 6px; }
 #pic-menu { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 3; width: min(360px, calc(100vw - 32px)); padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; }
@@ -59,7 +60,7 @@ body:not(.all-shown) #pic-menu .grid img { filter: blur(12px); }
 #models { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
 .chip.on { color: #111; background: var(--accent); border-color: var(--accent); }
-#models { position: relative; flex: none; max-width: 45%; }
+#models { position: relative; flex: 0 1 auto; min-width: 0; max-width: 45%; }
 #model-btn { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 4px 12px; border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
 #model-menu { position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 3; width: min(360px, calc(100vw - 32px)); max-height: 55vh; display: flex; flex-direction: column; gap: 6px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; }
 #model-menu .list { overflow-y: auto; }
@@ -112,6 +113,34 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet #auto button { margin-top: 6px; }
 .sheet #auto button:disabled { opacity: .5; cursor: default; }
 .sheet .how { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.sheet .how code[data-copy] { cursor: pointer; word-break: break-all; }
+.sheet .pack .lora-choice { display: grid; grid-template-columns: auto 1fr; gap: 6px 8px; align-items: start; margin-top: 6px; font-size: 12px; color: var(--muted); }
+.sheet .pack .lora-choice b { grid-column: 1 / -1; color: var(--text); }
+.sheet .pack .lora-choice button { white-space: nowrap; }
+.sheet .pack .lora-way { display: inline-flex; align-items: center; gap: 0; color: var(--muted); }
+.sheet .pack .lora-way button { margin-left: 4px; border: 1px solid var(--line); background: none; color: var(--muted); font: inherit; padding: 1px 8px; cursor: pointer; }
+.sheet .pack .lora-way button + button { margin-left: -1px; }
+.sheet .pack .lora-way button:first-of-type { border-radius: 999px 0 0 999px; }
+.sheet .pack .lora-way button:last-of-type { border-radius: 0 999px 999px 0; }
+.sheet .pack .lora-way button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: #111; font-weight: 600; }
+#lora-wrap { flex: none; }  /* the menu opens from the box (like Picture), so it stays on screen on a phone */
+#lora-btn { white-space: nowrap; }
+body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
+.sheet .pack .tune-box { margin-top: 6px; font-size: 13px; }
+.sheet .pack .tune-box summary { cursor: pointer; color: var(--muted); }
+.sheet .pack .tune-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; align-items: center; margin: 6px 0; }
+.sheet .pack .tune-grid span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.sheet .pack .tune-grid span.changed { color: var(--text); font-weight: 600; }
+.sheet .pack .tune-grid input { width: 16ch; padding: 1px 4px; font-size: 12px; }
+.sheet .pack .tune-grid input[type=checkbox] { width: auto; justify-self: start; }
+.sheet #tune-row { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; color: var(--text); font-size: 14px; cursor: pointer; }
+.sheet #tune-row input { width: auto; flex: none; margin: 3px 0 0; }
+#lora-menu { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 3; width: min(340px, calc(100vw - 32px)); max-height: 55vh; overflow-y: auto; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; font-size: 13px; }
+#lora-menu .kind { padding: 6px 2px 2px; font-size: 11px; font-weight: 600; color: var(--muted); }
+#lora-menu label { display: flex; gap: 6px; align-items: center; padding: 3px 2px; }
+#lora-menu label span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#lora-menu input[type=checkbox] { width: auto; flex: none; }
+#lora-menu input[type=number] { flex: none; width: 6ch; padding: 0 2px; font-size: 12px; }
 .sheet .how a, .sheet .how b { color: var(--text); font-weight: 500; }
 .sheet .tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 2px; }
 .sheet .tabs button { flex: none; font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; }
@@ -177,13 +206,14 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.26.4 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.26.5 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
 <div class="news"><time>2026-10-26</time><ul>
+<li>LoRAs: build them into your worker and pick which ones each picture uses, or add them by link. Plus: Fine-tune shows LoRA strengths and each model's own settings.</li>
 <li>LoRAs on A1111 workers, up to 8 LoRAs per model, LoRAs built into a worker, and a Custom button on Hugging Face SDXL models.</li>
 <li>Add your own LoRAs by pasting a Civitai or Hugging Face link (up to 4), and see a warning when one has no effect</li>
 <li>News is grouped by day.</li>
@@ -281,7 +311,12 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Type what you want to see, press Enter. The first time it opens <b class="ui">Settings</b> — paste your RunPod API key from step 6 there, then go back to <b class="ui">Chat</b>.</li>
 </ol>
 <p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p>
-<p class="note">A LoRA: <b class="ui">Models</b> → <b class="ui">+ LoRA</b> under the model → paste the LoRA's Civitai or Hugging Face link. Your worker downloads it with the next picture (a few seconds more, once) — nothing to build again. Pick a LoRA made for that model (its base model shows when you point at it). Up to 4 per model (8 if you set <code>REMOTE_LORA_MAX</code> to 8 on the endpoint), on models from a worker repo or «Any Civitai SDXL model» — not on the ones RunPod runs itself (the Hugging Face list). An SDXL model in that list has a <b class="ui">Custom</b> button: it runs the same model on your own copy of «Any Civitai SDXL model» instead, so LoRAs work — no Civitai token needed (it counts as your own worker). If Civitai won't hand one over, a <b class="ui">Civitai token</b> box shows in Models — paste a Read Only token there. A LoRA made for a different model does nothing; the picture then says so with ⚠.</p></div>
+<p class="note">A LoRA: <b class="ui">Models</b> → <b class="ui">+ LoRA</b> under the model. The first time, pick how that model gets its LoRAs:</p>
+<ul class="note">
+<li><b>Built into the worker</b> — for LoRAs you keep using. Paste the links; the app shows one line to put in your copy's <code>Dockerfile</code> (with a link that opens it) and RunPod builds the worker again. No waiting at each picture, and you pick which ones to use for each picture from the <b class="ui">LoRA</b> button next to Send. Each LoRA makes the build longer and the worker bigger — RunPod stops a build that runs over 30 minutes, so keep it to a handful. Changing the list means building again; press <b class="ui">Done — built</b> when it's finished.</li>
+<li><b>By link</b> — for trying one out. Paste the link and send: the worker downloads it with the next picture (a few seconds more, and again after the worker has been idle). Nothing to build. Up to 4 per model — for more, use «Built in» (or, on RunPod: your endpoint → <b class="ui">Manage</b> → <b class="ui">Edit Endpoint</b> → <b class="ui">Environment Variables</b> → add <code>REMOTE_LORA_MAX</code> = <code>8</code> → <b class="ui">Save Endpoint</b>).</li>
+</ul>
+<p class="note">You can switch any time with the «LoRAs: Built in | By link» switch under the model in Models. Pick a LoRA made for that model (its base model shows when you point at it); one made for a different model does nothing, and the picture then says so with ⚠. LoRAs work on models from a worker repo or «Any Civitai SDXL model» — not on the ones RunPod runs itself (the Hugging Face list). An SDXL model in that list has a <b class="ui">Custom</b> button: it runs the same model on your own copy of «Any Civitai SDXL model» instead, so LoRAs work — no Civitai token needed. A gated model (you must agree to its terms on Hugging Face first) adds one step: agree on its page, make a Read token, and paste it as <code>HF_TOKEN=</code> — the setup steps link both. If Civitai won't hand a LoRA over, a <b class="ui">Civitai token</b> box shows in Models — paste a Read Only token there.</p></div>
 
 <h2 style="margin-top:28px">When something is off</h2>
 <table>
@@ -294,7 +329,7 @@ body.all-shown .veil .full-btn { display: none; }
 <form id="form"><div class="box">
   <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button><span id="pic-unused" hidden>No chosen model takes a picture (Image To …) — it's left out</span></div><input id="pic-file" type="file" accept="image/*" hidden><div id="pic-menu" hidden></div>
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
-  <div class="row"><div id="models"></div><span class="right"><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+  <div class="row"><div id="models"></div><span class="right"><span id="lora-wrap"><button id="lora-btn" class="pill" type="button" title="The LoRAs this picture uses" hidden>LoRA</button><div id="lora-menu" hidden></div></span><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
 <div id="v-settings" class="sheet page" hidden><form class="card" id="settings-form">
   <b>Settings</b>
@@ -302,7 +337,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.26.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.26.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -310,12 +345,12 @@ body.all-shown .veil .full-btn { display: none; }
   <div id="pack-list"></div>
   <div class="add" id="civ-row" hidden><input id="civ-token" type="password" autocomplete="off" placeholder="Civitai token — only for LoRAs that need you signed in"></div>
   <div class="hint" id="civ-how" hidden>Most Civitai LoRAs download without it. If one fails, <a href="https://civitai.com/user/account" target="_blank" rel="noopener">make a token</a> (<b>API Keys</b> → <b>Add API key</b> → <b>Read Only</b>) and paste it here — it stays in this browser and goes only to your own worker.</div>
-  <div id="auto" hidden><label><input id="auto-ok" type="checkbox"><span>Let Cobalt Pear make it on RunPod. Your key passes through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>), which keeps nothing.</span></label>
+  <div id="auto" hidden><label><input id="auto-ok" type="checkbox"><span>Let Cobalt Pear make it on RunPod. Your key passes through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>), which keeps nothing about you — only how many times each model was made.</span></label>
   <div class="add" id="auto-hf-row" hidden><input id="auto-hf" type="password" autocomplete="off" placeholder="Hugging Face token (hf_...) for Gated models"></div>
   <div class="hint" id="auto-hf-how" hidden></div>
   <button id="auto-go" class="pill" type="button">Make it</button> <span class="hint" id="auto-state"></span></div>
   <div class="hint" id="auto-or" hidden>or by hand:</div>
-  <div class="add" id="gh-row" hidden><input id="gh-name" autocomplete="off" spellcheck="false" placeholder="Your GitHub name — for the «Add your token» links below"></div>
+  <div class="add" id="gh-row" hidden><input id="gh-name" autocomplete="off" spellcheck="false" placeholder="Your GitHub name — for the links to your copy below"></div>
   <div id="pack-how"></div>
   <div id="catalog-box"><label>Add a model</label><div class="tabs" id="kinds"></div><div class="hint" id="catalog-order" hidden>Listed live from Hugging Face, most downloaded first.</div><div id="catalog"></div>
   <div class="hint" id="catalog-hint">Add one, do the RunPod steps shown above, then paste the endpoint ID.</div>
@@ -331,7 +366,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.26.4";
+const VERSION = "2026.10.26.5";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -360,7 +395,7 @@ const ENGINES = {
     valid: p => p.workflow && typeof p.workflow === "object",
     input(p, v) {
       const wf = structuredClone(p.workflow), images = [], loras = v.loras || [];
-      v = withLoraWords(v, loras);
+      v = withLoraWords(v, [...loras, ...v.baked || []]);
       for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) {
         if (k !== "image") { wf[n].inputs[name] = v[k]; continue; }
         // the worker takes pictures as input.images; LoadImage keeps the template's file name and reads it from there
@@ -373,6 +408,7 @@ const ENGINES = {
         addLoras(wf, loras);
         out.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256 }));  // the worker downloads each once and keeps it
       }
+      if (v.baked) out.baked_loras = bakedPick(v.baked);
       return out;
     },
     get: (p, k) => { const [n, name] = p[k]?.[0] || []; return p.workflow[n]?.inputs[name]; },  // the template's own value of a slot
@@ -391,8 +427,8 @@ const ENGINES = {
   json: {
     valid: p => p.input && typeof p.input === "object",
     input(p, v) {
-      const inp = structuredClone(p.input), loras = p.remote_loras && v.loras || [];
-      v = withLoraWords(v, loras);
+      const inp = structuredClone(p.input), loras = p.remote_loras && v.loras || [], baked = p.remote_loras && v.baked;
+      v = withLoraWords(v, [...loras, ...baked || []]);
       for (const k of SLOTS) if (v[k] != null) for (const path of p[k] || []) {
         let o = inp;
         for (const s of path.slice(0, -1)) o = o[s] ??= {};
@@ -400,6 +436,7 @@ const ENGINES = {
       }
       // a worker whose pack says remote_loras (our A1111 workers) downloads them and puts <lora:…> in the prompt itself
       if (loras.length) inp.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256, strength: l.strength ?? 1 }));
+      if (baked) inp.baked_loras = bakedPick(baked);
       return inp;
     },
     get: (p, k) => p[k]?.[0]?.reduce((o, s) => o?.[s], p.input),
@@ -416,6 +453,8 @@ function withLoraWords(v, loras) {
   return words.length ? { ...v, prompt: `${words.join(", ")}, ${v.prompt}` } : v;
 }
 const takesLoras = p => p.engine === "comfyui" || !!p.remote_loras;
+// LoRAs built into the worker (its LORAS line) are picked by link for each picture: the worker uses only these ([] = none)
+const bakedPick = ls => ls.map(l => ({ link: l.link, strength: l.strength ?? 1 }));
 const loraFile = l => `remote_${l.sha256.slice(0, 24)}.safetensors`;
 // LoRAs go between the model loader and everything that used it. A LoRA can also change the text encoder
 // (trigger words), so where the workflow has one it goes through LoraLoader too — once, even with two models (Wan).
@@ -454,7 +493,7 @@ async function loraInfo(link, hfToken) {
     if (!/^(LORA|LoCon|DoRA)$/i.test(v.model?.type || "")) throw new Error(`This is a ${v.model?.type || "file"}, not a LoRA`);
     const f = v.files.find(f => f.primary && /\.safetensors$/i.test(f.name)) || v.files.find(f => /\.safetensors$/i.test(f.name));
     if (!f?.hashes?.SHA256) throw new Error("This LoRA has no .safetensors file");
-    return { link, label: `${v.model.name}${v.name ? ` ${v.name}` : ""}`, url: f.downloadUrl, sha256: f.hashes.SHA256.toLowerCase(), base: v.baseModel || "", words: (v.trainedWords || []).map(w => w.replace(/^[\s,]+|[\s,]+$/g, "")).filter(Boolean).slice(0, 3) };
+    return { link, label: `${v.model.name}${v.name ? ` ${v.name}` : ""}`, url: f.downloadUrl, sha256: f.hashes.SHA256.toLowerCase(), size: (f.sizeKB || 0) * 1024, base: v.baseModel || "", words: (v.trainedWords || []).map(w => w.replace(/^[\s,]+|[\s,]+$/g, "")).filter(Boolean).slice(0, 3) };
   }
   const m = link.match(/^https:\/\/huggingface\.co\/([\w.-]+\/[\w.-]+)(?:\/(?:blob|resolve|tree)\/([^/]+)\/?(.*))?$/);
   if (!m) throw new Error("Paste a Civitai model link or a Hugging Face link");
@@ -467,7 +506,7 @@ async function loraInfo(link, hfToken) {
   if (files.length > 1) throw new Error(`There are ${files.length} .safetensors files there — open the one you want on Hugging Face and paste its link`);
   const f = files[0];
   return { link, label: f.path.split("/").pop().replace(/\.safetensors$/i, ""), url: `https://huggingface.co/${repo}/resolve/${encodeURIComponent(rev)}/${enc(f.path)}`,
-           sha256: f.lfs.oid, base: "", words: [] };
+           sha256: f.lfs.oid, size: f.lfs.size || f.size || 0, base: "", words: [] };
 }
 function checkPack(p) {
   if (!PACK_FORMATS.includes(p?.format)) throw new Error("Not a model pack");
@@ -590,6 +629,18 @@ let packs = store.get(PACKS_KEY, null) || store.get("packs", []);  // model pack
 let endpoints = store.get("endpoints", {});  // pack id → endpoint ID
 let loras = store.get("loras", {});  // pack id → LoRAs added by link [{link, label, url, sha256, base, words, strength}] — kept apart, so a pack update keeps them
 let loraOpen = "";  // the pack whose «+ LoRA» box is open
+// how a model's LoRAs reach its worker, picked before its first LoRA: "built" = in its Dockerfile's LORAS line (built once),
+// "link" = sent with each picture and downloaded by the worker (the default for LoRAs added before there was a choice)
+let loraMode = store.get("lora-mode", {});
+let loraBuilt = store.get("lora-built", {});  // pack id → the LORAS line last marked as built
+const builtMode = id => loraMode[id] === "built";
+// Fine-tune (Plus): a model's own values changed here, kept apart from the pack so an update keeps them — used only while Fine-tune is on
+let tweaks = store.get("tweaks", {});  // pack id → {JSON path in the template: value}
+let tuneOpen = new Set();  // packs whose value list is open in Models
+const LORA_STRENGTH = 0.8;  // a LoRA's strength while Fine-tune is off
+const lorasLine = id => (loras[id] || []).map(l => l.link).join(" ");  // strengths are sent with each picture
+// a LoRA added to a «Built in» model is left out of pictures until its build is marked done — the worker would refuse it
+const unbuilt = (id, l) => builtMode(id) && !(loraBuilt[id] || "").split(" ").includes(l.link);
 const turns = [];  // {created, prompt, items: [{id, packId, label, seed, w, h, status, error, media: [{url, kind, type}], blobs, text}]}
 let allShown = store.get("all-shown", true);  // Show all / Hide all is remembered; new users see their results right away
 const revealed = new Set();
@@ -619,7 +670,7 @@ async function hfCheckpointInfo(c) {
   if (!((await r.json()).siblings || []).some(f => !f.rfilename.includes("/") && f.rfilename.endsWith(".safetensors") && f.size > 3e9))
     throw new Error(`${c.label} has only diffusers folders on Hugging Face, no single-file checkpoint, so a worker copy can't load it — press Add to run it as it is`);
   const anime = /pony|illustrious|noob|animagine|anime/i.test(c.setup_pick), fast = /turbo|lightning|hyper/i.test(c.setup_pick);
-  return { hf: true, id: "hf-" + c.id, version: `https://huggingface.co/${c.setup_pick}`, name: c.label, version_name: "", base: "SDXL", nsfw: !!c.nsfw,
+  return { hf: true, gated: !!c.gated || undefined, id: "hf-" + c.id, version: `https://huggingface.co/${c.setup_pick}`, name: c.label, version_name: "", base: "SDXL", nsfw: !!c.nsfw,
            sampler: fast ? "DPM++ SDE" : "DPM++ 2M", schedule: "Karras", steps: fast ? 6 : 30, cfg: fast ? 2 : anime ? 6 : 5, clip: anime ? 2 : 1, negative: "", words: [] };
 }
 // A1111 sampler names (as Civitai shows them) → ComfyUI sampler and scheduler
@@ -663,7 +714,7 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${takesLoras(p) && (loras[p.id] || []).length < 8 && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «Any Civitai SDXL model»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${takesLoras(p) && (loras[p.id] || []).length < (builtMode(p.id) ? 20 : 8) && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «Any Civitai SDXL model»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${tuneBox(p)}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
   // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
   for (const p of byLabel(packs)) {
@@ -672,14 +723,24 @@ function renderPacks() {
   }
   // a Civitai model gets its own two links: a private copy of the worker, then civitai.env with the model filled in
   const civ = byLabel(packs).filter(p => !endpoints[p.id] && p.civitai), gh = $("gh-name").value.trim().replace(/^@/, "");
-  $("gh-row").hidden = !civ.length;
   const make = p => `https://github.com/new?template_owner=cobaltpear&template_name=civitai-sdxl&owner=%40me&name=${civitaiRepo(p)}&visibility=private`;
-  const add = p => `https://github.com/${encodeURIComponent(gh)}/${civitaiRepo(p)}/new/main?filename=civitai.env&value=${encodeURIComponent(`CIVITAI_MODEL=${p.setup_pick}\n${p.civitai.hf ? "" : "CIVITAI_TOKEN="}`)}`;
+  const add = p => `https://github.com/${encodeURIComponent(gh)}/${civitaiRepo(p)}/new/main?filename=civitai.env&value=${encodeURIComponent(`CIVITAI_MODEL=${p.setup_pick}\n${p.civitai.hf ? p.civitai.gated ? "HF_TOKEN=" : "" : "CIVITAI_TOKEN="}`)}`;
   const tok = civ.some(p => !p.civitai.hf);  // a Hugging Face model needs no Civitai token
+  const hft = civ.filter(p => p.civitai.gated);  // … but a Gated one needs a Hugging Face token
   // the steps once for all of them; only the links differ, one per model
   const one = civ.length === 1, links = (url, text) => one ? `<a href="${esc(url(civ[0]))}" target="_blank" rel="noopener">${text} ↗</a>`
     : `${text}: ${civ.map(p => `<a href="${esc(url(p))}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(" · ")}`;
-  $("pack-how").innerHTML = (civ.length ? `<div class="how"><b>${esc(civ.map(p => p.label).join(", "))}</b>: 1. ${links(make, "Make your copy")} → <b>Create repository</b>. ${tok ? `2. Make a Civitai token: <a href="https://civitai.com/user/account" target="_blank" rel="noopener">Civitai settings ↗</a> → <b>Security &amp; Apps</b> → <b>API Keys</b> → <b>Add API key</b> → Permission preset <b>Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model, so next time skip this step and reuse it. 3. ${gh ? `${links(add, "Add your token")} → paste it after <code>CIVITAI_TOKEN=</code> → <b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «Add your token» link${one ? "" : "s"}.`} 4.` : `2. ${gh ? `${links(add, "Add the model")} → <b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «Add the model» link${one ? "" : "s"}.`} 3.`} On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} with the settings in <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide step 4 ↗</a> (it shows where each one is on the page) — GPU <b>16 GB</b>, Container disk <b>20 GB</b> — the first build takes about 15 minutes, the first picture up to 10 more. Then paste ${one ? "its ID above" : "each ID next to its model"}.</div>` : "")
+  const steps = [`${links(make, "Make your copy")} → <b>Create repository</b>.`];
+  if (tok) steps.push(`Make a Civitai token: <a href="https://civitai.com/user/account" target="_blank" rel="noopener">Civitai settings ↗</a> → <b>Security &amp; Apps</b> → <b>API Keys</b> → <b>Add API key</b> → Permission preset <b>Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model, so next time skip this step and reuse it.`);
+  if (hft.length) steps.push(`Make a Hugging Face token: on ${hft.map(p => `<a href="https://huggingface.co/${esc(p.civitai.version.split("huggingface.co/")[1])}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(", ")} press <b>Agree</b> (signed in to Hugging Face), then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token ↗</a> — pick <b>Read</b> — and copy it. One token works for every model.`);
+  const addText = tok || hft.length ? "Add your token" : "Add the model";
+  steps.push(gh ? `${links(add, addText)} → ${tok || hft.length ? `paste your token after ${[tok && "<code>CIVITAI_TOKEN=</code>", hft.length && "<code>HF_TOKEN=</code>"].filter(Boolean).join(" or ")} → ` : ""}<b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «${addText}» link${one ? "" : "s"}.`);
+  steps.push(`On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} with the settings in <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide step 4 ↗</a> (it shows where each one is on the page) — GPU <b>16 GB</b>, Container disk <b>20 GB</b> — the first build takes about 15 minutes, the first picture up to 10 more. Then paste ${one ? "its ID above" : "each ID next to its model"}.`);
+  // a model whose built-in LoRAs changed: the new LORAS line goes in its copy's Dockerfile, then RunPod builds it again
+  const build = byLabel(packs).filter(p => builtMode(p.id) && lorasLine(p.id) !== (loraBuilt[p.id] || ""));
+  $("gh-row").hidden = !civ.length && !build.length;
+  $("pack-how").innerHTML = (civ.length ? `<div class="how"><b>${esc(civ.map(p => p.label).join(", "))}</b>: ${steps.map((t, i) => `${i + 1}. ${t}`).join(" ")}</div>` : "")
+    + build.map(buildSteps).join("")
     + [...how].map(([k, labels]) => { const [url, steps] = k.split("\n");
     return `<div class="how"><b>${esc(labels.join(", "))}</b>: ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${url.startsWith("https://github.com/") ? "Open the worker" : "Open RunPod"} ↗</a> → ` : ""}${esc(steps).replace("as the guide shows", `as the <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide ↗</a> shows`)} Then paste ${labels.length > 1 ? "each ID next to its model" : "its ID above"}.</div>`; }).join("");
   $("pack-tools").hidden = packs.length + catalog.length < 8;
@@ -698,7 +759,12 @@ function renderPacks() {
 function loraRow(p) {
   const ls = loras[p.id] || [];
   if (!ls.length && loraOpen !== p.id) return "";
-  return `<div class="loras">${ls.map((l, i) => `<span class="lora" title="${esc([l.base, l.words?.length && `Trigger words, added to the prompt: ${l.words.join(", ")}`].filter(Boolean).join(" · "))}"><a href="${esc(l.link)}" target="_blank" rel="noopener">${esc(l.label)}</a>`
+  if (loraOpen === p.id && !loraMode[p.id]) return `<div class="lora-choice"><b>How should ${esc(p.label)} get its LoRAs? You can change it later.</b>`
+    + `<button type="button" class="pill" data-lora-pick="built" data-id="${esc(p.id)}">Built into the worker</button><span>For LoRAs you keep using. Every picture starts without waiting, and you pick which ones each picture uses (LoRA, next to Send). Adding or changing one means building the worker again — each one makes that build longer and the worker bigger.</span>`
+    + `<button type="button" class="pill" data-lora-pick="link" data-id="${esc(p.id)}">By link</button><span>For trying LoRAs out. Paste a link and use it on the next picture — nothing to build. The first picture with a new LoRA waits for its download, and again after the worker has been idle a while; up to 4 at once.</span>`
+    + `<span></span><span><button type="button" class="pill" data-lora-cancel>Cancel</button></span></div>`;
+  return `<div class="loras">${loraMode[p.id] ? `<span class="lora-way" title="How the LoRAs reach the worker">LoRAs:${[["built", "Built in", "Built into the worker: no wait at each picture; changing them means building again"], ["link", "By link", "Downloaded with the picture: nothing to build; the first picture waits"]].map(([m, t, tip]) =>
+    `<button type="button" data-lora-pick="${m}" data-id="${esc(p.id)}" aria-pressed="${loraMode[p.id] === m}" title="${tip}">${t}</button>`).join("")}</span>` : ""}${ls.map((l, i) => `<span class="lora" title="${esc([l.base, l.words?.length && `Trigger words, added to the prompt: ${l.words.join(", ")}`].filter(Boolean).join(" · "))}"><a href="${esc(l.link)}" target="_blank" rel="noopener">${esc(l.label)}</a>`
     + `<input type="number" step="0.05" min="-2" max="2" value="${esc(l.strength)}" data-lora-w="${esc(p.id)}" data-i="${i}" title="Strength"><button type="button" data-lora-del="${esc(p.id)}" data-i="${i}" title="Remove this LoRA">×</button></span>`).join("")}`
     + (loraOpen === p.id ? `<input data-lora-add="${esc(p.id)}" autocomplete="off" spellcheck="false" placeholder="Civitai or Hugging Face link of a LoRA for ${esc(p.label)}"><button type="button" class="pill" data-lora-cancel title="Close without adding">Cancel</button>` : "")
     + `<span class="hint" data-lora-state="${esc(p.id)}"></span></div>`;
@@ -713,9 +779,47 @@ async function addLora(id, link) {
     if (ls.some(x => x.sha256 === l.sha256)) throw new Error("This LoRA is on this model already");
     loras[id] = [...ls, { ...l, strength: 0.8 }]; store.set("loras", loras);
     loraOpen = ""; renderPacks();
-    if (loras[id].length === 5) document.querySelector(`[data-lora-state="${CSS.escape(id)}"]`).textContent = "Over 4 LoRAs: set REMOTE_LORA_MAX to 8 on the endpoint (RunPod → Manage → Edit Endpoint → Environment Variables)";
+    if (loras[id].length === 5 && !builtMode(id)) document.querySelector(`[data-lora-state="${CSS.escape(id)}"]`).textContent = "By link takes 4 LoRAs at once. For more, pick Built in — or on RunPod open this endpoint → Manage → Edit Endpoint → Environment Variables → add REMOTE_LORA_MAX with the value 8 → Save Endpoint.";
   } catch (err) { state.textContent = err.message; }
 }
+// the steps to build a model's LoRAs into its worker: the LORAS line for its copy's Dockerfile, how big the build gets, and «Built»
+const gbs = b => (b / 1e9).toFixed(b < 1e10 ? 1 : 0);
+function buildSteps(p) {
+  const gh = $("gh-name").value.trim().replace(/^@/, ""), ls = loras[p.id] || [], line = `ARG LORAS="${lorasLine(p.id)}"`;
+  const repo = p.civitai ? civitaiRepo(p) : (p.src || p.setup_url || "").match(/github(?:usercontent)?\.com\/[\w.-]+\/([\w.-]+?)(?:\.git|\/|$)/)?.[1];
+  const size = ls.reduce((n, l) => n + (l.size || 0), 0), civ = ls.some(l => /^https:\/\/civitai\./.test(l.link));
+  const open = gh && repo ? `<a href="https://github.com/${encodeURIComponent(gh)}/${esc(repo)}/edit/main/Dockerfile" target="_blank" rel="noopener">Open your copy's Dockerfile ↗</a>` : gh ? "Open your copy of the worker on GitHub → <b>Dockerfile</b> → ✏️" : "Type your GitHub name above, then open your copy's <b>Dockerfile</b> → ✏️";
+  return `<div class="how"><b>${esc(p.label)} — LoRAs built in</b>: 1. ${open} → replace the line <code>ARG LORAS=…</code> with <code data-copy="${esc(line)}" title="Click to copy">${esc(line)}</code> <span class="hint-copy"></span> → <b>Commit changes…</b> → <b>Commit changes</b> again.${civ && p.civitai?.hf ? ` A Civitai LoRA may need your Civitai token: add a line <code>CIVITAI_TOKEN=</code> with it to <code>civitai.env</code> in your copy.` : ""} `
+    + `2. RunPod builds the worker again by itself (your endpoint → <b>Builds</b>).${size ? ` The LoRAs add about <b>${gbs(size)} GB</b> to download while it builds.` : ""} RunPod stops a build that runs over 30 minutes, and the worker itself already takes about 15 — ${size > 3e9 ? "<b>that is a lot, so fewer LoRAs is safer</b>" : "so keep it to the LoRAs you really use"}. Until you press Done — built, pictures leave the new LoRAs out. `
+    + `3. <button type="button" class="pill" data-lora-built="${esc(p.id)}">Done — built</button>${ls.length ? "" : " (no LoRAs left: the line is empty)"}</div>`;
+}
+// the LORAS line copies on click; «Done — built» puts the steps away until the LoRAs change again
+$("pack-how").addEventListener("click", e => {
+  const copy = e.target.closest("[data-copy]"), built = e.target.dataset.loraBuilt;
+  if (copy) { const hint = copy.nextElementSibling; navigator.clipboard?.writeText(copy.dataset.copy).then(() => { hint.textContent = "copied ✓"; setTimeout(() => hint.textContent = "", 1200); }, () => {}); }
+  if (built) { keepEndpointInputs(); loraBuilt[built] = lorasLine(built); store.set("lora-built", loraBuilt); renderPacks(); }
+});
+// LoRA, next to Send: the LoRAs of the chosen models, each on or off for the next pictures, with its strength
+const loraPacks = () => chosenPacks().filter(p => takesLoras(p) && loras[p.id]?.length);
+function fillLoras() {
+  const ps = loraPacks(), on = ps.flatMap(p => loras[p.id].filter(l => !l.off && !unbuilt(p.id, l))).length;
+  $("lora-btn").hidden = !ps.length;
+  $("lora-btn").textContent = on ? `LoRA ${on}` : "LoRA";
+  if (!ps.length) $("lora-menu").hidden = true;
+  $("lora-menu").innerHTML = ps.map(p => `<div class="kind">${esc(p.label)}${builtMode(p.id) ? " · built in" : ""}</div>` + loras[p.id].map((l, i) =>
+    unbuilt(p.id, l) ? `<label title="Build the worker with it first (Models), then press Done — built"><input type="checkbox" disabled><span>${esc(l.label)} · not built yet</span></label>` : `<label><input type="checkbox" data-lora-on="${esc(p.id)}" data-i="${i}"${l.off ? "" : " checked"}><span title="${esc(l.label)}">${esc(l.label)}</span>`
+    + `<input type="number" step="0.05" min="-2" max="2" value="${esc(l.strength)}" data-lora-s="${esc(p.id)}" data-i="${i}" title="Strength"></label>`).join("")).join("");
+}
+$("lora-btn").addEventListener("click", () => { $("lora-menu").hidden = !$("lora-menu").hidden; });
+$("lora-menu").addEventListener("change", e => {
+  const id = e.target.dataset.loraOn || e.target.dataset.loraS, l = loras[id]?.[e.target.dataset.i];
+  if (!l) return;
+  if (e.target.dataset.loraOn) { if (e.target.checked) delete l.off; else l.off = true; }
+  else { const n = parseFloat(e.target.value); if (!isFinite(n)) return; l.strength = n; }
+  store.set("loras", loras); fillLoras(); $("lora-menu").hidden = false;
+});
+document.addEventListener("click", e => { if (!e.target.closest("#lora-wrap")) $("lora-menu").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("lora-menu").hidden = true; });
 // Make it: a model from the list gets its endpoint made by the relay (RunPod's create API can't be called from a page) — opt-in, ticked once
 const RELAY_URL = "https://cobaltpear-relay.cobaltpear.workers.dev";
 const catalogOf = p => catalog.find(c => c.url === p.src);
@@ -772,7 +876,7 @@ function renderCatalog() {
   $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
     `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
-    ${own && c.arch === "StableDiffusionXLPipeline" && !c.gated ? `<button class="pill" type="button" data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai SDXL model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
+    ${own && c.arch === "StableDiffusionXLPipeline" ? `<button class="pill" type="button" data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai SDXL model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
   findPacks();
 }
 // The list is RunPod's own, made the way RunPod makes it: Hugging Face models by downloads, kept if vLLM-Omni runs them.
@@ -900,26 +1004,42 @@ $("gh-name").addEventListener("input", () => { try { localStorage.setItem("githu
 $("pack-list").addEventListener("change", e => {
   const w = e.target.dataset.loraW, add = e.target.dataset.loraAdd;
   if (w) { const l = loras[w]?.[e.target.dataset.i], n = parseFloat(e.target.value); if (l && isFinite(n)) { l.strength = n; store.set("loras", loras); } return; }
+  const tk = e.target.dataset.tune;
+  if (tk) {  // empty = the model's own again
+    const k = e.target.dataset.k, f = tuneFields(packs.find(p => p.id === tk)).find(f => JSON.stringify(f.path) === k);
+    if (!f) return;
+    let v = typeof f.value === "boolean" ? e.target.checked : typeof f.value === "number" ? parseFloat(e.target.value) : e.target.value;
+    if (typeof f.value === "number" && !isFinite(v) || typeof f.value === "string" && v === "") v = f.value;
+    const t = tweaks[tk] ||= {};
+    if (v === f.value) delete t[k]; else t[k] = v;
+    if (!Object.keys(t).length) delete tweaks[tk];
+    store.set("tweaks", tweaks); keepEndpointInputs(); setTimeout(renderPacks); return;
+  }
   if (e.target.dataset.ep !== undefined) { keepEndpointInputs(); store.set("endpoints", endpoints); setTimeout(renderPacks); } });  // not inside the input's own blur
 // a LoRA link is looked up as soon as it is pasted (or on Enter) — no Add button
 $("pack-list").addEventListener("paste", e => { const id = e.target.dataset.loraAdd; if (id) setTimeout(() => addLora(id, e.target.value)); });
 $("pack-list").addEventListener("keydown", e => { const id = e.target.dataset.loraAdd; if (id && e.key === "Enter") { e.preventDefault(); addLora(id, e.target.value); }
   if (id && e.key === "Escape") { e.preventDefault(); keepEndpointInputs(); loraOpen = ""; renderPacks(); } });
+$("pack-list").addEventListener("toggle", e => { const id = e.target.dataset?.tuneBox; if (id) { if (e.target.open) tuneOpen.add(id); else tuneOpen.delete(id); } }, true);
 $("pack-list").addEventListener("click", e => {
-  const pick = e.target.closest("[data-copy]");  // the whole «Model: …» line copies the name
-  if (pick) { const hint = pick.querySelector(".hint-copy"); navigator.clipboard?.writeText(pick.dataset.copy).then(() => { hint.textContent = "copied ✓"; setTimeout(() => hint.textContent = "", 1200); }, () => {}); return; }
+  const reset = e.target.dataset.tuneReset;
+  if (reset) { delete tweaks[reset]; store.set("tweaks", tweaks); keepEndpointInputs(); renderPacks(); return; }
+  const copy = e.target.closest("[data-copy]");  // the whole «Model: …» line copies the name
+  if (copy) { const hint = copy.querySelector(".hint-copy"); navigator.clipboard?.writeText(copy.dataset.copy).then(() => { hint.textContent = "copied ✓"; setTimeout(() => hint.textContent = "", 1200); }, () => {}); return; }
   const open = e.target.dataset.loraOpen, del = e.target.dataset.loraDel;
   if (e.target.closest("[data-lora-cancel]")) { keepEndpointInputs(); loraOpen = ""; renderPacks(); return; }
+  const pick = e.target.dataset.loraPick;
+  if (pick) { keepEndpointInputs(); loraMode[e.target.dataset.id] = pick; store.set("lora-mode", loraMode); renderPacks(); document.querySelector(`[data-lora-add="${CSS.escape(e.target.dataset.id)}"]`)?.focus(); return; }
   if (open) { keepEndpointInputs(); loraOpen = open; renderPacks(); document.querySelector(`[data-lora-add="${CSS.escape(open)}"]`)?.focus(); return; }
-  if (del) { loras[del].splice(+e.target.dataset.i, 1); if (!loras[del].length) delete loras[del]; store.set("loras", loras); renderPacks(); return; }
+  if (del) { loras[del].splice(+e.target.dataset.i, 1); if (!loras[del].length && !builtMode(del)) delete loras[del]; store.set("loras", loras); renderPacks(); return; }
   const save = packs.find(p => p.id === e.target.dataset.savePack);
   if (save) return savePack(save);
   const id = e.target.dataset.delPack;
   if (!id) return;
   keepEndpointInputs();
   const ep = endpoints[id], made = store.get("made", []);
-  packs = packs.filter(p => p.id !== id); delete endpoints[id]; delete loras[id];
-  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints); store.set("loras", loras);
+  packs = packs.filter(p => p.id !== id); delete endpoints[id]; delete loras[id]; delete loraMode[id]; delete loraBuilt[id]; delete tweaks[id]; store.set("tweaks", tweaks);
+  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints); store.set("loras", loras); store.set("lora-mode", loraMode); store.set("lora-built", loraBuilt);
   renderPacks();
   // an endpoint Make it made goes too (one click makes it again); hand-made ones stay on RunPod
   if (RELAY_URL && ep && made.includes(ep) && apiKey) {
@@ -992,12 +1112,60 @@ $("settings-form").addEventListener("submit", e => { e.preventDefault(); locatio
 // ---- Models ----
 const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
 const customAllowed = () => ownWorkers() < 1;
+const tuneOn = () => false;
+function showTune() { document.body.classList.toggle("tune", tuneOn()); fillLoras(); }
+// the plain values of a model's request that Fine-tune can change: not the prompt, seed, size or picture (the chat sets those), not file names.
+// RunPod's own worker (the Hugging Face list) takes only those, so it has none.
+function tuneFields(p) {
+  if (!p || /^@omni-/.test(p.setup || "")) return [];
+  const slot = new Set(SLOTS.flatMap(k => (p[k] || []).map(x => JSON.stringify(x))));
+  const plain = v => typeof v === "number" || typeof v === "boolean" || typeof v === "string" && v.length <= 80 && !/\.(safetensors|ckpt|pt|pth|gguf|bin|png|jpe?g|webp|mp4)$/i.test(v);
+  if ((p.engine || "comfyui") === "comfyui")
+    return Object.entries(p.workflow || {}).flatMap(([n, node]) => Object.entries(node.inputs || {})
+      .filter(([k, v]) => plain(v) && !slot.has(JSON.stringify([n, k])) && !/^(filename_prefix|text)$/.test(k))
+      .map(([k, v]) => ({ path: [n, k], label: `${node.class_type} · ${k}`, value: v })));
+  const out = [], walk = (o, path) => { for (const [k, v] of Object.entries(o)) {
+    const at = [...path, k];
+    if (v && typeof v === "object" && !Array.isArray(v)) walk(v, at);
+    else if (plain(v) && !slot.has(JSON.stringify(at)) && !/^(remote_loras|baked_loras)$/.test(k)) out.push({ path: at, label: at.join(" · "), value: v });
+  } };
+  walk(p.input || {}, []);
+  return out;
+}
+// the pack with its changed values in it — as it is while Fine-tune is off
+function tuned(p) {
+  const t = tuneOn() && tweaks[p.id];
+  if (!t || !Object.keys(t).length) return p;
+  const q = structuredClone(p), comfy = (p.engine || "comfyui") === "comfyui";
+  for (const [k, v] of Object.entries(t)) {
+    const path = JSON.parse(k);
+    if (comfy) { if (q.workflow?.[path[0]]?.inputs) q.workflow[path[0]].inputs[path[1]] = v; continue; }
+    let o = q.input;
+    for (const s of path.slice(0, -1)) o = o?.[s];
+    if (o && typeof o === "object") o[path.at(-1)] = v;
+  }
+  return q;
+}
+// under a model in Models: its values, the changed ones in bold, and the way back
+function tuneBox(p) {
+  const fs = tuneOn() ? tuneFields(p) : [];
+  if (!fs.length) return "";
+  const t = tweaks[p.id] || {}, n = Object.keys(t).length;
+  return `<details class="tune-box" data-tune-box="${esc(p.id)}"${tuneOpen.has(p.id) ? " open" : ""}><summary>Settings${n ? ` · ${n} changed` : ""}</summary><div class="tune-grid">`
+    + fs.map(f => {
+      const k = JSON.stringify(f.path), ch = k in t, v = ch ? t[k] : f.value;
+      return `<span${ch ? ' class="changed"' : ""} title="${esc(f.label)} — the model's own: ${esc(f.value)}">${esc(f.label)}</span>`
+        + (typeof f.value === "boolean" ? `<input type="checkbox" data-tune="${esc(p.id)}" data-k="${esc(k)}"${v ? " checked" : ""}>`
+          : `<input${typeof f.value === "number" ? ' type="number" step="any"' : ""} data-tune="${esc(p.id)}" data-k="${esc(k)}" value="${esc(v)}" placeholder="${esc(f.value)}" autocomplete="off" spellcheck="false">`);
+    }).join("")
+    + `</div>${n ? `<button type="button" class="pill" data-tune-reset="${esc(p.id)}">Back to the model's own</button>` : ""}</details>`;
+}
 
 // several models can be on at once — each prompt goes to every model that is on.
 // One button names the one on (or «3 models») and opens a list grouped like the Models tabs; a click ticks a model on or off
 // and the list stays open until a click outside or Esc — so a hundred models still fit in one row.
 let chosen = store.get("models", []);
-function fillModels() { fillChips(); fitNegative(); fitPicture(); }
+function fillModels() { fillChips(); fitNegative(); fitPicture(); fillLoras(); }
 function modelsHead() {
   const list = usable(), names = chosen.map(id => list.find(p => p.id === id)?.label).filter(Boolean);
   return (names.length > 1 ? `${names.length} models` : names[0] || "") + " ▾";
@@ -1032,7 +1200,7 @@ $("models").addEventListener("click", e => {
   else if (chosen.length > 1) chosen = chosen.filter(x => x !== id);  // the last model on stays on
   store.set("models", chosen);
   e.target.classList.toggle("on", chosen.includes(id)); $("model-btn").textContent = modelsHead();
-  fitNegative(); fitPicture();
+  fitNegative(); fitPicture(); fillLoras();
 });
 $("models").addEventListener("input", e => { if (e.target.id === "model-find") findModels(); });
 document.addEventListener("click", e => { if (!e.target.closest("#models")) modelMenu(false); });
@@ -1157,19 +1325,22 @@ function run(prompt, use, count = 1, seed, negative = "", image = null) {
   render(); scrollTo(0, document.body.scrollHeight);
   t.items.forEach(it => runItem(t, it));
 }
+// the LoRAs that are on: built into the worker = picked by link (none on = none used), by link = downloaded by the worker
+const picked = id => { const on = (loras[id] || []).filter(l => !l.off && !unbuilt(id, l)).map(l => tuneOn() ? l : { ...l, strength: LORA_STRENGTH }); return builtMode(id) ? { baked: on } : { loras: withCivitaiToken(on) }; };
 async function runItem(t, it) {
   const pack = packs.find(p => p.id === it.packId);
   try {
     if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
     if (takesImage(pack) && !t.image) throw new Error("This model starts from a picture — add one with Picture");
     const image = takesImage(pack) ? await toB64(t.image) : undefined;
-    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image, loras: withCivitaiToken(loras[pack.id]) });
+    const input = packInput(tuned(pack), { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image, ...picked(pack.id) });
     it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
     const out = await runAndWait(endpoints[pack.id], input, st => { it.status = st; render(); }) || {};
     if (/remote LoRA .* failed: 40[13]/.test(out.error || "")) throw new Error("A LoRA on this model needs you signed in to download it — paste your Civitai token in Models");
     if (out.error) throw new Error(out.error);
     // the worker names a LoRA that had no effect by its file name — show the name it has here
-    if (out.warning) out.warning = "⚠ " + out.warning.replace(/remote_([0-9a-f]{24})\.safetensors/g, (f, h) => (loras[pack.id] || []).find(l => l.sha256.startsWith(h))?.label || f);
+    if (out.warning) out.warning = "⚠ " + out.warning.replace(/remote_([0-9a-f]{24})\.safetensors/g, (f, h) => (loras[pack.id] || []).find(l => l.sha256.startsWith(h))?.label || f)
+      .replace(/baked_(\d+)\.safetensors/g, (f, i) => (loras[pack.id] || []).find(l => l.link === (loraBuilt[pack.id] || "").split(" ")[i])?.label || f);
     const { media, text } = await readOutput(out);
     if (!media.length && !text) throw new Error("No image, video, audio or text in the output");
     it.blobs = media.map(m => m.blob);
@@ -1368,7 +1539,7 @@ function openViewer(src) {
   vw.requestFullscreen?.().catch(() => {});
 }
 
-fillModels();
+fillModels(); showTune();
 $("plus").href = PLUS_URL;
 $("plus").hidden = !PLUS_URL;
 // ---- Update ----

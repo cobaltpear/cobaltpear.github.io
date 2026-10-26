@@ -129,7 +129,7 @@ const ENGINES = {
     valid: p => p.workflow && typeof p.workflow === "object",
     input(p, v) {
       const wf = structuredClone(p.workflow), images = [], loras = v.loras || [];
-      v = withLoraWords(v, loras);
+      v = withLoraWords(v, [...loras, ...v.baked || []]);
       for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) {
         if (k !== "image") { wf[n].inputs[name] = v[k]; continue; }
         // the worker takes pictures as input.images; LoadImage keeps the template's file name and reads it from there
@@ -142,6 +142,7 @@ const ENGINES = {
         addLoras(wf, loras);
         out.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256 }));  // the worker downloads each once and keeps it
       }
+      if (v.baked) out.baked_loras = bakedPick(v.baked);
       return out;
     },
     get: (p, k) => { const [n, name] = p[k]?.[0] || []; return p.workflow[n]?.inputs[name]; },  // the template's own value of a slot
@@ -160,8 +161,8 @@ const ENGINES = {
   json: {
     valid: p => p.input && typeof p.input === "object",
     input(p, v) {
-      const inp = structuredClone(p.input), loras = p.remote_loras && v.loras || [];
-      v = withLoraWords(v, loras);
+      const inp = structuredClone(p.input), loras = p.remote_loras && v.loras || [], baked = p.remote_loras && v.baked;
+      v = withLoraWords(v, [...loras, ...baked || []]);
       for (const k of SLOTS) if (v[k] != null) for (const path of p[k] || []) {
         let o = inp;
         for (const s of path.slice(0, -1)) o = o[s] ??= {};
@@ -169,6 +170,7 @@ const ENGINES = {
       }
       // a worker whose pack says remote_loras (our A1111 workers) downloads them and puts <lora:…> in the prompt itself
       if (loras.length) inp.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256, strength: l.strength ?? 1 }));
+      if (baked) inp.baked_loras = bakedPick(baked);
       return inp;
     },
     get: (p, k) => p[k]?.[0]?.reduce((o, s) => o?.[s], p.input),
@@ -185,6 +187,8 @@ function withLoraWords(v, loras) {
   return words.length ? { ...v, prompt: `${words.join(", ")}, ${v.prompt}` } : v;
 }
 const takesLoras = p => p.engine === "comfyui" || !!p.remote_loras;
+// LoRAs built into the worker (its LORAS line) are picked by link for each picture: the worker uses only these ([] = none)
+const bakedPick = ls => ls.map(l => ({ link: l.link, strength: l.strength ?? 1 }));
 const loraFile = l => `remote_${l.sha256.slice(0, 24)}.safetensors`;
 // LoRAs go between the model loader and everything that used it. A LoRA can also change the text encoder
 // (trigger words), so where the workflow has one it goes through LoraLoader too — once, even with two models (Wan).
@@ -223,7 +227,7 @@ async function loraInfo(link, hfToken) {
     if (!/^(LORA|LoCon|DoRA)$/i.test(v.model?.type || "")) throw new Error(`This is a ${v.model?.type || "file"}, not a LoRA`);
     const f = v.files.find(f => f.primary && /\.safetensors$/i.test(f.name)) || v.files.find(f => /\.safetensors$/i.test(f.name));
     if (!f?.hashes?.SHA256) throw new Error("This LoRA has no .safetensors file");
-    return { link, label: `${v.model.name}${v.name ? ` ${v.name}` : ""}`, url: f.downloadUrl, sha256: f.hashes.SHA256.toLowerCase(), base: v.baseModel || "", words: (v.trainedWords || []).map(w => w.replace(/^[\s,]+|[\s,]+$/g, "")).filter(Boolean).slice(0, 3) };
+    return { link, label: `${v.model.name}${v.name ? ` ${v.name}` : ""}`, url: f.downloadUrl, sha256: f.hashes.SHA256.toLowerCase(), size: (f.sizeKB || 0) * 1024, base: v.baseModel || "", words: (v.trainedWords || []).map(w => w.replace(/^[\s,]+|[\s,]+$/g, "")).filter(Boolean).slice(0, 3) };
   }
   const m = link.match(/^https:\/\/huggingface\.co\/([\w.-]+\/[\w.-]+)(?:\/(?:blob|resolve|tree)\/([^/]+)\/?(.*))?$/);
   if (!m) throw new Error("Paste a Civitai model link or a Hugging Face link");
@@ -236,7 +240,7 @@ async function loraInfo(link, hfToken) {
   if (files.length > 1) throw new Error(`There are ${files.length} .safetensors files there — open the one you want on Hugging Face and paste its link`);
   const f = files[0];
   return { link, label: f.path.split("/").pop().replace(/\.safetensors$/i, ""), url: `https://huggingface.co/${repo}/resolve/${encodeURIComponent(rev)}/${enc(f.path)}`,
-           sha256: f.lfs.oid, base: "", words: [] };
+           sha256: f.lfs.oid, size: f.lfs.size || f.size || 0, base: "", words: [] };
 }
 function checkPack(p) {
   if (!PACK_FORMATS.includes(p?.format)) throw new Error("Not a model pack");
