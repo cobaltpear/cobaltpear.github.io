@@ -97,6 +97,12 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack [data-ep] { width: 16ch; }
 .sheet .pack .new { font-size: 11px; color: var(--accent); }
 .sheet .pack .gated { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
+.sheet .pack .loras { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; font-size: 12px; }
+.sheet .pack .lora { display: inline-flex; gap: 4px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 1px 4px 1px 8px; max-width: 100%; }
+.sheet .pack .lora a { color: var(--text); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 24ch; }
+.sheet .pack .lora input { width: 6ch; padding: 0 2px; font-size: 12px; }
+.sheet .pack .lora button { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; padding: 0 2px; }
+.sheet .pack .loras [data-lora-add] { flex: 1; min-width: 20ch; font-size: 12px; }
 .sheet .pack .save-pack { background: none; font: inherit; font-size: 11px; color: var(--text); cursor: pointer; }
 .sheet #auto { margin-top: 8px; font-size: 13px; }
 .sheet #auto label { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--text); font-size: 13px; cursor: pointer; }
@@ -170,13 +176,14 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.26.2 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.26.3 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
 <div class="news"><time>2026-10-26</time><ul>
+<li>Add your own LoRAs by pasting a Civitai or Hugging Face link (up to 4), and see a warning when one has no effect</li>
 <li>News is grouped by day.</li>
 </ul></div>
 <div class="news"><time>2026-10-25</time><ul>
@@ -271,7 +278,8 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>), then go to <b class="ui">Chat</b>.</li>
 <li>Type what you want to see, press Enter. The first time it opens <b class="ui">Settings</b> — paste your RunPod API key from step 6 there, then go back to <b class="ui">Chat</b>.</li>
 </ol>
-<p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p></div>
+<p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p>
+<p class="note">A LoRA: <b class="ui">Models</b> → <b class="ui">+ LoRA</b> under the model → paste the LoRA's Civitai or Hugging Face link. Your worker downloads it with the next picture (a few seconds more, once) — nothing to build again. Pick a LoRA made for that model (its base model shows when you point at it).</p></div>
 
 <h2 style="margin-top:28px">When something is off</h2>
 <table>
@@ -292,12 +300,14 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.26.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.26.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"></div>
   <div id="pack-list"></div>
+  <div class="add" id="civ-row" hidden><input id="civ-token" type="password" autocomplete="off" placeholder="Civitai token — only for LoRAs that need you signed in"></div>
+  <div class="hint" id="civ-how" hidden>Most Civitai LoRAs download without it. If one fails, <a href="https://civitai.com/user/account" target="_blank" rel="noopener">make a token</a> (<b>API Keys</b> → <b>Add API key</b> → <b>Read Only</b>) and paste it here — it stays in this browser and goes only to your own worker.</div>
   <div id="auto" hidden><label><input id="auto-ok" type="checkbox"><span>Let Cobalt Pear make it on RunPod. Your key passes through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>), which keeps nothing.</span></label>
   <div class="add" id="auto-hf-row" hidden><input id="auto-hf" type="password" autocomplete="off" placeholder="Hugging Face token (hf_...) for Gated models"></div>
   <div class="hint" id="auto-hf-how" hidden></div>
@@ -319,7 +329,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.26.2";
+const VERSION = "2026.10.26.3";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -347,7 +357,10 @@ const ENGINES = {
   comfyui: {
     valid: p => p.workflow && typeof p.workflow === "object",
     input(p, v) {
-      const wf = structuredClone(p.workflow), images = [];
+      const wf = structuredClone(p.workflow), images = [], loras = v.loras || [];
+      // a LoRA's trigger words go in front of the prompt unless it has them already
+      const words = loras.flatMap(l => l.words || []).filter(w => v.prompt != null && !v.prompt.toLowerCase().includes(w.toLowerCase()));
+      if (words.length) v = { ...v, prompt: `${words.join(", ")}, ${v.prompt}` };
       for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) {
         if (k !== "image") { wf[n].inputs[name] = v[k]; continue; }
         // the worker takes pictures as input.images; LoadImage keeps the template's file name and reads it from there
@@ -355,7 +368,12 @@ const ENGINES = {
         wf[n].inputs[name] = file;
         images.push({ name: file, image: v[k] });
       }
-      return images.length ? { workflow: wf, images } : { workflow: wf };
+      const out = images.length ? { workflow: wf, images } : { workflow: wf };
+      if (loras.length) {
+        addLoras(wf, loras);
+        out.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256 }));  // the worker downloads each once and keeps it
+      }
+      return out;
     },
     get: (p, k) => { const [n, name] = p[k]?.[0] || []; return p.workflow[n]?.inputs[name]; },  // the template's own value of a slot
     // every plain value of the workflow (links to other nodes left out): "KSampler · steps: 30".
@@ -385,6 +403,63 @@ const ENGINES = {
     describe: inp => [JSON.stringify(inp, (k, v) => typeof v === "string" && v.length > 300 ? `(picture, ${Math.round(v.length * 3 / 4 / 1024)} KB)` : v, 1)],
   },
 };
+// LoRAs by link — sent with each request, not built into the worker: a LoraLoaderModelOnly per LoRA goes right after each model loader
+// and whatever read the loader's model reads the last LoRA instead. Our ComfyUI workers download input.remote_loras by name.
+const MODEL_LOADER = /^(UNETLoader|UnetLoaderGGUF\w*|CheckpointLoader\w*|ImageOnlyCheckpointLoader)$/;
+const CLIP_LOADER = /^(CLIPLoader\w*|DualCLIPLoader\w*|TripleCLIPLoader|QuadrupleCLIPLoader)$/;
+const loraFile = l => `remote_${l.sha256.slice(0, 24)}.safetensors`;
+// LoRAs go between the model loader and everything that used it. A LoRA can also change the text encoder
+// (trigger words), so where the workflow has one it goes through LoraLoader too — once, even with two models (Wan).
+function addLoras(wf, loras) {
+  const clipId = Object.keys(wf).find(k => CLIP_LOADER.test(wf[k].class_type));
+  let clipDone = false;
+  for (const [id, n] of Object.entries(wf)) {
+    if (!MODEL_LOADER.test(n.class_type)) continue;
+    const clipFrom = clipDone ? null : /^CheckpointLoader/.test(n.class_type) ? [id, 1] : clipId ? [clipId, 0] : null;
+    let model = [id, 0], clip = clipFrom;
+    const chain = loras.map((l, i) => {
+      const key = `lora_${id}_${i}`;
+      wf[key] = clip
+        ? { class_type: "LoraLoader", inputs: { model, clip, lora_name: loraFile(l), strength_model: l.strength ?? 1, strength_clip: l.strength ?? 1 } }
+        : { class_type: "LoraLoaderModelOnly", inputs: { model, lora_name: loraFile(l), strength_model: l.strength ?? 1 } };
+      model = [key, 0];
+      if (clip) clip = [key, 1];
+      return key;
+    });
+    const same = (x, y) => Array.isArray(x) && y && x[0] === y[0] && x[1] === y[1];
+    for (const [k, m] of Object.entries(wf)) if (!chain.includes(k))
+      for (const [name, x] of Object.entries(m.inputs || {})) {
+        if (same(x, [id, 0])) m.inputs[name] = model;
+        else if (same(x, clipFrom)) m.inputs[name] = clip;
+      }
+    if (clipFrom) clipDone = true;
+  }
+}
+// a Civitai or Hugging Face link → the LoRA file: {link, label, url, sha256, base, words}
+async function loraInfo(link, hfToken) {
+  link = link.trim();
+  if (/^https:\/\/civitai\.(com|green|red)\/models\/\d+/.test(link)) {
+    const api = path => fetch("https://civitai.com/api/v1/" + path).then(r => { if (!r.ok) throw new Error(`Civitai answered ${r.status} for this link`); return r.json(); });
+    const m = link.match(/modelVersionId=(\d+)/);
+    const v = await api("model-versions/" + (m ? m[1] : (await api("models/" + link.match(/\/models\/(\d+)/)[1])).modelVersions[0].id));
+    if (!/^(LORA|LoCon|DoRA)$/i.test(v.model?.type || "")) throw new Error(`This is a ${v.model?.type || "file"}, not a LoRA`);
+    const f = v.files.find(f => f.primary && /\.safetensors$/i.test(f.name)) || v.files.find(f => /\.safetensors$/i.test(f.name));
+    if (!f?.hashes?.SHA256) throw new Error("This LoRA has no .safetensors file");
+    return { link, label: `${v.model.name}${v.name ? ` ${v.name}` : ""}`, url: f.downloadUrl, sha256: f.hashes.SHA256.toLowerCase(), base: v.baseModel || "", words: (v.trainedWords || []).map(w => w.replace(/^[\s,]+|[\s,]+$/g, "")).filter(Boolean).slice(0, 3) };
+  }
+  const m = link.match(/^https:\/\/huggingface\.co\/([\w.-]+\/[\w.-]+)(?:\/(?:blob|resolve|tree)\/([^/]+)\/?(.*))?$/);
+  if (!m) throw new Error("Paste a Civitai model link or a Hugging Face link");
+  const [, repo, rev = "main", path = ""] = m, enc = s => s.split("/").map(encodeURIComponent).join("/");
+  const r = await fetch(`https://huggingface.co/api/models/${repo}/tree/${encodeURIComponent(rev)}${path && !/\.safetensors$/i.test(path) ? "/" + enc(path) : ""}?recursive=true`,
+                        hfToken ? { headers: { Authorization: "Bearer " + hfToken } } : {});
+  if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? "Hugging Face won't show this repo — it is private or Gated" : `Hugging Face answered ${r.status} for this link`);
+  const files = (await r.json()).filter(f => f.lfs && /\.safetensors$/i.test(f.path) && (!/\.safetensors$/i.test(path) || f.path === decodeURIComponent(path)));
+  if (!files.length) throw new Error("No .safetensors file there");
+  if (files.length > 1) throw new Error(`There are ${files.length} .safetensors files there — open the one you want on Hugging Face and paste its link`);
+  const f = files[0];
+  return { link, label: f.path.split("/").pop().replace(/\.safetensors$/i, ""), url: `https://huggingface.co/${repo}/resolve/${encodeURIComponent(rev)}/${enc(f.path)}`,
+           sha256: f.lfs.oid, base: "", words: [] };
+}
 function checkPack(p) {
   if (!PACK_FORMATS.includes(p?.format)) throw new Error("Not a model pack");
   const engine = p.engine || "comfyui";
@@ -447,8 +522,8 @@ async function fetchPack(url) {
 
 // Read the output — workers differ, so look for all the common shapes:
 // ComfyUI worker [{type:"base64"|"s3_url", data}], "data:...;base64,...", bare base64 and "https://..." are files;
-// strings under keys like content/text (LLM) are text. File type comes from the first bytes.
-const TEXT_KEYS = ["content", "text", "response", "output", "caption"];
+// strings under keys like content/text (LLM) are text, and so is a worker's warning. File type comes from the first bytes.
+const TEXT_KEYS = ["content", "text", "response", "output", "caption", "warning"];
 async function readOutput(out) {
   const files = [], texts = [];
   (function walk(v, key) {
@@ -504,6 +579,8 @@ let apiKey = "";
 apiKey = store.get("key", "") || apiKey;  // kept in this browser like the models; clear it to forget
 let packs = store.get(PACKS_KEY, null) || store.get("packs", []);  // model packs
 let endpoints = store.get("endpoints", {});  // pack id → endpoint ID
+let loras = store.get("loras", {});  // pack id → LoRAs added by link [{link, label, url, sha256, base, words, strength}] — kept apart, so a pack update keeps them
+let loraOpen = "";  // the pack whose «+ LoRA» box is open
 const turns = [];  // {created, prompt, items: [{id, packId, label, seed, w, h, status, error, media: [{url, kind, type}], blobs, text}]}
 let allShown = store.get("all-shown", true);  // Show all / Hide all is remembered; new users see their results right away
 const revealed = new Set();
@@ -566,7 +643,7 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}</div>${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${p.engine === "comfyui" && (loras[p.id] || []).length < 4 && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}</div>${p.engine === "comfyui" ? loraRow(p) : ""}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
   // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
   for (const p of byLabel(packs)) {
@@ -591,14 +668,41 @@ function renderPacks() {
   $("auto-hf-row").hidden = $("auto-hf-how").hidden = !gated.length;
   $("auto-hf-how").innerHTML = gated.length ? `Gated: first press <b>Agree</b> on ${gated.map(p => `<a href="https://huggingface.co/${esc(p.setup_pick)}" target="_blank" rel="noopener">${esc(p.label)}</a>`).join(", ")}, then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token</a> — pick <b>Read</b> — and paste it here.` : "";
   $("auto-go").disabled = !$("auto-ok").checked;
+  // the Civitai token box shows only while a Civitai LoRA is on a model
+  $("civ-row").hidden = $("civ-how").hidden = !Object.values(loras).flat().some(l => /^https:\/\/civitai\./.test(l.link));
   $("auto-or").hidden = $("auto").hidden || !how.size;
   renderCatalog();
+}
+// a model's LoRAs: name (opens its page) · strength · ×, and the link box while «+ LoRA» is open
+function loraRow(p) {
+  const ls = loras[p.id] || [];
+  if (!ls.length && loraOpen !== p.id) return "";
+  return `<div class="loras">${ls.map((l, i) => `<span class="lora" title="${esc([l.base, l.words?.length && `Trigger words, added to the prompt: ${l.words.join(", ")}`].filter(Boolean).join(" · "))}"><a href="${esc(l.link)}" target="_blank" rel="noopener">${esc(l.label)}</a>`
+    + `<input type="number" step="0.05" min="-2" max="2" value="${esc(l.strength)}" data-lora-w="${esc(p.id)}" data-i="${i}" title="Strength"><button type="button" data-lora-del="${esc(p.id)}" data-i="${i}" title="Remove this LoRA">×</button></span>`).join("")}`
+    + (loraOpen === p.id ? `<input data-lora-add="${esc(p.id)}" autocomplete="off" spellcheck="false" placeholder="Civitai or Hugging Face link of a LoRA for ${esc(p.label)}">` : "")
+    + `<span class="hint" data-lora-state="${esc(p.id)}"></span></div>`;
+}
+async function addLora(id, link) {
+  const state = document.querySelector(`[data-lora-state="${CSS.escape(id)}"]`);
+  if (!link.trim() || state.textContent === "Looking it up…") return;
+  state.textContent = "Looking it up…";
+  try {
+    let hf = ""; try { hf = localStorage.getItem("hf-token") || ""; } catch {}
+    const l = await loraInfo(link, hf), ls = loras[id] || [];
+    if (ls.some(x => x.sha256 === l.sha256)) throw new Error("This LoRA is on this model already");
+    loras[id] = [...ls, { ...l, strength: 0.8 }]; store.set("loras", loras);
+    loraOpen = ""; renderPacks();
+  } catch (err) { state.textContent = err.message; }
 }
 // Make it: a model from the list gets its endpoint made by the relay (RunPod's create API can't be called from a page) — opt-in, ticked once
 const RELAY_URL = "https://cobaltpear-relay.cobaltpear.workers.dev";
 const catalogOf = p => catalog.find(c => c.url === p.src);
 const waitingForAuto = () => packs.filter(p => !endpoints[p.id] && p.setup_pick && catalogOf(p));
 try { $("auto-hf").value = localStorage.getItem("hf-token") || ""; } catch {}
+try { $("civ-token").value = localStorage.getItem("civitai-token") || ""; } catch {}
+$("civ-token").addEventListener("change", () => { try { localStorage.setItem("civitai-token", $("civ-token").value.trim()); } catch {} });
+// a Civitai download link gets the token, if there is one, as the request goes out (never kept with the LoRA)
+const withCivitaiToken = ls => { const t = $("civ-token").value.trim(); return t && ls ? ls.map(l => /^https:\/\/civitai\.com\/api\/download\//.test(l.url) ? { ...l, url: l.url + (l.url.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(t) } : l) : ls; };
 $("auto-hf").addEventListener("change", () => { try { localStorage.setItem("hf-token", $("auto-hf").value.trim()); } catch {} });
 try { $("auto-ok").checked = localStorage.getItem("auto-ok") === "1"; } catch {}
 $("auto-ok").addEventListener("change", () => { renderPacks(); try { localStorage.setItem("auto-ok", $("auto-ok").checked ? "1" : ""); } catch {} });
@@ -766,18 +870,27 @@ $("pack-file").addEventListener("change", async e => {
 // a pasted endpoint ID is kept at once — no Done button; leaving the page fills the chat's model list
 try { $("gh-name").value = localStorage.getItem("github-name") || ""; } catch {}
 $("gh-name").addEventListener("input", () => { try { localStorage.setItem("github-name", $("gh-name").value.trim()); } catch {} renderPacks(); });
-$("pack-list").addEventListener("change", e => { if (e.target.dataset.ep !== undefined) { keepEndpointInputs(); store.set("endpoints", endpoints); setTimeout(renderPacks); } });  // not inside the input's own blur
+$("pack-list").addEventListener("change", e => {
+  const w = e.target.dataset.loraW, add = e.target.dataset.loraAdd;
+  if (w) { const l = loras[w]?.[e.target.dataset.i], n = parseFloat(e.target.value); if (l && isFinite(n)) { l.strength = n; store.set("loras", loras); } return; }
+  if (e.target.dataset.ep !== undefined) { keepEndpointInputs(); store.set("endpoints", endpoints); setTimeout(renderPacks); } });  // not inside the input's own blur
+// a LoRA link is looked up as soon as it is pasted (or on Enter) — no Add button
+$("pack-list").addEventListener("paste", e => { const id = e.target.dataset.loraAdd; if (id) setTimeout(() => addLora(id, e.target.value)); });
+$("pack-list").addEventListener("keydown", e => { const id = e.target.dataset.loraAdd; if (id && e.key === "Enter") { e.preventDefault(); addLora(id, e.target.value); } });
 $("pack-list").addEventListener("click", e => {
   const pick = e.target.closest("[data-copy]");  // the whole «Model: …» line copies the name
   if (pick) { const hint = pick.querySelector(".hint-copy"); navigator.clipboard?.writeText(pick.dataset.copy).then(() => { hint.textContent = "copied ✓"; setTimeout(() => hint.textContent = "", 1200); }, () => {}); return; }
+  const open = e.target.dataset.loraOpen, del = e.target.dataset.loraDel;
+  if (open) { keepEndpointInputs(); loraOpen = open; renderPacks(); document.querySelector(`[data-lora-add="${CSS.escape(open)}"]`)?.focus(); return; }
+  if (del) { loras[del].splice(+e.target.dataset.i, 1); if (!loras[del].length) delete loras[del]; store.set("loras", loras); renderPacks(); return; }
   const save = packs.find(p => p.id === e.target.dataset.savePack);
   if (save) return savePack(save);
   const id = e.target.dataset.delPack;
   if (!id) return;
   keepEndpointInputs();
   const ep = endpoints[id], made = store.get("made", []);
-  packs = packs.filter(p => p.id !== id); delete endpoints[id];
-  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints);
+  packs = packs.filter(p => p.id !== id); delete endpoints[id]; delete loras[id];
+  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints); store.set("loras", loras);
   renderPacks();
   // an endpoint Make it made goes too (one click makes it again); hand-made ones stay on RunPod
   if (RELAY_URL && ep && made.includes(ep) && apiKey) {
@@ -1021,10 +1134,13 @@ async function runItem(t, it) {
     if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
     if (takesImage(pack) && !t.image) throw new Error("This model starts from a picture — add one with Picture");
     const image = takesImage(pack) ? await toB64(t.image) : undefined;
-    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image });
+    const input = packInput(pack, { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image, loras: withCivitaiToken(loras[pack.id]) });
     it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
     const out = await runAndWait(endpoints[pack.id], input, st => { it.status = st; render(); }) || {};
+    if (/remote LoRA .* failed: 40[13]/.test(out.error || "")) throw new Error("A LoRA on this model needs you signed in to download it — paste your Civitai token in Models");
     if (out.error) throw new Error(out.error);
+    // the worker names a LoRA that had no effect by its file name — show the name it has here
+    if (out.warning) out.warning = "⚠ " + out.warning.replace(/remote_([0-9a-f]{24})\.safetensors/g, (f, h) => (loras[pack.id] || []).find(l => l.sha256.startsWith(h))?.label || f);
     const { media, text } = await readOutput(out);
     if (!media.length && !text) throw new Error("No image, video, audio or text in the output");
     it.blobs = media.map(m => m.blob);

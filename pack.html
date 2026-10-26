@@ -128,7 +128,10 @@ const ENGINES = {
   comfyui: {
     valid: p => p.workflow && typeof p.workflow === "object",
     input(p, v) {
-      const wf = structuredClone(p.workflow), images = [];
+      const wf = structuredClone(p.workflow), images = [], loras = v.loras || [];
+      // a LoRA's trigger words go in front of the prompt unless it has them already
+      const words = loras.flatMap(l => l.words || []).filter(w => v.prompt != null && !v.prompt.toLowerCase().includes(w.toLowerCase()));
+      if (words.length) v = { ...v, prompt: `${words.join(", ")}, ${v.prompt}` };
       for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) {
         if (k !== "image") { wf[n].inputs[name] = v[k]; continue; }
         // the worker takes pictures as input.images; LoadImage keeps the template's file name and reads it from there
@@ -136,7 +139,12 @@ const ENGINES = {
         wf[n].inputs[name] = file;
         images.push({ name: file, image: v[k] });
       }
-      return images.length ? { workflow: wf, images } : { workflow: wf };
+      const out = images.length ? { workflow: wf, images } : { workflow: wf };
+      if (loras.length) {
+        addLoras(wf, loras);
+        out.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256 }));  // the worker downloads each once and keeps it
+      }
+      return out;
     },
     get: (p, k) => { const [n, name] = p[k]?.[0] || []; return p.workflow[n]?.inputs[name]; },  // the template's own value of a slot
     // every plain value of the workflow (links to other nodes left out): "KSampler · steps: 30".
@@ -166,6 +174,63 @@ const ENGINES = {
     describe: inp => [JSON.stringify(inp, (k, v) => typeof v === "string" && v.length > 300 ? `(picture, ${Math.round(v.length * 3 / 4 / 1024)} KB)` : v, 1)],
   },
 };
+// LoRAs by link — sent with each request, not built into the worker: a LoraLoaderModelOnly per LoRA goes right after each model loader
+// and whatever read the loader's model reads the last LoRA instead. Our ComfyUI workers download input.remote_loras by name.
+const MODEL_LOADER = /^(UNETLoader|UnetLoaderGGUF\w*|CheckpointLoader\w*|ImageOnlyCheckpointLoader)$/;
+const CLIP_LOADER = /^(CLIPLoader\w*|DualCLIPLoader\w*|TripleCLIPLoader|QuadrupleCLIPLoader)$/;
+const loraFile = l => `remote_${l.sha256.slice(0, 24)}.safetensors`;
+// LoRAs go between the model loader and everything that used it. A LoRA can also change the text encoder
+// (trigger words), so where the workflow has one it goes through LoraLoader too — once, even with two models (Wan).
+function addLoras(wf, loras) {
+  const clipId = Object.keys(wf).find(k => CLIP_LOADER.test(wf[k].class_type));
+  let clipDone = false;
+  for (const [id, n] of Object.entries(wf)) {
+    if (!MODEL_LOADER.test(n.class_type)) continue;
+    const clipFrom = clipDone ? null : /^CheckpointLoader/.test(n.class_type) ? [id, 1] : clipId ? [clipId, 0] : null;
+    let model = [id, 0], clip = clipFrom;
+    const chain = loras.map((l, i) => {
+      const key = `lora_${id}_${i}`;
+      wf[key] = clip
+        ? { class_type: "LoraLoader", inputs: { model, clip, lora_name: loraFile(l), strength_model: l.strength ?? 1, strength_clip: l.strength ?? 1 } }
+        : { class_type: "LoraLoaderModelOnly", inputs: { model, lora_name: loraFile(l), strength_model: l.strength ?? 1 } };
+      model = [key, 0];
+      if (clip) clip = [key, 1];
+      return key;
+    });
+    const same = (x, y) => Array.isArray(x) && y && x[0] === y[0] && x[1] === y[1];
+    for (const [k, m] of Object.entries(wf)) if (!chain.includes(k))
+      for (const [name, x] of Object.entries(m.inputs || {})) {
+        if (same(x, [id, 0])) m.inputs[name] = model;
+        else if (same(x, clipFrom)) m.inputs[name] = clip;
+      }
+    if (clipFrom) clipDone = true;
+  }
+}
+// a Civitai or Hugging Face link → the LoRA file: {link, label, url, sha256, base, words}
+async function loraInfo(link, hfToken) {
+  link = link.trim();
+  if (/^https:\/\/civitai\.(com|green|red)\/models\/\d+/.test(link)) {
+    const api = path => fetch("https://civitai.com/api/v1/" + path).then(r => { if (!r.ok) throw new Error(`Civitai answered ${r.status} for this link`); return r.json(); });
+    const m = link.match(/modelVersionId=(\d+)/);
+    const v = await api("model-versions/" + (m ? m[1] : (await api("models/" + link.match(/\/models\/(\d+)/)[1])).modelVersions[0].id));
+    if (!/^(LORA|LoCon|DoRA)$/i.test(v.model?.type || "")) throw new Error(`This is a ${v.model?.type || "file"}, not a LoRA`);
+    const f = v.files.find(f => f.primary && /\.safetensors$/i.test(f.name)) || v.files.find(f => /\.safetensors$/i.test(f.name));
+    if (!f?.hashes?.SHA256) throw new Error("This LoRA has no .safetensors file");
+    return { link, label: `${v.model.name}${v.name ? ` ${v.name}` : ""}`, url: f.downloadUrl, sha256: f.hashes.SHA256.toLowerCase(), base: v.baseModel || "", words: (v.trainedWords || []).map(w => w.replace(/^[\s,]+|[\s,]+$/g, "")).filter(Boolean).slice(0, 3) };
+  }
+  const m = link.match(/^https:\/\/huggingface\.co\/([\w.-]+\/[\w.-]+)(?:\/(?:blob|resolve|tree)\/([^/]+)\/?(.*))?$/);
+  if (!m) throw new Error("Paste a Civitai model link or a Hugging Face link");
+  const [, repo, rev = "main", path = ""] = m, enc = s => s.split("/").map(encodeURIComponent).join("/");
+  const r = await fetch(`https://huggingface.co/api/models/${repo}/tree/${encodeURIComponent(rev)}${path && !/\.safetensors$/i.test(path) ? "/" + enc(path) : ""}?recursive=true`,
+                        hfToken ? { headers: { Authorization: "Bearer " + hfToken } } : {});
+  if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? "Hugging Face won't show this repo — it is private or Gated" : `Hugging Face answered ${r.status} for this link`);
+  const files = (await r.json()).filter(f => f.lfs && /\.safetensors$/i.test(f.path) && (!/\.safetensors$/i.test(path) || f.path === decodeURIComponent(path)));
+  if (!files.length) throw new Error("No .safetensors file there");
+  if (files.length > 1) throw new Error(`There are ${files.length} .safetensors files there — open the one you want on Hugging Face and paste its link`);
+  const f = files[0];
+  return { link, label: f.path.split("/").pop().replace(/\.safetensors$/i, ""), url: `https://huggingface.co/${repo}/resolve/${encodeURIComponent(rev)}/${enc(f.path)}`,
+           sha256: f.lfs.oid, base: "", words: [] };
+}
 function checkPack(p) {
   if (!PACK_FORMATS.includes(p?.format)) throw new Error("Not a model pack");
   const engine = p.engine || "comfyui";
@@ -228,8 +293,8 @@ async function fetchPack(url) {
 
 // Read the output — workers differ, so look for all the common shapes:
 // ComfyUI worker [{type:"base64"|"s3_url", data}], "data:...;base64,...", bare base64 and "https://..." are files;
-// strings under keys like content/text (LLM) are text. File type comes from the first bytes.
-const TEXT_KEYS = ["content", "text", "response", "output", "caption"];
+// strings under keys like content/text (LLM) are text, and so is a worker's warning. File type comes from the first bytes.
+const TEXT_KEYS = ["content", "text", "response", "output", "caption", "warning"];
 async function readOutput(out) {
   const files = [], texts = [];
   (function walk(v, key) {
