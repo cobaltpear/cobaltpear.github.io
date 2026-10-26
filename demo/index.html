@@ -6,10 +6,11 @@
 <title>DEMO Cobalt Pear — API UI</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E">
 <style>
-:root { color-scheme: dark; --bg: #111; --panel: #1b1b1b; --line: #333; --text: #eee; --muted: #999; --accent: #e8e8e8; }
+:root { color-scheme: dark; --bg: #111; --panel: #1b1b1b; --line: #333; --strong: #f2f2f2; --text: #d0d0d0; --muted: #999; --accent: var(--strong); }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, sans-serif; }
+header b, .doc b, .doc strong { color: var(--strong); }
 header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
 header { flex-wrap: wrap; }
 header b { display: flex; align-items: center; gap: 8px; }
@@ -126,8 +127,8 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet.page .card > b { display: block; font-size: 26px; margin: 24px 0 4px; }
 /* About and Guide — the same text as about.html and guide.html, shown in this page */
 .doc { max-width: 720px; margin: 0 auto; padding: 8px 16px 80px; font-size: 16px; line-height: 1.6; }
-.doc h1 { font-size: 26px; line-height: 1.3; margin: 24px 0 4px; }
-.doc h2 { font-size: 18px; margin: 0; }
+.doc h1 { color: var(--strong); font-size: 26px; line-height: 1.3; margin: 24px 0 4px; }
+.doc h2 { color: var(--strong); font-size: 18px; margin: 0; }
 .doc .lead, .doc .muted { color: var(--muted); }
 .doc a { color: var(--text); }
 .doc code, .doc kbd { font: 14px ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; word-break: break-all; }
@@ -169,7 +170,7 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.26.1 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.26.2 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
@@ -291,7 +292,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.26.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.26.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -352,7 +353,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.26.1";
+const VERSION = "2026.10.26.2";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
