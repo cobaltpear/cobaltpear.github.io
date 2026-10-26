@@ -129,9 +129,7 @@ const ENGINES = {
     valid: p => p.workflow && typeof p.workflow === "object",
     input(p, v) {
       const wf = structuredClone(p.workflow), images = [], loras = v.loras || [];
-      // a LoRA's trigger words go in front of the prompt unless it has them already
-      const words = loras.flatMap(l => l.words || []).filter(w => v.prompt != null && !v.prompt.toLowerCase().includes(w.toLowerCase()));
-      if (words.length) v = { ...v, prompt: `${words.join(", ")}, ${v.prompt}` };
+      v = withLoraWords(v, loras);
       for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) {
         if (k !== "image") { wf[n].inputs[name] = v[k]; continue; }
         // the worker takes pictures as input.images; LoadImage keeps the template's file name and reads it from there
@@ -162,12 +160,15 @@ const ENGINES = {
   json: {
     valid: p => p.input && typeof p.input === "object",
     input(p, v) {
-      const inp = structuredClone(p.input);
+      const inp = structuredClone(p.input), loras = p.remote_loras && v.loras || [];
+      v = withLoraWords(v, loras);
       for (const k of SLOTS) if (v[k] != null) for (const path of p[k] || []) {
         let o = inp;
         for (const s of path.slice(0, -1)) o = o[s] ??= {};
         o[path.at(-1)] = v[k];
       }
+      // a worker whose pack says remote_loras (our A1111 workers) downloads them and puts <lora:…> in the prompt itself
+      if (loras.length) inp.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256, strength: l.strength ?? 1 }));
       return inp;
     },
     get: (p, k) => p[k]?.[0]?.reduce((o, s) => o?.[s], p.input),
@@ -178,6 +179,12 @@ const ENGINES = {
 // and whatever read the loader's model reads the last LoRA instead. Our ComfyUI workers download input.remote_loras by name.
 const MODEL_LOADER = /^(UNETLoader|UnetLoaderGGUF\w*|CheckpointLoader\w*|ImageOnlyCheckpointLoader)$/;
 const CLIP_LOADER = /^(CLIPLoader\w*|DualCLIPLoader\w*|TripleCLIPLoader|QuadrupleCLIPLoader)$/;
+// a LoRA's trigger words go in front of the prompt unless it has them already
+function withLoraWords(v, loras) {
+  const words = loras.flatMap(l => l.words || []).filter(w => v.prompt != null && !v.prompt.toLowerCase().includes(w.toLowerCase()));
+  return words.length ? { ...v, prompt: `${words.join(", ")}, ${v.prompt}` } : v;
+}
+const takesLoras = p => p.engine === "comfyui" || !!p.remote_loras;
 const loraFile = l => `remote_${l.sha256.slice(0, 24)}.safetensors`;
 // LoRAs go between the model loader and everything that used it. A LoRA can also change the text encoder
 // (trigger words), so where the workflow has one it goes through LoraLoader too — once, even with two models (Wan).

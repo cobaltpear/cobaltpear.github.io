@@ -96,6 +96,7 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 .sheet .pack [data-ep] { width: 16ch; }
 .sheet .pack .new { font-size: 11px; color: var(--accent); }
+.sheet .pack .no-lora { font-size: 11px; color: var(--muted); opacity: .7; align-self: center; }
 .sheet .pack .gated { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
 .sheet .pack .loras { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; font-size: 12px; }
 .sheet .pack .lora { display: inline-flex; gap: 4px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 1px 4px 1px 8px; max-width: 100%; }
@@ -176,13 +177,14 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.26.3 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.26.4 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
 <div class="news"><time>2026-10-26</time><ul>
+<li>LoRAs on A1111 workers, up to 8 LoRAs per model, LoRAs built into a worker, and a Custom button on Hugging Face SDXL models.</li>
 <li>Add your own LoRAs by pasting a Civitai or Hugging Face link (up to 4), and see a warning when one has no effect</li>
 <li>News is grouped by day.</li>
 </ul></div>
@@ -279,7 +281,7 @@ body.all-shown .veil .full-btn { display: none; }
 <li>Type what you want to see, press Enter. The first time it opens <b class="ui">Settings</b> — paste your RunPod API key from step 6 there, then go back to <b class="ui">Chat</b>.</li>
 </ol>
 <p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p>
-<p class="note">A LoRA: <b class="ui">Models</b> → <b class="ui">+ LoRA</b> under the model → paste the LoRA's Civitai or Hugging Face link. Your worker downloads it with the next picture (a few seconds more, once) — nothing to build again. Pick a LoRA made for that model (its base model shows when you point at it).</p></div>
+<p class="note">A LoRA: <b class="ui">Models</b> → <b class="ui">+ LoRA</b> under the model → paste the LoRA's Civitai or Hugging Face link. Your worker downloads it with the next picture (a few seconds more, once) — nothing to build again. Pick a LoRA made for that model (its base model shows when you point at it). Up to 4 per model (8 if you set <code>REMOTE_LORA_MAX</code> to 8 on the endpoint), on models from a worker repo or «Any Civitai SDXL model» — not on the ones RunPod runs itself (the Hugging Face list). An SDXL model in that list has a <b class="ui">Custom</b> button: it runs the same model on your own copy of «Any Civitai SDXL model» instead, so LoRAs work — no Civitai token needed (it counts as your own worker). If Civitai won't hand one over, a <b class="ui">Civitai token</b> box shows in Models — paste a Read Only token there. A LoRA made for a different model does nothing; the picture then says so with ⚠.</p></div>
 
 <h2 style="margin-top:28px">When something is off</h2>
 <table>
@@ -300,7 +302,7 @@ body.all-shown .veil .full-btn { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.26.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.26.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -363,7 +365,7 @@ body.all-shown .veil .full-btn { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.26.3";
+const VERSION = "2026.10.26.4";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
@@ -392,9 +394,7 @@ const ENGINES = {
     valid: p => p.workflow && typeof p.workflow === "object",
     input(p, v) {
       const wf = structuredClone(p.workflow), images = [], loras = v.loras || [];
-      // a LoRA's trigger words go in front of the prompt unless it has them already
-      const words = loras.flatMap(l => l.words || []).filter(w => v.prompt != null && !v.prompt.toLowerCase().includes(w.toLowerCase()));
-      if (words.length) v = { ...v, prompt: `${words.join(", ")}, ${v.prompt}` };
+      v = withLoraWords(v, loras);
       for (const k of SLOTS) if (v[k] != null) for (const [n, name] of p[k] || []) if (wf[n]) {
         if (k !== "image") { wf[n].inputs[name] = v[k]; continue; }
         // the worker takes pictures as input.images; LoadImage keeps the template's file name and reads it from there
@@ -425,12 +425,15 @@ const ENGINES = {
   json: {
     valid: p => p.input && typeof p.input === "object",
     input(p, v) {
-      const inp = structuredClone(p.input);
+      const inp = structuredClone(p.input), loras = p.remote_loras && v.loras || [];
+      v = withLoraWords(v, loras);
       for (const k of SLOTS) if (v[k] != null) for (const path of p[k] || []) {
         let o = inp;
         for (const s of path.slice(0, -1)) o = o[s] ??= {};
         o[path.at(-1)] = v[k];
       }
+      // a worker whose pack says remote_loras (our A1111 workers) downloads them and puts <lora:…> in the prompt itself
+      if (loras.length) inp.remote_loras = loras.map(l => ({ name: loraFile(l), url: l.url, sha256: l.sha256, strength: l.strength ?? 1 }));
       return inp;
     },
     get: (p, k) => p[k]?.[0]?.reduce((o, s) => o?.[s], p.input),
@@ -441,6 +444,12 @@ const ENGINES = {
 // and whatever read the loader's model reads the last LoRA instead. Our ComfyUI workers download input.remote_loras by name.
 const MODEL_LOADER = /^(UNETLoader|UnetLoaderGGUF\w*|CheckpointLoader\w*|ImageOnlyCheckpointLoader)$/;
 const CLIP_LOADER = /^(CLIPLoader\w*|DualCLIPLoader\w*|TripleCLIPLoader|QuadrupleCLIPLoader)$/;
+// a LoRA's trigger words go in front of the prompt unless it has them already
+function withLoraWords(v, loras) {
+  const words = loras.flatMap(l => l.words || []).filter(w => v.prompt != null && !v.prompt.toLowerCase().includes(w.toLowerCase()));
+  return words.length ? { ...v, prompt: `${words.join(", ")}, ${v.prompt}` } : v;
+}
+const takesLoras = p => p.engine === "comfyui" || !!p.remote_loras;
 const loraFile = l => `remote_${l.sha256.slice(0, 24)}.safetensors`;
 // LoRAs go between the model loader and everything that used it. A LoRA can also change the text encoder
 // (trigger words), so where the workflow has one it goes through LoraLoader too — once, even with two models (Wan).
@@ -637,6 +646,16 @@ async function civitaiInfo(link) {
            sampler: most("sampler") || "Euler a", schedule: most("Schedule type") || "", steps: +most("steps") || 25, cfg: +most("cfgScale") || 6,
            clip: +most("clipSkip") || (base === "SDXL 1.0" ? 1 : 2), negative: most("negativePrompt") || "", words: v.trainedWords || [] };
 }
+// a Hugging Face SDXL model on your own copy of the same worker: it needs a single-file checkpoint, as the worker's build.sh picks it
+async function hfCheckpointInfo(c) {
+  const r = await fetch(`https://huggingface.co/api/models/${c.setup_pick}?blobs=true`);
+  if (!r.ok) throw new Error(`Hugging Face answered ${r.status} for ${c.setup_pick}`);
+  if (!((await r.json()).siblings || []).some(f => !f.rfilename.includes("/") && f.rfilename.endsWith(".safetensors") && f.size > 3e9))
+    throw new Error(`${c.label} has only diffusers folders on Hugging Face, no single-file checkpoint, so a worker copy can't load it — press Add to run it as it is`);
+  const anime = /pony|illustrious|noob|animagine|anime/i.test(c.setup_pick), fast = /turbo|lightning|hyper/i.test(c.setup_pick);
+  return { hf: true, id: "hf-" + c.id, version: `https://huggingface.co/${c.setup_pick}`, name: c.label, version_name: "", base: "SDXL", nsfw: !!c.nsfw,
+           sampler: fast ? "DPM++ SDE" : "DPM++ 2M", schedule: "Karras", steps: fast ? 6 : 30, cfg: fast ? 2 : anime ? 6 : 5, clip: anime ? 2 : 1, negative: "", words: [] };
+}
 // A1111 sampler names (as Civitai shows them) → ComfyUI sampler and scheduler
 const SAMPLERS = { "Euler a": "euler_ancestral", "Euler": "euler", "DPM++ 2M": "dpmpp_2m", "DPM++ 2M SDE": "dpmpp_2m_sde", "DPM++ SDE": "dpmpp_sde", "DPM++ 2S a": "dpmpp_2s_ancestral",
                    "DPM++ 3M SDE": "dpmpp_3m_sde", "DPM2": "dpm_2", "DPM2 a": "dpm_2_ancestral", "Heun": "heun", "LMS": "lms", "DDIM": "ddim", "UniPC": "uni_pc", "LCM": "lcm" };
@@ -652,8 +671,9 @@ function civitaiPack(base, c) {
     if (n.class_type === "CLIPSetLastLayer") n.inputs.stop_at_clip_layer = -c.clip;
   }
   if (c.negative && base.negative?.[0]) wf[base.negative[0][0]].inputs[base.negative[0][1]] = c.negative;
-  return { ...base, id: `civitai-${c.version}`, label: c.name, nsfw: c.nsfw || undefined, workflow: wf, civitai: c,
-           note: `${c.name} ${c.version_name} (${c.base}) — ${c.steps} steps, CFG ${c.cfg}, ${c.sampler}${c.clip > 1 ? `, clip skip ${c.clip}` : ""}, as in its example pictures.${c.words.length ? ` Trigger words: ${c.words.join(", ")}` : ""}`,
+  return { ...base, id: c.id || `civitai-${c.version}`, label: c.name, nsfw: c.nsfw || undefined, workflow: wf, civitai: c,
+           note: c.hf ? `${c.name} from Hugging Face, on your own worker copy — ${c.steps} steps, CFG ${c.cfg}, ${c.sampler} ${c.schedule}${c.clip > 1 ? `, clip skip ${c.clip}` : ""}: plain SDXL settings, its Hugging Face page may suggest others.`
+             : `${c.name} ${c.version_name} (${c.base}) — ${c.steps} steps, CFG ${c.cfg}, ${c.sampler}${c.clip > 1 ? `, clip skip ${c.clip}` : ""}, as in its example pictures.${c.words.length ? ` Trigger words: ${c.words.join(", ")}` : ""}`,
            setup_url: CIVITAI_WORKER, setup: "Use this template → Create a new repository (private), paste your Civitai token and this model's number at the top of its Dockerfile, then connect your copy on RunPod as the guide shows.",
            setup_pick: c.version };
 }
@@ -677,7 +697,7 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Any text (demo)">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${p.engine === "comfyui" && (loras[p.id] || []).length < 4 && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}</div>${p.engine === "comfyui" ? loraRow(p) : ""}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${takesLoras(p) && (loras[p.id] || []).length < 8 && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «Any Civitai SDXL model»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
   // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
   for (const p of byLabel(packs)) {
@@ -688,11 +708,12 @@ function renderPacks() {
   const civ = byLabel(packs).filter(p => !endpoints[p.id] && p.civitai), gh = $("gh-name").value.trim().replace(/^@/, "");
   $("gh-row").hidden = !civ.length;
   const make = p => `https://github.com/new?template_owner=cobaltpear&template_name=civitai-sdxl&owner=%40me&name=${civitaiRepo(p)}&visibility=private`;
-  const add = p => `https://github.com/${encodeURIComponent(gh)}/${civitaiRepo(p)}/new/main?filename=civitai.env&value=${encodeURIComponent(`CIVITAI_MODEL=${p.setup_pick}\nCIVITAI_TOKEN=`)}`;
+  const add = p => `https://github.com/${encodeURIComponent(gh)}/${civitaiRepo(p)}/new/main?filename=civitai.env&value=${encodeURIComponent(`CIVITAI_MODEL=${p.setup_pick}\n${p.civitai.hf ? "" : "CIVITAI_TOKEN="}`)}`;
+  const tok = civ.some(p => !p.civitai.hf);  // a Hugging Face model needs no Civitai token
   // the steps once for all of them; only the links differ, one per model
   const one = civ.length === 1, links = (url, text) => one ? `<a href="${esc(url(civ[0]))}" target="_blank" rel="noopener">${text} ↗</a>`
     : `${text}: ${civ.map(p => `<a href="${esc(url(p))}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(" · ")}`;
-  $("pack-how").innerHTML = (civ.length ? `<div class="how"><b>${esc(civ.map(p => p.label).join(", "))}</b>: 1. ${links(make, "Make your copy")} → <b>Create repository</b>. 2. Make a Civitai token: <a href="https://civitai.com/user/account" target="_blank" rel="noopener">Civitai settings ↗</a> → <b>Security &amp; Apps</b> → <b>API Keys</b> → <b>Add API key</b> → Permission preset <b>Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model, so next time skip this step and reuse it. 3. ${gh ? `${links(add, "Add your token")} → paste it after <code>CIVITAI_TOKEN=</code> → <b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «Add your token» link${one ? "" : "s"}.`} 4. On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} with the settings in <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide step 4 ↗</a> (it shows where each one is on the page) — GPU <b>16 GB</b>, Container disk <b>20 GB</b> — the first build takes about 15 minutes, the first picture up to 10 more. Then paste ${one ? "its ID above" : "each ID next to its model"}.</div>` : "")
+  $("pack-how").innerHTML = (civ.length ? `<div class="how"><b>${esc(civ.map(p => p.label).join(", "))}</b>: 1. ${links(make, "Make your copy")} → <b>Create repository</b>. ${tok ? `2. Make a Civitai token: <a href="https://civitai.com/user/account" target="_blank" rel="noopener">Civitai settings ↗</a> → <b>Security &amp; Apps</b> → <b>API Keys</b> → <b>Add API key</b> → Permission preset <b>Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model, so next time skip this step and reuse it. 3. ${gh ? `${links(add, "Add your token")} → paste it after <code>CIVITAI_TOKEN=</code> → <b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «Add your token» link${one ? "" : "s"}.`} 4.` : `2. ${gh ? `${links(add, "Add the model")} → <b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «Add the model» link${one ? "" : "s"}.`} 3.`} On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} with the settings in <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide step 4 ↗</a> (it shows where each one is on the page) — GPU <b>16 GB</b>, Container disk <b>20 GB</b> — the first build takes about 15 minutes, the first picture up to 10 more. Then paste ${one ? "its ID above" : "each ID next to its model"}.</div>` : "")
     + [...how].map(([k, labels]) => { const [url, steps] = k.split("\n");
     return `<div class="how"><b>${esc(labels.join(", "))}</b>: ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${url.startsWith("https://github.com/") ? "Open the worker" : "Open RunPod"} ↗</a> → ` : ""}${esc(steps).replace("as the guide shows", `as the <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide ↗</a> shows`)} Then paste ${labels.length > 1 ? "each ID next to its model" : "its ID above"}.</div>`; }).join("");
   $("pack-tools").hidden = packs.length + catalog.length < 8;
@@ -713,7 +734,7 @@ function loraRow(p) {
   if (!ls.length && loraOpen !== p.id) return "";
   return `<div class="loras">${ls.map((l, i) => `<span class="lora" title="${esc([l.base, l.words?.length && `Trigger words, added to the prompt: ${l.words.join(", ")}`].filter(Boolean).join(" · "))}"><a href="${esc(l.link)}" target="_blank" rel="noopener">${esc(l.label)}</a>`
     + `<input type="number" step="0.05" min="-2" max="2" value="${esc(l.strength)}" data-lora-w="${esc(p.id)}" data-i="${i}" title="Strength"><button type="button" data-lora-del="${esc(p.id)}" data-i="${i}" title="Remove this LoRA">×</button></span>`).join("")}`
-    + (loraOpen === p.id ? `<input data-lora-add="${esc(p.id)}" autocomplete="off" spellcheck="false" placeholder="Civitai or Hugging Face link of a LoRA for ${esc(p.label)}">` : "")
+    + (loraOpen === p.id ? `<input data-lora-add="${esc(p.id)}" autocomplete="off" spellcheck="false" placeholder="Civitai or Hugging Face link of a LoRA for ${esc(p.label)}"><button type="button" class="pill" data-lora-cancel title="Close without adding">Cancel</button>` : "")
     + `<span class="hint" data-lora-state="${esc(p.id)}"></span></div>`;
 }
 async function addLora(id, link) {
@@ -726,6 +747,7 @@ async function addLora(id, link) {
     if (ls.some(x => x.sha256 === l.sha256)) throw new Error("This LoRA is on this model already");
     loras[id] = [...ls, { ...l, strength: 0.8 }]; store.set("loras", loras);
     loraOpen = ""; renderPacks();
+    if (loras[id].length === 5) document.querySelector(`[data-lora-state="${CSS.escape(id)}"]`).textContent = "Over 4 LoRAs: set REMOTE_LORA_MAX to 8 on the endpoint (RunPod → Manage → Edit Endpoint → Environment Variables)";
   } catch (err) { state.textContent = err.message; }
 }
 // Make it: a model from the list gets its endpoint made by the relay (RunPod's create API can't be called from a page) — opt-in, ticked once
@@ -784,7 +806,7 @@ function renderCatalog() {
   $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
     `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
-    <button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
+    ${own && c.arch === "StableDiffusionXLPipeline" && !c.gated ? `<button class="pill" type="button" data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai SDXL model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
   findPacks();
 }
 // The list is RunPod's own, made the way RunPod makes it: Hugging Face models by downloads, kept if vLLM-Omni runs them.
@@ -815,9 +837,9 @@ async function liveCatalog(known) {
     const k = ARCH_KINDS[arch] || (pt.includes("-to-video") ? (pt.startsWith("image") ? "image-to-video" : "text-to-video") : pt.startsWith("image") ? "image-to-image" : "text-to-image");
     const nsfw = tags.includes("not-for-all-audiences"), gated = !!m.gated;
     const c = ours.get(low);
-    if (c) { out.push({ ...c, kind: KIND_NAMES[k], gated, nsfw }); continue; }
+    if (c) { out.push({ ...c, kind: KIND_NAMES[k], gated, nsfw, arch }); continue; }
     const gb = (params || 0) * 2 / 1024 ** 3, gpu = gb < 18 ? 24 : gb < 40 ? 48 : 80;  // weights at 16 bits
-    out.push({ id: low.replace(/[^a-z0-9]+/g, "-"), label: name.split("/").pop(), kind: KIND_NAMES[k], setup_pick: name, gpu, gated, nsfw,
+    out.push({ id: low.replace(/[^a-z0-9]+/g, "-"), label: name.split("/").pop(), kind: KIND_NAMES[k], setup_pick: name, gpu, gated, nsfw, arch,
                note: `${name} on Hugging Face. Needs a ${gpu} GB GPU.`, url: "hf:" + name });
   }
   return out.sort((a, b) => Object.values(KIND_NAMES).indexOf(a.kind) - Object.values(KIND_NAMES).indexOf(b.kind));
@@ -838,6 +860,11 @@ fetch(CATALOG_URL, { cache: "no-cache" }).then(r => r.json()).then(async j => {
   try { catalog = await liveCatalog(catalog); liveOrder = true; renderPacks(); fillChips(); } catch {}  // Hugging Face out of reach — the fixed list stays
 }).catch(() => {});
 $("catalog").addEventListener("click", async e => {
+  if (e.target.dataset.catCustom) {
+    const c = catalog.find(c => c.url === e.target.dataset.catCustom);
+    try { addPack(civitaiPack(checkPack(await fetchPack(CIVITAI_PACK)), await hfCheckpointInfo(c)), "", CIVITAI_PACK); } catch (err) { alert(err.message); }
+    return;
+  }
   const url = e.target.dataset.cat;
   if (!url) return;
   const c = catalog.find(c => c.url === url);
@@ -910,11 +937,13 @@ $("pack-list").addEventListener("change", e => {
   if (e.target.dataset.ep !== undefined) { keepEndpointInputs(); store.set("endpoints", endpoints); setTimeout(renderPacks); } });  // not inside the input's own blur
 // a LoRA link is looked up as soon as it is pasted (or on Enter) — no Add button
 $("pack-list").addEventListener("paste", e => { const id = e.target.dataset.loraAdd; if (id) setTimeout(() => addLora(id, e.target.value)); });
-$("pack-list").addEventListener("keydown", e => { const id = e.target.dataset.loraAdd; if (id && e.key === "Enter") { e.preventDefault(); addLora(id, e.target.value); } });
+$("pack-list").addEventListener("keydown", e => { const id = e.target.dataset.loraAdd; if (id && e.key === "Enter") { e.preventDefault(); addLora(id, e.target.value); }
+  if (id && e.key === "Escape") { e.preventDefault(); keepEndpointInputs(); loraOpen = ""; renderPacks(); } });
 $("pack-list").addEventListener("click", e => {
   const pick = e.target.closest("[data-copy]");  // the whole «Model: …» line copies the name
   if (pick) { const hint = pick.querySelector(".hint-copy"); navigator.clipboard?.writeText(pick.dataset.copy).then(() => { hint.textContent = "copied ✓"; setTimeout(() => hint.textContent = "", 1200); }, () => {}); return; }
   const open = e.target.dataset.loraOpen, del = e.target.dataset.loraDel;
+  if (e.target.closest("[data-lora-cancel]")) { keepEndpointInputs(); loraOpen = ""; renderPacks(); return; }
   if (open) { keepEndpointInputs(); loraOpen = open; renderPacks(); document.querySelector(`[data-lora-add="${CSS.escape(open)}"]`)?.focus(); return; }
   if (del) { loras[del].splice(+e.target.dataset.i, 1); if (!loras[del].length) delete loras[del]; store.set("loras", loras); renderPacks(); return; }
   const save = packs.find(p => p.id === e.target.dataset.savePack);
