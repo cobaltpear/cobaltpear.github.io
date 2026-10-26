@@ -1,0 +1,163 @@
+{
+  "format": "pack/1",
+  "engine": "comfyui",
+  "kind": "Text To Image",
+  "id": "civitai-sd15",
+  "label": "Any Civitai SD 1.5 model",
+  "note": "Paste a Civitai model link in Cobalt Pear's «Your own worker» to set it up for that model. SD 1.5 settings: 25 steps, CFG 7, DPM++ 2M Karras, 512×768.",
+  "civitai": "sd15",
+  "workflow": {
+    "4": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "model.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 512,
+        "height": 768,
+        "batch_size": 1
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "10",
+          0
+        ],
+        "text": ""
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "10",
+          0
+        ],
+        "text": "worst quality, low quality, blurry"
+      }
+    },
+    "3": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "4",
+          0
+        ],
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "5",
+          0
+        ],
+        "seed": 0,
+        "steps": 25,
+        "cfg": 7,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 1.0
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "3",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "civitai-sd15"
+      }
+    },
+    "10": {
+      "class_type": "CLIPSetLastLayer",
+      "inputs": {
+        "clip": [
+          "4",
+          1
+        ],
+        "stop_at_clip_layer": -1
+      }
+    }
+  },
+  "sizes": [
+    [
+      512,
+      768,
+      "Portrait 2:3"
+    ],
+    [
+      768,
+      512,
+      "Landscape 3:2"
+    ],
+    [
+      512,
+      512,
+      "Square"
+    ],
+    [
+      576,
+      1024,
+      "Tall 9:16"
+    ],
+    [
+      1024,
+      576,
+      "Wide 16:9"
+    ]
+  ],
+  "size_step": 64,
+  "prompt": [
+    [
+      "6",
+      "text"
+    ]
+  ],
+  "negative": [
+    [
+      "7",
+      "text"
+    ]
+  ],
+  "seed": [
+    [
+      "3",
+      "seed"
+    ]
+  ],
+  "width": [
+    [
+      "5",
+      "width"
+    ]
+  ],
+  "height": [
+    [
+      "5",
+      "height"
+    ]
+  ]
+}
