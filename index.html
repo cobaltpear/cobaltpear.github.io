@@ -161,6 +161,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 .sheet .saved { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
 .sheet .saved b { color: var(--text); font-weight: 600; }
 .sheet .add { display: flex; gap: 6px; margin-top: 8px; }
+.sheet .add label.pill { display: inline-flex; align-items: center; margin: 0; padding: 6px 12px; color: var(--text); background: var(--panel); border: 1px solid var(--line); font-size: 13px; }  /* a file picker that looks like the buttons beside it */
 .sheet .file-add { align-items: center; }
 .sheet .file-add label { display: inline-block; margin: 0; background: var(--panel); border: 1px solid var(--line); }
 .sheet .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
@@ -214,15 +215,19 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.26.6 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.27.1 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
 <h1>News</h1>
 <!-- newest first -->
+<div class="news"><time>2026-10-27</time><ul>
+<li>Settings: Backup — save your models, endpoint IDs, LoRAs and settings to a file and load them back after clearing site data or in another browser (keys and tokens are left out).</li>
+<li>Settings: Plugins — add features from a plugin file. Only plugins signed by Cobalt Pear are taken; a changed or unknown one is refused, since a plugin can read your RunPod key.</li>
+</ul></div>
 <div class="news"><time>2026-10-26</time><ul>
-<li>Any FLUX.1, Chroma, Z-Image or SD 1.5 model from Civitai (FLUX.1 and Z-Image from Hugging Face too) — not just SDXL. Plus: Tune changes LoRAs and model settings right from the chat.</li>
-<li>LoRAs: build them into your worker and pick which ones each picture uses, or add them by link. Plus: Fine-tune shows LoRA strengths and each model's own settings.</li>
+<li>Any FLUX.1, Chroma, Z-Image or SD 1.5 model from Civitai (FLUX.1 and Z-Image from Hugging Face too) — not just SDXL.</li>
+<li>LoRAs: build them into your worker and pick which ones each picture uses, or add them by link.</li>
 <li>LoRAs on A1111 workers, up to 8 LoRAs per model, LoRAs built into a worker, and a Custom button on Hugging Face SDXL models.</li>
 <li>Add your own LoRAs by pasting a Civitai or Hugging Face link (up to 4), and see a warning when one has no effect</li>
 <li>News is grouped by day.</li>
@@ -346,7 +351,15 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
   <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
-  <div class="hint">Cobalt Pear 2026.10.26.6 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <label>Plugins</label>
+  <div id="plugin-list"></div>
+  <div class="add"><label class="pill">Add a plugin file…<input id="plugin-load" type="file" accept=".json,application/json" hidden></label></div>
+  <div class="hint" id="plugin-state">A plugin adds features to this page. We vouch only for files from cobaltpear.github.io and cobaltpear.gumroad.com — not for anything from anywhere else, which may leak your RunPod key.</div>
+  <div id="plugin-settings"></div>
+  <label>Backup</label>
+  <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
+  <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
+  <div class="hint">Cobalt Pear 2026.10.27.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -373,12 +386,12 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <script>
 // Cobalt Pear — a serverless page: the browser calls the user's own RunPod Serverless endpoints directly.
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
-// Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html / plus.html.
+// Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.26.6";
+const VERSION = "2026.10.27.1";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
-const PACKS_KEY = "simple-packs";  // its own list, so Plus's list on the same site stays as it is
+const PACKS_KEY = "simple-packs";  // the name from when Plus was a page of its own — kept so saved lists stay
 const GET_URL = "https://cobaltpear.github.io/";
 const CATALOG_URL = "https://cobaltpear.github.io/packs/index.json";  // models anyone can start on RunPod in a few clicks — no GitHub, no build
 const $ = id => document.getElementById(id);
@@ -643,7 +656,7 @@ let loraOpen = "", loraChosen = "";  // the pack whose «+ LoRA» box is open ·
 let loraMode = store.get("lora-mode", {});
 let loraBuilt = store.get("lora-built", {});  // pack id → the LoRAs its worker said it has (output.built_in of the last picture)
 const builtMode = id => loraMode[id] === "built";
-// Fine-tune (Plus): a model's own values changed here, kept apart from the pack so an update keeps them — used only while Fine-tune is on
+// Fine-tune (on only with a plugin that offers it): a model's own values changed here, kept apart from the pack so an update keeps them — used only while Fine-tune is on
 let tweaks = store.get("tweaks", {});  // pack id → {JSON path in the template: value}
 let tuneOpen = new Set();  // packs whose value list is open in Models
 const LORA_STRENGTH = 0.8;  // a LoRA's strength while Fine-tune is off
@@ -938,10 +951,11 @@ async function makeEndpoints() {
   renderPacks(); fillModels();  // the IDs are in their boxes now and the box goes away
 }
 $("auto-go").addEventListener("click", makeEndpoints);
-// Simple takes one worker of your own, Plus any number (models from the catalog never count)
+// one worker of your own, more with a plugin (hooks.ownLimit) — models from the catalog never count
 const CATALOG_DIR = new URL(".", CATALOG_URL).href;
 // a Civitai model is your own worker too (its pack sits in the catalog folder, but the worker is your copy)
-const ownWorkers = () => packs.filter(p => p.civitai || !p.src?.startsWith(CATALOG_DIR) && !p.src?.startsWith("hf:")).length;
+const isOwn = p => !!p.civitai || !p.src?.startsWith(CATALOG_DIR) && !p.src?.startsWith("hf:");
+const ownWorkers = () => packs.filter(isOwn).length;
 // The catalog — models that start on RunPod without GitHub. Add one, follow the line under it, paste the endpoint ID.
 // Steps shared by many models live once in the catalog («setups»); a pack names them as "@<key>". A pack of your own can still carry its own text.
 let catalog = [], setups = {}, liveOrder = false;  // liveOrder: the list came from Hugging Face, most downloaded first
@@ -951,15 +965,15 @@ try { kind = localStorage.getItem("catalog-kind") || ""; } catch {}
 const setupOf = p => !p.setup ? null : p.setup.startsWith("@") ? setups[p.setup.slice(1)] || null : { url: p.setup_url || "", steps: p.setup };
 function renderCatalog() {
   const rest = catalog.filter(c => !packs.some(p => p.src === c.url));
-  const own = customAllowed();  // your own worker is the last tab
-  const kinds = [...new Set(rest.map(c => c.kind || "")), ...(own ? [CUSTOM] : [])];
+  // your own worker is the last tab, always there — past the free one, adding asks to use it instead (addPack)
+  const kinds = [...new Set(rest.map(c => c.kind || "")), CUSTOM];
   $("catalog-box").hidden = !kinds.length;
   shown = kinds.includes(kind) ? kind : kinds[0] ?? "";
   $("kinds").hidden = kinds.length < 2;
   $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
     `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
-    ${own && archFam(c.arch) ? `<button class="pill" type="button" data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai ${CIVITAI_FAMS[archFam(c.arch)].name} model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
+    ${archFam(c.arch) ? `<button class="pill" type="button" data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai ${CIVITAI_FAMS[archFam(c.arch)].name} model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
   findPacks();
 }
 // The list is RunPod's own, made the way RunPod makes it: Hugging Face models by downloads, kept if vLLM-Omni runs them.
@@ -1061,11 +1075,19 @@ function keepEndpointInputs() {
 }
 // a Civitai (or Hugging Face) model on its family's worker, whose pack is fetched again when it changes
 const civitaiAdd = async c => addPack(civitaiPack(checkPack(await fetchPack(civitaiPackUrl(c.fam))), c), "", civitaiPackUrl(c.fam));
+function forgetPack(id) {
+  packs = packs.filter(p => p.id !== id); delete endpoints[id]; delete loras[id]; delete loraMode[id]; delete loraBuilt[id]; delete tweaks[id]; store.set("tweaks", tweaks);
+  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints); store.set("loras", loras); store.set("lora-mode", loraMode); store.set("lora-built", loraBuilt);
+}
 function addPack(data, name, src) {
   // a pack, or a ComfyUI API workflow (bare, or inside {"prompt": …})
   const p = checkPack(data.format ? data : detectPack(data.prompt && !data.class_type && typeof data.prompt === "object" ? data.prompt : data, name));
   if (src) p.src = src;
   keepEndpointInputs();
+  // at the limit of your own workers, another one asks to take that one's place
+  const old = isOwn(p) && !customAllowed() ? packs.filter(x => isOwn(x) && x.id !== p.id) : [];
+  if (old.length && !confirm(`Use «${p.name}» instead of ${old.map(x => `«${x.name}»`).join(", ")}?\n\n${old.length > 1 ? "They leave" : "It leaves"} Models with ${old.length > 1 ? "their" : "its"} endpoint ID and LoRAs.`)) return false;
+  for (const x of old) forgetPack(x.id);
   packs = packs.filter(x => x.id !== p.id).concat(p);
   store.set(PACKS_KEY, packs);
   renderPacks();
@@ -1114,8 +1136,7 @@ $("pack-list").addEventListener("click", e => {
   if (!id) return;
   keepEndpointInputs();
   const ep = endpoints[id], made = store.get("made", []);
-  packs = packs.filter(p => p.id !== id); delete endpoints[id]; delete loras[id]; delete loraMode[id]; delete loraBuilt[id]; delete tweaks[id]; store.set("tweaks", tweaks);
-  store.set(PACKS_KEY, packs); store.set("endpoints", endpoints); store.set("loras", loras); store.set("lora-mode", loraMode); store.set("lora-built", loraBuilt);
+  forgetPack(id);
   renderPacks();
   // an endpoint Make it made goes too (one click makes it again); hand-made ones stay on RunPod
   if (RELAY_URL && ep && made.includes(ep) && apiKey) {
@@ -1184,11 +1205,34 @@ guideSteps.forEach((c, i) => {
 });
 $("models-form").addEventListener("submit", e => { e.preventDefault(); location.hash = ""; });  // Done = back to the chat
 $("settings-form").addEventListener("submit", e => { e.preventDefault(); location.hash = ""; });  // Enter = back to the chat
+// Backup — everything this site keeps in localStorage (plugins too) except keys and tokens; results stay in IndexedDB
+const SECRET = ["key", "hf-token", "civitai-token"];
+const backupKeys = () => Object.keys(localStorage).filter(k => k.startsWith(NS) && (NS || !k.startsWith("demo.")) && !SECRET.includes(k.slice(NS.length)));
+$("backup-save").addEventListener("click", () => {
+  const data = {};
+  try { for (const k of backupKeys()) data[k.slice(NS.length)] = localStorage.getItem(k); } catch {}
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({ app: "cobaltpear", version: VERSION, saved: new Date().toISOString(), data }, null, 1)], { type: "application/json" }));
+  a.download = `cobaltpear-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1e4);
+});
+$("backup-load").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  let b;
+  try { b = JSON.parse(await f.text()); } catch {}
+  if (b?.app !== "cobaltpear" || typeof b.data !== "object") { $("backup-state").textContent = "That file is not a Cobalt Pear backup."; return; }
+  try { for (const [k, v] of Object.entries(b.data)) if (!SECRET.includes(k) && typeof v === "string") localStorage.setItem(NS + k, v); } catch { $("backup-state").textContent = "This browser would not save it."; return; }
+  location.reload();  // every list is read at start, so start again with what came back
+});
 
 // ---- Models ----
 const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
-const customAllowed = () => ownWorkers() < 1;
-const tuneOn = () => false;
+// what plugins (Settings → Plugins) can change — the page itself takes one worker of your own and has no Fine-tune
+const hooks = { ownLimit: 1, tune: () => false };
+const customAllowed = () => ownWorkers() < hooks.ownLimit;
+const tuneOn = () => !!hooks.tune();
 function showTune() { document.body.classList.toggle("tune", tuneOn()); fillLoras(); }
 // the plain values of a model's request that Fine-tune can change: not the prompt, seed, size or picture (the chat sets those), not file names.
 // RunPod's own worker (the Hugging Face list) takes only those, so it has none.
@@ -1620,6 +1664,55 @@ function openViewer(src) {
 fillModels(); showTune();
 $("plus").href = PLUS_URL;
 $("plus").hidden = !PLUS_URL;
+// ---- Plugins ----
+// A plugin is a file ({id, name, version, api, code, sig}) kept in this browser. It runs only if Cobalt Pear's signature over it checks out,
+// so a changed or made-up one (one that would read the RunPod key, say) is refused. It gets the small «app» below and nothing else is promised.
+const PLUGIN_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6UWuGyGP/5wze7xoD45YNSwEQXgvdWTX7esJ1/EmlcF4fn65RenQiVO3Nh7VU4ldSucP04j7IrkDbUepKv3L0g==";  // public half of tools/sign-plugin.py's key
+const PLUGIN_API = 1;
+const BUNDLED = [];  // the demo build puts plugins here to show them
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+let pluginKey = null;
+async function signedOk(x) {
+  try {
+    pluginKey ??= await crypto.subtle.importKey("spki", b64(PLUGIN_KEY), { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"]);
+    return await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, pluginKey, b64(x.sig),
+      new TextEncoder().encode(JSON.stringify([x.id, x.name, x.version, x.api, x.code])));
+  } catch { return false; }
+}
+const pluginApp = { api: PLUGIN_API, hooks, store, $, esc,
+  settings: html => { const d = document.createElement("div"); d.innerHTML = html; $("plugin-settings").append(d); return d; },
+  refresh: () => { fillModels(); showTune(); if (view === "models") renderPacks(); } };
+const plugins = store.get("plugins", []), running = [];
+function showPlugins() {
+  $("plugin-list").innerHTML = running.map(x => `<div class="add"><span>✓ ${esc(x.name)} <span class="meta">${esc(x.version)}</span></span>${BUNDLED.includes(x) ? "" : `<button class="pill" type="button" data-plugin-del="${esc(x.id)}">Remove</button>`}</div>`).join("");
+}
+async function startPlugins() {
+  for (const x of [...BUNDLED, ...plugins.filter(x => !BUNDLED.some(b => b.id === x.id))]) {
+    if (x.api !== PLUGIN_API || !await signedOk(x)) continue;
+    try { new Function("app", x.code)(pluginApp); running.push(x); } catch (e) { console.error(`plugin ${x.name}:`, e); }
+  }
+  showPlugins();
+  if (running.length) pluginApp.refresh();
+}
+$("plugin-load").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  let x;
+  try { x = JSON.parse(await f.text()); } catch {}
+  const say = t => { $("plugin-state").textContent = t; };
+  if (x?.app !== "cobaltpear-plugin" || typeof x.code !== "string") return say("That file is not a Cobalt Pear plugin.");
+  if (!await signedOk(x)) return say("Refused: this plugin is not signed by Cobalt Pear, or was changed after. Delete the file — it may be made to steal your RunPod key.");
+  if (x.api !== PLUGIN_API) return say(`«${x.name}» ${x.version} needs ${x.api > PLUGIN_API ? "a newer Cobalt Pear — update the page" : "an update — get its newest version"}.`);
+  store.set("plugins", plugins.filter(p => p.id !== x.id).concat(x));
+  location.reload();  // a plugin starts with the page, so an old version never keeps running beside the new one
+});
+$("plugin-list").addEventListener("click", e => {
+  const id = e.target.closest("[data-plugin-del]")?.dataset.pluginDel;
+  if (!id) return;
+  store.set("plugins", plugins.filter(p => p.id !== id));
+  location.reload();
+});
+startPlugins();
 // ---- Update ----
 // The page is a file people keep, so it asks once per load whether a newer one is out and shows a link — nothing changes by itself
 const newer = (a, b) => {
