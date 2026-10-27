@@ -215,7 +215,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.27.1 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.27.2 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
@@ -359,7 +359,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.27.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.27.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -388,7 +388,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.27.1";
+const VERSION = "2026.10.27.2";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // the name from when Plus was a page of its own — kept so saved lists stay
@@ -1086,7 +1086,7 @@ function addPack(data, name, src) {
   keepEndpointInputs();
   // at the limit of your own workers, another one asks to take that one's place
   const old = isOwn(p) && !customAllowed() ? packs.filter(x => isOwn(x) && x.id !== p.id) : [];
-  if (old.length && !confirm(`Use «${p.name}» instead of ${old.map(x => `«${x.name}»`).join(", ")}?\n\n${old.length > 1 ? "They leave" : "It leaves"} Models with ${old.length > 1 ? "their" : "its"} endpoint ID and LoRAs.`)) return false;
+  if (old.length && !confirm(`Use «${p.label}» instead of ${old.map(x => `«${x.label}»`).join(", ")}?\n\n${old.length > 1 ? "They leave" : "It leaves"} Models with ${old.length > 1 ? "their" : "its"} endpoint ID and LoRAs.`)) return false;
   for (const x of old) forgetPack(x.id);
   packs = packs.filter(x => x.id !== p.id).concat(p);
   store.set(PACKS_KEY, packs);
@@ -1684,7 +1684,7 @@ const pluginApp = { api: PLUGIN_API, hooks, store, $, esc,
   refresh: () => { fillModels(); showTune(); if (view === "models") renderPacks(); } };
 const plugins = store.get("plugins", []), running = [];
 function showPlugins() {
-  $("plugin-list").innerHTML = running.map(x => `<div class="add"><span>✓ ${esc(x.name)} <span class="meta">${esc(x.version)}</span></span>${BUNDLED.includes(x) ? "" : `<button class="pill" type="button" data-plugin-del="${esc(x.id)}">Remove</button>`}</div>`).join("");
+  $("plugin-list").innerHTML = running.map(x => `<div class="add"><span>✓ ${esc(x.name)} · ${esc(x.version)}</span>${BUNDLED.includes(x) ? "" : `<button class="pill" type="button" data-plugin-del="${esc(x.id)}">Remove</button>`}</div>`).join("");
 }
 async function startPlugins() {
   for (const x of [...BUNDLED, ...plugins.filter(x => !BUNDLED.some(b => b.id === x.id))]) {
