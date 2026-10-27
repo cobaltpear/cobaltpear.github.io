@@ -215,7 +215,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.27.4 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.27.5 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
@@ -359,7 +359,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.27.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.27.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -422,7 +422,14 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.27.4";
+const VERSION = "2026.10.27.5";
+// The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
+// Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
+// The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
+const MESSAGES = {"en": {"lora.ask": "How should {{model}} get its LoRAs? You can change it later.", "lora.which": "Which to pick?", "lora.built": "Built into the worker", "lora.built.hint": "<b>Same LoRAs every time.<\/b> No wait at each picture; changing them means building the worker again.", "lora.link": "By link", "lora.link.hint": "<b>Trying many LoRAs.<\/b> Nothing to build; the first picture after the worker restarts waits for the download. Up to 4 at once.", "cancel": "Cancel"}};
+const LANG = navigator.languages.map(l => l.split("-")[0]).find(l => MESSAGES[l]) || "en";
+const tr = (key, vals = {}) => (MESSAGES[LANG][key] ?? MESSAGES.en[key] ?? key).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, n) => vals[n] ?? m);
+document.documentElement.lang = LANG;
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // the name from when Plus was a page of its own — kept so saved lists stay
@@ -745,11 +752,18 @@ async function civitaiInfo(link) {
            clip: +most("clipSkip") || (base === "SDXL 1.0" || fam === "sd15" ? 1 : 2), negative: most("negativePrompt") || "", words: v.trainedWords || [] };
 }
 // a Hugging Face SDXL, FLUX.1 or Z-Image model on your own copy of the same worker: it needs a single-file model, as the worker's build.sh picks it
+const singleFiles = new Map();  // repo → promise of whether it has one, asked once
+function singleFile(c) {
+  const F = CIVITAI_FAMS[archFam(c.arch) || "sdxl"], key = c.setup_pick;
+  if (!singleFiles.has(key)) singleFiles.set(key, fetch(`https://huggingface.co/api/models/${key}?blobs=true`).then(async r => {
+    if (!r.ok) throw new Error(`Hugging Face answered ${r.status} for ${key}`);
+    return ((await r.json()).siblings || []).some(f => !f.rfilename.includes("/") && f.rfilename.endsWith(".safetensors") && f.size > F.min);
+  }).catch(err => { singleFiles.delete(key); throw err; }));
+  return singleFiles.get(key);
+}
 async function hfCheckpointInfo(c) {
   const fam = archFam(c.arch) || "sdxl", F = CIVITAI_FAMS[fam];
-  const r = await fetch(`https://huggingface.co/api/models/${c.setup_pick}?blobs=true`);
-  if (!r.ok) throw new Error(`Hugging Face answered ${r.status} for ${c.setup_pick}`);
-  if (!((await r.json()).siblings || []).some(f => !f.rfilename.includes("/") && f.rfilename.endsWith(".safetensors") && f.size > F.min))
+  if (!(await singleFile(c)))
     throw new Error(`${c.label} has only diffusers folders on Hugging Face, no single-file checkpoint, so a worker copy can't load it — press Add to run it as it is`);
   if (fam !== "sdxl") { const schnell = /schnell/i.test(c.setup_pick);
     return { fam, hf: true, gated: !!c.gated || undefined, id: "hf-" + c.id, version: `https://huggingface.co/${c.setup_pick}`, name: c.label, version_name: "", base: F.name, nsfw: !!c.nsfw,
@@ -854,14 +868,15 @@ function renderPacks() {
   renderCatalog();
 }
 // a model's LoRAs: name (opens its page) · strength · ×, and the link box while «+ LoRA» is open
+const DOCS = "https://cobaltpear.github.io/docs/";  // the manual — the long explanations live there
 function loraRow(p) {
   const ls = loras[p.id] || [];
   if (!ls.length && loraOpen !== p.id) return "";
   // with no LoRAs yet, «+ LoRA» always explains the two ways first (the last pick shows as chosen)
-  if (loraOpen === p.id && (!loraMode[p.id] || !ls.length && loraChosen !== p.id)) return `<div class="lora-choice"><b>How should ${esc(p.label)} get its LoRAs? You can change it later.</b>`
-    + `<button type="button" class="pill" data-lora-pick="built" data-id="${esc(p.id)}" aria-pressed="${loraMode[p.id] === "built"}">Built into the worker</button><span>For LoRAs you keep using. Every picture starts without waiting, and you pick which ones each picture uses (LoRA, next to Send). Adding or changing one means building the worker again. There is no set number of LoRAs — the limit is time: RunPod stops a build after 30 minutes, and each LoRA makes the build longer and the worker bigger (the app shows how many GB they add).</span>`
-    + `<button type="button" class="pill" data-lora-pick="link" data-id="${esc(p.id)}" aria-pressed="${loraMode[p.id] === "link"}">By link</button><span>For trying LoRAs out. Paste a link and use it on the next picture — nothing to build. The first picture with a new LoRA waits for its download, and again after the worker has been idle a while. Up to 4 at once — for more, on RunPod open this endpoint → <b>Manage</b> → <b>Edit Endpoint</b> → <b>Environment Variables</b> → add <code>REMOTE_LORA_MAX</code> with the value <code>8</code> → <b>Save Endpoint</b>.</span>`
-    + `<span></span><span><button type="button" class="pill" data-lora-cancel>Cancel</button></span></div>`;
+  if (loraOpen === p.id && (!loraMode[p.id] || !ls.length && loraChosen !== p.id)) return `<div class="lora-choice"><b>${tr("lora.ask", { model: esc(p.label) })}</b> <a href="${DOCS}loras/" target="_blank" rel="noopener">${tr("lora.which")} ↗</a>`
+    + `<button type="button" class="pill" data-lora-pick="built" data-id="${esc(p.id)}" aria-pressed="${loraMode[p.id] === "built"}">${tr("lora.built")}</button><span>${tr("lora.built.hint")}</span>`
+    + `<button type="button" class="pill" data-lora-pick="link" data-id="${esc(p.id)}" aria-pressed="${loraMode[p.id] === "link"}">${tr("lora.link")}</button><span>${tr("lora.link.hint")}</span>`
+    + `<span></span><span><button type="button" class="pill" data-lora-cancel>${tr("cancel")}</button></span></div>`;
   return `<div class="loras">${loraMode[p.id] ? `<span class="lora-way" title="How the LoRAs reach the worker">LoRAs:${[["built", "Built in", "Built into the worker: no wait at each picture; changing them means building again"], ["link", "By link", "Downloaded with the picture: nothing to build; the first picture waits"]].map(([m, t, tip]) =>
     `<button type="button" data-lora-pick="${m}" data-id="${esc(p.id)}" aria-pressed="${loraMode[p.id] === m}" title="${tip}">${t}</button>`).join("")}</span>` : ""}${ls.map((l, i) => `<span class="lora" title="${esc([l.base, l.words?.length && `Trigger words, added to the prompt: ${l.words.join(", ")}`].filter(Boolean).join(" · "))}"><a href="${esc(l.link)}" target="_blank" rel="noopener">${esc(l.label)}</a>`
     + `<input type="number" step="0.05" min="-2" max="2" value="${esc(l.strength)}" data-lora-w="${esc(p.id)}" data-i="${i}" title="Strength"><button type="button" data-lora-del="${esc(p.id)}" data-i="${i}" title="Remove this LoRA">×</button></span>`).join("")}`
@@ -997,6 +1012,14 @@ const CUSTOM = "custom";
 let kind = "", shown = "";  // the tab picked last, and the one shown (the first, until the picked one exists); a search looks in every tab
 try { kind = localStorage.getItem("catalog-kind") || ""; } catch {}
 const setupOf = p => !p.setup ? null : p.setup.startsWith("@") ? setups[p.setup.slice(1)] || null : { url: p.setup_url || "", steps: p.setup };
+// Custom shows once Hugging Face says the model has a single file — a model with only diffusers folders can't go on a worker copy.
+// Asked only for the rows on screen, so a long list doesn't make a request per model.
+const customSeen = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  customSeen.unobserve(e.target);
+  const b = e.target.querySelector("[data-cat-custom]"), c = catalog.find(c => c.url === b.dataset.catCustom);
+  if (c) singleFile(c).then(ok => { b.hidden = !ok; }, () => {});
+}));
 function renderCatalog() {
   const rest = catalog.filter(c => !packs.some(p => p.src === c.url || p.id === "hf-" + c.id));  // added, or added as Custom
   // your own worker is the last tab, always there — past the free one, adding asks to use it instead (addPack)
@@ -1007,8 +1030,9 @@ function renderCatalog() {
   $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
     `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
-    ${archFam(c.arch) ? `<button class="pill" type="button" data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai ${CIVITAI_FAMS[archFam(c.arch)].name} model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
+    ${archFam(c.arch) ? `<button class="pill" type="button" hidden data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai ${CIVITAI_FAMS[archFam(c.arch)].name} model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
   findPacks();
+  $("catalog").querySelectorAll("[data-cat-custom]").forEach(b => customSeen.observe(b.closest(".pack")));
 }
 // The list is RunPod's own, made the way RunPod makes it: Hugging Face models by downloads, kept if vLLM-Omni runs them.
 // So the order follows popularity, new models come in and dropped ones go by themselves (models already added stay).
