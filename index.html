@@ -200,7 +200,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <body>
 <header>
   <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</a></b>
-  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#about">About</a><a href="#news">News</a><a href="#guide">Guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub">Feedback ↗</a></nav>
+  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#about">About</a><a href="#news">News</a><a href="#guide">Guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
@@ -215,7 +215,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.27.2 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.27.3 · <a href="#news">What's new</a></p>
 
 </section>
 <section id="v-news" class="doc" hidden>
@@ -359,7 +359,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.27.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a></div>
+  <div class="hint">Cobalt Pear 2026.10.27.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -388,7 +388,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.27.2";
+const VERSION = "2026.10.27.3";
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
 const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // the name from when Plus was a page of its own — kept so saved lists stay
@@ -1096,9 +1096,15 @@ $("pack-add").addEventListener("click", async () => {
   const url = $("pack-url").value.trim();
   if (!url) return;
   try {
-    if (civitaiLink(url)) await civitaiAdd(await civitaiInfo(url));
-    else addPack(await fetchPack(url), url.split("/").pop(), url);
-    $("pack-url").value = "";
+    let added;
+    if (civitaiLink(url)) added = await civitaiAdd(await civitaiInfo(url));
+    else {
+      const d = await fetchPack(url), fam = typeof d.civitai === "string" && CIVITAI_FAMS[d.civitai];  // its pack names only the family
+      // the «Any Civitai … model» worker (or a copy of it) — the model it runs is the Civitai link, not the repo
+      if (fam) throw new Error(`That is the worker for any Civitai ${fam.name} model. Paste the model's own Civitai link here instead (from the address bar on its Civitai page) — it gets the model's name and settings.`);
+      added = addPack(d, url.split("/").pop(), url);
+    }
+    if (added !== false) $("pack-url").value = "";  // No to swapping your own worker keeps the link to try again
   } catch (err) { alert(err.message); }
 });
 $("pack-file").addEventListener("change", async e => {
