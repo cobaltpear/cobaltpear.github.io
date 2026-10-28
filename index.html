@@ -187,10 +187,6 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 .doc table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
 .doc td { border-top: 1px solid var(--line); padding: 6px 8px 6px 0; vertical-align: top; }
 .doc td:first-child { color: var(--muted); width: 42%; }
-.doc .news { margin: 10px 0; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
-.doc .news time { color: var(--muted); font-size: 13px; display: block; }
-.doc .news ul { margin: 6px 0 0; padding-left: 18px; }
-.doc .news li + li { margin-top: 6px; }
 .doc .note { margin-top: 8px; font-size: 14px; color: var(--muted); }
 .doc ul.points { padding-left: 22px; line-height: 1.8; }
 .doc .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
@@ -200,7 +196,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <body>
 <header>
   <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</a></b>
-  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#about">About</a><a href="#news">News</a><a href="#guide">Guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
+  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#about">About</a><a href="#guide">Guide</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
@@ -215,35 +211,8 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
 </ul>
 <div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.28.1 · <a href="#news">What's new</a></p>
+<p class="muted">Version 2026.10.28.2 · <a href="https://cobaltpear.github.io/docs/news/">What's new</a></p>
 
-</section>
-<section id="v-news" class="doc" hidden>
-<h1>News</h1>
-<!-- newest first -->
-<div class="news"><time>2026-10-27</time><ul>
-<li>Settings: Backup — save your models, endpoint IDs, LoRAs and settings to a file and load them back after clearing site data or in another browser (keys and tokens are left out).</li>
-<li>Settings: Plugins — add features from a plugin file. Only plugins signed by Cobalt Pear are taken; a changed or unknown one is refused, since a plugin can read your RunPod key.</li>
-</ul></div>
-<div class="news"><time>2026-10-26</time><ul>
-<li>Any FLUX.1, Chroma, Z-Image or SD 1.5 model from Civitai (FLUX.1 and Z-Image from Hugging Face too) — not just SDXL.</li>
-<li>LoRAs: build them into your worker and pick which ones each picture uses, or add them by link.</li>
-<li>LoRAs on A1111 workers, up to 8 LoRAs per model, LoRAs built into a worker, and a Custom button on Hugging Face SDXL models.</li>
-<li>Add your own LoRAs by pasting a Civitai or Hugging Face link (up to 4), and see a warning when one has no effect</li>
-<li>News is grouped by day.</li>
-</ul></div>
-<div class="news"><time>2026-10-25</time><ul>
-<li>Edit and picture-to-video templates: your picture now reaches the worker.</li>
-<li>Add any SDXL model from Civitai with its link, make a pack by filling in boxes, and clearer setup steps for RunPod and Civitai</li>
-</ul></div>
-<div class="news"><time>2026-10-24</time><ul>
-<li>Models: each model you added shows what it is — Text To Image, Image To Video…, NSFW, Gated, or Custom for your own worker. «Use as picture» no longer changes your models; with none that takes a picture, the picture says it is left out.</li>
-<li>Picture: pick one you made here, right from the Picture button — and «Use as picture» under every result, even before you have a model that takes one.</li>
-<li>Negative: with several models chosen, leave it empty and each gets its own — type words to send the same to all, ✕ to go back. Feedback is now in the top menu.</li>
-<li>Chat: all models sit in one list, grouped like the Models tabs — click to tick them on or off, so the row stays short however many you have.</li>
-<li>Make it: pick any of 127 models, tick «Let Cobalt Pear make it», and it's ready on your RunPod in a few minutes.</li>
-<li>Cobalt Pear is out. Start with Z-Image Turbo from the Models list — no GitHub, no build.</li>
-</ul></div>
 </section>
 <section id="v-guide" class="doc" hidden>
 <h1>Set up your own image generator</h1>
@@ -359,7 +328,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.28.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.28.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
@@ -388,7 +357,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.28.1";
+const VERSION = "2026.10.28.2";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -1202,8 +1171,8 @@ function leaveModels() {
   const then = afterModels; afterModels = null;
   if (usable().length && then) then();
 }
-// Chat · Models · Settings · About · News · Guide are views of this one page (#models, #settings, #about, #news, #guide) — nothing opens a new tab and Back works
-const views = { models: $("v-models"), settings: $("v-settings"), about: $("v-about"), news: $("v-news"), guide: $("v-guide") }, scrollAt = {};
+// Chat · Models · Settings · About · Guide are views of this one page (#models, #settings, #about, #guide) — Back works; News lives in the manual
+const views = { models: $("v-models"), settings: $("v-settings"), about: $("v-about"), guide: $("v-guide") }, scrollAt = {};
 let view = null;
 function showView() {
   const v = location.hash.slice(1) in views ? location.hash.slice(1) : "";
@@ -1616,7 +1585,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="#news">News</a> · <a href="#guide">Setup guide</a></div>`);
+  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a> · <a href="#guide">Setup guide</a></div>`);
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {
