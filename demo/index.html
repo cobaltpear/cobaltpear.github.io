@@ -106,7 +106,11 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack .lora button { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; padding: 0 2px; }
 .sheet .pack .loras [data-lora-add] { flex: 1; min-width: 20ch; font-size: 12px; }
 .sheet .pack .save-pack { background: none; font: inherit; font-size: 11px; color: var(--text); cursor: pointer; }
-.sheet #auto { margin-top: 8px; font-size: 13px; }
+.sheet #auto { font-size: 13px; }
+/* the Civitai token, «Make it» and «by hand» each in a box of their own («by hand» only when «Make it» shows too) */
+.sheet #auto, .sheet #hand.boxed, .sheet #civ-box { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.sheet .box-title { margin-bottom: 6px; color: var(--strong); font-size: 13px; font-weight: 600; }
+.sheet #hand.boxed .how:first-child, .sheet #hand.boxed .box-title + .how { margin-top: 0; }
 .sheet #auto label { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--text); font-size: 13px; cursor: pointer; }
 .sheet #auto label input { width: auto; flex: none; margin: 2px 0 0; }
 .sheet #auto label a { color: inherit; }
@@ -114,8 +118,10 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet #auto button:disabled { opacity: .5; cursor: default; }
 [data-tune-reset]:disabled { opacity: .5; cursor: default; }
 .sheet .how { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.sheet .how ol { margin: 4px 0 0; padding-left: 20px; }
+.sheet .how li + li { margin-top: 2px; }
 .sheet .how code { font: 13px ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 0 4px; }
-.sheet .how code[data-copy] { cursor: pointer; word-break: break-all; }
+.sheet .how .copy { font-size: 11px; padding: 0 8px; margin-left: 2px; cursor: pointer; }
 .sheet .pack .lora-choice { display: grid; grid-template-columns: auto 1fr; gap: 6px 8px; align-items: start; margin-top: 6px; font-size: 12px; color: var(--muted); }
 .sheet .pack .lora-choice b { grid-column: 1 / -1; color: var(--text); }
 .sheet .pack .lora-choice button { white-space: nowrap; }
@@ -170,145 +176,17 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 .sheet.page { position: static; background: none; padding: 8px 16px 80px; overflow: visible; }
 .sheet.page .card { max-width: 720px; margin: 0 auto; background: none; border: 0; padding: 0; }
 .sheet.page .card > b { display: block; font-size: 26px; margin: 24px 0 4px; }
-/* About and Guide — the same text as about.html and guide.html, shown in this page */
-.doc { max-width: 720px; margin: 0 auto; padding: 8px 16px 80px; font-size: 16px; line-height: 1.6; }
-.doc h1 { color: var(--strong); font-size: 26px; line-height: 1.3; margin: 24px 0 4px; }
-.doc h2 { color: var(--strong); font-size: 18px; margin: 0; }
-.doc .lead, .doc .muted { color: var(--muted); }
-.doc a { color: var(--text); }
-.doc code, .doc kbd { font: 14px ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; word-break: break-all; }
-.doc b.ui { white-space: nowrap; }
-.doc .step { margin: 14px 0; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
-.doc .step > label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-.doc .step input { width: 20px; height: 20px; padding: 0; flex: none; accent-color: #8fb3ff; }
-.doc .step.done { opacity: .55; }
-.doc .step ol, .doc .step ul { margin: 8px 0 0; padding-left: 22px; }
-.doc .step li { margin: 4px 0; }
-.doc table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
-.doc td { border-top: 1px solid var(--line); padding: 6px 8px 6px 0; vertical-align: top; }
-.doc td:first-child { color: var(--muted); width: 42%; }
-.doc .note { margin-top: 8px; font-size: 14px; color: var(--muted); }
-.doc ul.points { padding-left: 22px; line-height: 1.8; }
-.doc .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
-.doc .links a { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
 </style>
 </head>
 <body>
 <header>
   <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear <span class="meta">· demo</span></a></b>
-  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#about">About</a><a href="#guide">Guide</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
+  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="https://cobaltpear.github.io/docs/" target="_blank" rel="noopener">Manual ↗</a><a href="https://cobaltpear.github.io/docs/setup/" target="_blank" rel="noopener">Setup ↗</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
 </header>
 <main id="feed"></main>
-<section id="v-about" class="doc" hidden>
-<h1>Prompt in, picture out — on your own RunPod.</h1>
-<p class="lead">Cobalt Pear is an API UI — a one-page app for RunPod Serverless. Pick a model, paste your endpoint ID, and just type.</p>
-<ul class="points">
-<li>Just type — no GPU, no ComfyUI, no install.</li>
-<li>Your own RunPod: your own GPU, your own rules — you pay only for the pictures you make.</li>
-<li>Your key and pictures stay in this browser. There is no Cobalt Pear server.</li>
-</ul>
-<div class="links"><a href="#">Open the app</a><a href="#guide">Setup guide</a><a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
-<p class="muted">Version 2026.10.28.2 · <a href="https://cobaltpear.github.io/docs/news/">What's new</a></p>
-
-</section>
-<section id="v-guide" class="doc" hidden>
-<h1>Set up your own image generator</h1>
-<p class="lead">About 15 minutes of clicking, then about 30 minutes of waiting. No coding. You need a card to add $10 of RunPod credit — you pay only while pictures are being made, nothing while it sits idle.</p>
-<p class="muted">Tick each step as you go — this page remembers where you are.</p>
-
-<div class="step"><label><input type="checkbox"><h2>1. Make three accounts</h2></label>
-<ul>
-<li><a href="https://github.com/signup" target="_blank" rel="noopener">GitHub</a> — holds your copy of the generator.</li>
-<li><a href="https://civitai.com" target="_blank" rel="noopener">Civitai</a> — where most models come from. Needed if the worker's page asks for a Civitai token.</li>
-<li><a href="https://runpod.io?ref=qpguwapm" target="_blank" rel="noopener">RunPod</a> — the computer that makes the pictures. Then <b class="ui">Billing</b> → add <b>$10</b>.
-  <div class="note">This is a referral link: after your first $10, RunPod gives you a bonus credit (usually $5–10) and Cobalt Pear a small credit.</div></li>
-</ul></div>
-
-<div class="step"><label><input type="checkbox"><h2>2. Copy the worker</h2></label>
-<p class="note">A «worker» is the model packed for RunPod. Each model has its own worker page on GitHub — its page links here. Made your own worker? <a href="https://cobaltpear.github.io/pack.html" target="_blank" rel="noopener">Make a pack</a> for it.</p>
-<ol>
-<li>On the worker's GitHub page, click the green <b class="ui">Use this template</b> → <b class="ui">Create a new repository</b>.</li>
-<li>Any name is fine. Choose <b>Private</b> → <b class="ui">Create repository</b>.</li>
-</ol>
-<p class="note">Keep the worker's own page address — you will paste it into Cobalt Pear in step 7 (not the address of your copy).</p>
-<p class="note">No worker yet? Start with a model from the app's <b class="ui">Models</b> list (like Z-Image Turbo) — it needs no GitHub at all: skip steps 2–5 and do the box below instead.</p></div>
-
-<div class="step"><label><input type="checkbox"><h2>Quick start: a model from the list, without GitHub</h2></label>
-<ol>
-<li><a href="#">Open Cobalt Pear</a> → <b class="ui">Models</b> → <b class="ui">Add</b> next to the model. The RunPod steps show in the same window.</li>
-<li>Do those steps on RunPod — for Z-Image Turbo: <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy image or video API</b> → <b class="ui">Text To Image</b> → <b>Tongyi-MAI/Z-Image-Turbo</b> → <b class="ui">Deploy with vLLM Omni</b> → <b class="ui">Next</b> → <b class="ui">Create Endpoint</b>.</li>
-<li>In the endpoint's settings set Max workers <code>1</code>, Execution timeout <code>600</code> → <b class="ui">Save</b>.</li>
-<li>Paste its endpoint ID next to the model in Cobalt Pear. Then do step 6 and put the key in <b class="ui">Settings</b>.</li>
-</ol>
-<p class="note">No build to wait for. The first picture takes about a minute while RunPod starts it; then about 8 seconds each.</p></div>
-
-<div class="step"><label><input type="checkbox"><h2>3. Put your Civitai token in your copy</h2></label>
-<p class="note">Only if the worker's page asks for it. It lets RunPod download the model with your account.</p>
-<ol>
-<li>Civitai → your picture (top right) → <b class="ui">Account settings</b> → <b class="ui">Security &amp; Apps</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → Permission preset <b class="ui">Read Only</b> → copy it and keep it somewhere — Civitai shows it only once. One token works for every model: next time, reuse it.</li>
-<li>In your copy on GitHub, click <code>Dockerfile</code> → the pencil ✏️ (top right of the file).</li>
-<li>Replace <code>PASTE_YOUR_CIVITAI_TOKEN_HERE</code> with your token → <b class="ui">Commit changes…</b> → <b class="ui">Commit changes</b> again.</li>
-</ol></div>
-
-<div class="step" id="endpoint"><label><input type="checkbox"><h2>4. Create the endpoint</h2></label>
-<p class="note">The «endpoint» is your generator on RunPod.</p>
-<ol>
-<li>RunPod → <b class="ui">Serverless</b> → <b class="ui">New Endpoint</b> → <b class="ui">Deploy from a GitHub repository</b>.</li>
-<li>Pick your copy. The first time, click <b class="ui">Edit connection</b> and let RunPod see it.</li>
-<li>Fill in the page from top to bottom. Some settings are folded away — the arrows show what to click open:</li>
-</ol>
-<table>
-<tr><td><b class="ui">Endpoint name</b></td><td>anything — your copy's name is fine</td></tr>
-<tr><td><b class="ui">GPU configuration</b></td><td>tick <b>16 GB</b> for SDXL, Pony, Illustrious and NoobAI models (every Civitai link) · <b>24 GB</b> for Krea 2, Flux and bigger · more boxes = easier to get a GPU</td></tr>
-<tr><td><b class="ui">Max workers</b></td><td><code>1</code></td></tr>
-<tr><td colspan="2">Click <b class="ui">Advanced settings</b> to open it:</td></tr>
-<tr><td>→ <b class="ui">Active workers</b></td><td><code>0</code> — nothing to pay while idle</td></tr>
-<tr><td>→ <b class="ui">GPU count</b></td><td><code>1</code></td></tr>
-<tr><td>→ <b class="ui">Idle timeout</b></td><td><code>5</code> sec</td></tr>
-<tr><td>→ <b class="ui">Enable FlashBoot</b></td><td>switch on · <b class="ui">Standard</b></td></tr>
-<tr><td>→ <b class="ui">Enable execution timeout</b></td><td>switch on · <b class="ui">Execution timeout</b> <code>600</code> sec</td></tr>
-<tr><td>→ click <b class="ui">Container configuration</b> → <b class="ui">Container disk</b></td><td><code>20</code> GB for SDXL, Pony, Illustrious and NoobAI (every Civitai link) · <code>30</code> GB for A1111 workers · <code>40</code> GB for Krea 2, Flux and bigger</td></tr>
-</table>
-<ol start="4"><li>Leave the rest as it is → <b class="ui">Deploy</b> at the bottom.</li></ol>
-<p class="note">RunPod may warn «runpod.serverless.start() handler not found in your repo». You can ignore it — the worker starts its handler from the image it builds on.</p></div>
-
-<div class="step"><label><input type="checkbox"><h2>5. Wait for the build</h2></label>
-<p>RunPod now builds your generator — about 30 minutes. The endpoint's page shows its progress. You can do step 6 meanwhile.</p>
-<p class="note">If it fails, open the build log, copy the last lines and ask in <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Discussions</a>.</p></div>
-
-<div class="step"><label><input type="checkbox"><h2>6. Make an API key</h2></label>
-<ol>
-<li>RunPod → <b class="ui">Settings</b> → <b class="ui">API Keys</b> → <b class="ui">Create API Key</b>.</li>
-<li>Choose <b>All</b>.</li>
-<li>Copy the key now — RunPod shows it only once.</li>
-</ol>
-<p class="note">One key does everything — making pictures and making endpoints — for every endpoint you add later. Cobalt Pear keeps it in your browser, so use a browser only you use. RunPod spends only the credit you added.</p></div>
-
-<div class="step"><label><input type="checkbox"><h2>7. Connect Cobalt Pear</h2></label>
-<ol>
-<li><a href="#">Open Cobalt Pear</a> → <b class="ui">Models</b> → paste the <b>worker's page address</b> (from step 2) under «Your own worker» → <b class="ui">Add</b>.</li>
-<li>Paste your <b>endpoint ID</b> next to the model — on RunPod it is the short code under the endpoint's name (like <code>ab12cd34ef56gh</code>), then go to <b class="ui">Chat</b>.</li>
-<li>Type what you want to see, press Enter. The first time it opens <b class="ui">Settings</b> — paste your RunPod API key from step 6 there, then go back to <b class="ui">Chat</b>.</li>
-</ol>
-<p class="note">The very first picture can take 10–15 minutes while RunPod starts the generator for the first time. After that it is seconds to a minute.</p>
-<p class="note">A LoRA: <b class="ui">Models</b> → <b class="ui">+ LoRA</b> under the model. The first time, pick how that model gets its LoRAs:</p>
-<ul class="note">
-<li><b>Built into the worker</b> — for LoRAs you keep using. Paste the links; the app shows one line to put in your copy's <code>Dockerfile</code> (with a link that opens it) and RunPod builds the worker again. No waiting at each picture, and you pick which ones to use for each picture from the <b class="ui">LoRA</b> button next to Send. There is no set number of LoRAs — the limit is time: RunPod stops a build that runs over 30 minutes, and each LoRA makes the build longer and the worker bigger (the app shows how many GB they add), so keep it to the ones you use. Changing the list means building again; until it's built, pictures come out without the new LoRAs and say so. Nothing to press when it's done — the next picture tells the app.</li>
-<li><b>By link</b> — for trying one out. Paste the link and send: the worker downloads it with the next picture (a few seconds more, and again after the worker has been idle). Nothing to build. Up to 4 per model — for more, use «Built in» (or, on RunPod: your endpoint → <b class="ui">Manage</b> → <b class="ui">Edit Endpoint</b> → <b class="ui">Environment Variables</b> → add <code>REMOTE_LORA_MAX</code> = <code>8</code> → <b class="ui">Save Endpoint</b>).</li>
-</ul>
-<p class="note">You can switch any time with the «LoRAs: Built in | By link» switch under the model in Models. Pick a LoRA made for that model (its base model shows when you point at it); one made for a different model does nothing, and the picture then says so with ⚠. LoRAs work on models from a worker repo or «Any Civitai SDXL model» — not on the ones RunPod runs itself (the Hugging Face list). An SDXL model in that list has a <b class="ui">Custom</b> button: it runs the same model on your own copy of «Any Civitai SDXL model» instead, so LoRAs work — no Civitai token needed. Only SDXL models get it — that worker runs SDXL, so FLUX, SD 3 and the like (most of the Gated ones) have no Custom. A gated SDXL model (you must agree to its terms on Hugging Face first) adds one step: agree on its page, make a Read token, and paste it as <code>HF_TOKEN=</code> — the setup steps link both. If Civitai won't hand a LoRA over, a <b class="ui">Civitai token</b> box shows in Models — paste a token there (Civitai → your picture → <b class="ui">Account settings</b> → <b class="ui">Security &amp; Apps</b> → <b class="ui">API Keys</b> → <b class="ui">Add API key</b> → <b class="ui">Read Only</b>).</p></div>
-
-<h2 style="margin-top:28px">When something is off</h2>
-<table>
-<tr><td>«Wrong RunPod key»</td><td>Check the key, and that it has All access.</td></tr>
-<tr><td>Waits a long time</td><td>Normal for the first picture, and after a long break. If it never starts, check the endpoint's page on RunPod.</td></tr>
-<tr><td>To stop paying entirely</td><td>Set Max workers to 0, or delete the endpoint. Idle endpoints with 0 active workers cost nothing.</td></tr>
-<tr><td>Anything else</td><td><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Ask in Discussions</a>.</td></tr>
-</table>
-</section>
 <form id="form"><div class="box">
   <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button><span id="pic-unused" hidden>No chosen model takes a picture (Image To …) — it's left out</span></div><input id="pic-file" type="file" accept="image/*" hidden><div id="pic-menu" hidden></div>
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
@@ -319,7 +197,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <div class="saved">Everything is saved <b>only in this browser</b> — your key, models, endpoint IDs and results. Nothing goes to a server of ours. Another browser, a private window or clearing site data starts empty.</div>
   <label for="key">RunPod API key</label>
   <input id="key" type="password" autocomplete="off" placeholder="rpa_...">
-  <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="#guide">Setup guide</a></div>
+  <div class="hint">The key is saved only in this browser as you type — to forget it, clear it. Use a key with <b>All</b> access, in a browser only you use. <a href="https://cobaltpear.github.io/docs/setup/#make-an-api-key" target="_blank" rel="noopener">How to make one ↗</a></div>
   <label>Plugins</label>
   <div id="plugin-list"></div>
   <div class="add"><label class="pill">Add a plugin file…<input id="plugin-load" type="file" accept=".json,application/json" hidden></label></div>
@@ -328,27 +206,29 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.28.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.28.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"></div>
   <div id="pack-list"></div>
-  <div class="add" id="civ-row" hidden><input id="civ-token" type="password" autocomplete="off" placeholder="Civitai token — only for LoRAs that need you signed in"></div>
-  <div class="hint" id="civ-how" hidden></div>
-  <div id="auto" hidden><label><input id="auto-ok" type="checkbox"><span>Let Cobalt Pear make it on RunPod. Your key passes through our relay (<a href="https://github.com/cobaltpear/relay/blob/main/worker.js" target="_blank" rel="noopener">its code</a>), which keeps nothing about you — only how many times each model was made.</span></label>
+  <div id="civ-box" hidden><div class="box-title">Civitai token</div>
+  <div class="add" id="civ-row"><input id="civ-token" type="password" autocomplete="off" placeholder="Civitai token — only for LoRAs that need you signed in"></div>
+  <div class="hint" id="civ-how"></div></div>
+  <div id="auto" hidden><div class="box-title">Make it for me</div><label><input id="auto-ok" type="checkbox"><span>Let Cobalt Pear make it on RunPod — your key passes through our relay, which keeps nothing about you (<a href="https://cobaltpear.github.io/docs/models/#add" target="_blank" rel="noopener">details ↗</a>).</span></label>
   <div class="add" id="auto-hf-row" hidden><input id="auto-hf" type="password" autocomplete="off" placeholder="Hugging Face token (hf_...) for Gated models"></div>
   <div class="hint" id="auto-hf-how" hidden></div>
+  <div class="hint" id="auto-which"></div>
   <button id="auto-go" class="pill" type="button">Make it</button> <span class="hint" id="auto-state"></span></div>
-  <div class="hint" id="auto-or" hidden>or by hand:</div>
+  <div id="hand"><div class="box-title" id="auto-or" hidden>Or by hand</div>
   <div class="add" id="gh-row" hidden><input id="gh-name" autocomplete="off" spellcheck="false" placeholder="Your GitHub name — for the links to your copy below"></div>
-  <div id="pack-how"></div>
-  <div id="catalog-box"><label>Add a model</label><div class="tabs" id="kinds"></div><div class="hint" id="catalog-order" hidden>Listed live from Hugging Face, most downloaded first.</div><div id="catalog"></div>
+  <div id="pack-how"></div></div>
+  <div id="catalog-box"><label>Add a model</label><div class="tabs" id="kinds"></div><div id="catalog"></div>
   <div class="hint" id="catalog-hint">Add one, do the RunPod steps shown above, then paste the endpoint ID.</div>
   <div id="custom">
   <label for="pack-url">Your own worker</label>
   <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL or Civitai model link"><button id="pack-add" class="pill" type="button">Add</button></div>
-  <div class="hint">A Civitai model link (an SDXL, Pony, Illustrious, NoobAI, FLUX.1, Chroma, Z-Image or SD 1.5 checkpoint, e.g. <code>https://civitai.com/models/257749?modelVersionId=290640</code> — copy it from the address bar on the model's page. The <code>?modelVersionId=290640</code> part shows once you click a version there; without it you get the newest version) takes its settings from Civitai and gives you a ready worker to copy.</div>
+  <div class="hint">A Civitai model link from the address bar on the model's page, or a worker repo — <a href="https://cobaltpear.github.io/docs/models/#your-own-worker" target="_blank" rel="noopener">which models, how ↗</a></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack or ComfyUI workflow (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   </div></div>
 </form></div>
@@ -391,7 +271,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.28.2";
+const VERSION = "2026.10.28.3";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -811,19 +691,19 @@ function renderPacks() {
     : `${text}: ${civ.map(p => `<a href="${esc(url(p))}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(" · ")}`;
   // the GPU, disk and build time of the biggest family among them, for the one shared step
   const big = civ.map(p => CIVITAI_FAMS[famOf(p.civitai)]).reduce((a, b) => b.gpu > a.gpu || b.build > a.build ? b : a, CIVITAI_FAMS.sd15);
-  const steps = [`${links(make, "Make your copy")} → <b>Create repository</b>.`];
-  if (tok) steps.push(`Make a Civitai token: ${CIV_TOKEN_HOW} → copy it and keep it somewhere — Civitai shows it only once. One token works for every model, so next time skip this step and reuse it.`);
-  if (hft.length) steps.push(`Make a Hugging Face token: on ${hft.map(p => `<a href="https://huggingface.co/${esc(p.civitai.version.split("huggingface.co/")[1])}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(", ")} press <b>Agree</b> (signed in to Hugging Face), then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token ↗</a> — pick <b>Read</b> — and copy it. One token works for every model.`);
+  const steps = [`${links(make, "Make your copy")} → <b>Create repository</b>`];
+  if (tok) steps.push(`Make a Civitai token (or reuse yours): ${CIV_TOKEN_HOW} → copy it`);
+  if (hft.length) steps.push(`Make a Hugging Face token: <b>Agree</b> on ${hft.map(p => `<a href="https://huggingface.co/${esc(p.civitai.version.split("huggingface.co/")[1])}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(", ")}, then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token ↗</a> (<b>Read</b>) → copy it`);
   const addText = tok || hft.length ? "Add your token" : "Add the model";
-  steps.push(gh ? `${links(add, addText)} → ${tok || hft.length ? `paste your token after ${[tok && "<code>CIVITAI_TOKEN=</code>", hft.length && "<code>HF_TOKEN=</code>"].filter(Boolean).join(" or ")} → ` : ""}<b>Commit changes…</b> → <b>Commit changes</b> again.` : `Type your GitHub name above for the «${addText}» link${one ? "" : "s"}.`);
-  steps.push(`On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} with the settings in <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide step 4 ↗</a> (it shows where each one is on the page) — GPU <b>${big.gpu} GB</b>, Container disk <b>${big.disk} GB</b>${one ? "" : " (or more — the biggest model's)"} — the first build takes about ${big.build} minutes, the first picture up to 10 more. Then paste ${one ? "its ID above" : "each ID next to its model"}.`);
+  steps.push(gh ? `${links(add, addText)} → ${tok || hft.length ? `paste your token after ${[tok && "<code>CIVITAI_TOKEN=</code>", hft.length && "<code>HF_TOKEN=</code>"].filter(Boolean).join(" or ")} → ` : ""}<b>Commit changes</b> twice` : `Type your GitHub name above for the «${addText}» link${one ? "" : "s"}`);
+  steps.push(`On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} — GPU <b>${big.gpu} GB</b>, Container disk <b>${big.disk} GB</b> (<a href="https://cobaltpear.github.io/docs/setup/#create-the-endpoint" target="_blank" rel="noopener">where ↗</a>) → paste ${one ? "its ID above" : "each ID next to its model"}`);
   // a model whose built-in LoRAs changed: the new LORAS line goes in its copy's Dockerfile, then RunPod builds it again
   const build = byLabel(packs).filter(p => builtMode(p.id) && (loras[p.id] || []).some(l => unbuilt(p.id, l)));
   $("gh-row").hidden = !civ.length && !build.length;
-  $("pack-how").innerHTML = (civ.length ? `<div class="how"><b>${esc(civ.map(p => p.label).join(", "))}</b>: ${steps.map((t, i) => `${i + 1}. ${t}`).join(" ")}</div>` : "")
-    + build.map(buildSteps).join("")
+  $("pack-how").innerHTML = (civ.length ? `<div class="how"><b>${esc(civ.map(p => p.label).join(", "))}</b> · <a href="${DOCS}models/#setting-up-your-copy" target="_blank" rel="noopener">details ↗</a><ol>${steps.map(t => `<li>${t}</li>`).join("")}</ol></div>` : "")
+    + (build.length ? buildSteps(build) : "")
     + [...how].map(([k, labels]) => { const [url, steps] = k.split("\n");
-    return `<div class="how"><b>${esc(labels.join(", "))}</b>: ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${url.startsWith("https://github.com/") ? "Open the worker" : "Open RunPod"} ↗</a> → ` : ""}${esc(steps).replace("as the guide shows", `as the <a href="https://cobaltpear.github.io/guide.html#endpoint" target="_blank" rel="noopener">Setup guide ↗</a> shows`)} Then paste ${labels.length > 1 ? "each ID next to its model" : "its ID above"}.</div>`; }).join("");
+    return `<div class="how"><b>${esc(labels.join(", "))}</b><ol><li>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${url.startsWith("https://github.com/") ? "Open the worker" : "Open RunPod"} ↗</a> → ` : ""}${esc(steps).replace(/\.\s*$/, "").replace("as the guide shows", `as the <a href="https://cobaltpear.github.io/docs/setup/#create-the-endpoint" target="_blank" rel="noopener">Setup ↗</a> shows`)} → paste ${labels.length > 1 ? "each ID next to its model" : "its ID above"}</li></ol></div>`; }).join("");
   $("pack-tools").hidden = packs.length + catalog.length < 8;
   $("auto").hidden = !RELAY_URL || !waitingForAuto().length;
   // a Gated model needs the customer's own HF token and its license accepted on HF — asked only while one is waiting
@@ -831,9 +711,12 @@ function renderPacks() {
   $("auto-hf-row").hidden = $("auto-hf-how").hidden = !gated.length;
   $("auto-hf-how").innerHTML = gated.length ? `Gated: first press <b>Agree</b> on ${gated.map(p => `<a href="https://huggingface.co/${esc(p.setup_pick)}" target="_blank" rel="noopener">${esc(p.label)}</a>`).join(", ")}, then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token</a> — pick <b>Read</b> — and paste it here.` : "";
   $("auto-go").disabled = !$("auto-ok").checked;
+  // which models «Make it» makes an endpoint for
+  $("auto-which").innerHTML = waitingForAuto().length ? "Makes an endpoint for: " + waitingForAuto().map(p => `<b>${esc(p.label)}</b>`).join(", ") : "";
   // the Civitai token box shows only while a Civitai LoRA is on a model
-  $("civ-row").hidden = $("civ-how").hidden = !Object.values(loras).flat().some(l => /^https:\/\/civitai\./.test(l.link));
+  $("civ-box").hidden = !Object.values(loras).flat().some(l => /^https:\/\/civitai\./.test(l.link));
   $("auto-or").hidden = $("auto").hidden || !how.size;
+  $("hand").classList.toggle("boxed", !$("auto-or").hidden);
   renderCatalog();
 }
 // a model's LoRAs: name (opens its page) · strength · ×, and the link box while «+ LoRA» is open
@@ -862,19 +745,23 @@ async function addLora(id, link) {
     if (ls.some(x => x.sha256 === l.sha256)) throw new Error("This LoRA is on this model already");
     loras[id] = [...ls, { ...l, strength: 0.8 }]; store.set("loras", loras);
     loraOpen = ""; renderPacks();
-    if (loras[id].length === 5 && !builtMode(id)) document.querySelector(`[data-lora-state="${CSS.escape(id)}"]`).textContent = "By link takes 4 LoRAs at once. For more, pick Built in — or on RunPod open this endpoint → Manage → Edit Endpoint → Environment Variables → add REMOTE_LORA_MAX with the value 8 → Save Endpoint.";
+    if (loras[id].length === 5 && !builtMode(id)) document.querySelector(`[data-lora-state="${CSS.escape(id)}"]`).innerHTML = `By link takes 4 LoRAs at once — pick Built in, or <a href="${DOCS}loras/#more-than-4-at-once" target="_blank" rel="noopener">allow 8 ↗</a>.`;
   } catch (err) { state.textContent = err.message; }
 }
-// the steps to build a model's LoRAs into its worker: the LORAS line for its copy's Dockerfile, how big the build gets, and «Built»
+// the steps to build the changed LoRAs into the workers — one block for every such model, like the other steps:
+// each model's LORAS line (Copy) and its copy's Dockerfile, the Civitai token where a Hugging Face worker gets a Civitai LoRA, then the build
 const gbs = b => (b / 1e9).toFixed(b < 1e10 ? 1 : 0);
-function buildSteps(p) {
-  const gh = $("gh-name").value.trim().replace(/^@/, ""), ls = loras[p.id] || [], line = `ARG LORAS="${lorasLine(p.id)}"`;
-  const repo = p.civitai ? civitaiRepo(p) : (p.src || p.setup_url || "").match(/github(?:usercontent)?\.com\/[\w.-]+\/([\w.-]+?)(?:\.git|\/|$)/)?.[1];
-  const size = ls.reduce((n, l) => n + (l.size || 0), 0), civ = ls.some(l => /^https:\/\/civitai\./.test(l.link));
-  const open = gh && repo ? `<a href="https://github.com/${encodeURIComponent(gh)}/${esc(repo)}/edit/main/Dockerfile" target="_blank" rel="noopener">Open your copy's Dockerfile ↗</a>` : gh ? "Open your copy of the worker on GitHub → <b>Dockerfile</b> → ✏️" : "Type your GitHub name above, then open your copy's <b>Dockerfile</b> → ✏️";
-  return `<div class="how"><b>${esc(p.label)} — LoRAs built in</b>: 1. ${open} → replace the line <code>ARG LORAS=…</code> with <code data-copy="${esc(line)}" title="Click to copy">${esc(line)}</code> <span class="hint-copy"></span> → <b>Commit changes…</b> → <b>Commit changes</b> again.${civ && p.civitai?.hf ? ` A Civitai LoRA may need your Civitai token: add a line <code>CIVITAI_TOKEN=</code> with it to <code>civitai.env</code> in your copy.` : ""} `
-    + `2. RunPod builds the worker again by itself (your endpoint → <b>Builds</b>).${size ? ` The LoRAs add about <b>${gbs(size)} GB</b> to download while it builds.` : ""} RunPod stops a build that runs over 30 minutes, and the worker itself already takes about 15 — ${size > 3e9 ? "<b>that is a lot, so fewer LoRAs is safer</b>" : "so keep it to the LoRAs you really use"}. Until it's built, pictures come out without the new LoRAs and say so under the picture. `
-    + `3. Nothing to press: once it's built, the next picture tells the app which LoRAs the worker has, and these steps go away.</div>`;
+function buildSteps(ps) {
+  const gh = $("gh-name").value.trim().replace(/^@/, "");
+  const repo = p => p.civitai ? civitaiRepo(p) : (p.src || p.setup_url || "").match(/github(?:usercontent)?\.com\/[\w.-]+\/([\w.-]+?)(?:\.git|\/|$)/)?.[1];
+  const file = (p, f, text) => gh && repo(p) ? `<a href="https://github.com/${encodeURIComponent(gh)}/${esc(repo(p))}/edit/main/${f}" target="_blank" rel="noopener">${text} ↗</a>` : text;
+  const size = p => (loras[p.id] || []).reduce((n, l) => n + (l.size || 0), 0), all = ps.reduce((n, p) => n + size(p), 0);
+  const civ = ps.filter(p => p.civitai?.hf && (loras[p.id] || []).some(l => /^https:\/\/civitai\./.test(l.link)));
+  const each = ps.map(p => `${esc(p.label)} <button type="button" class="pill copy" data-copy="${esc(`ARG LORAS="${lorasLine(p.id)}"`)}" title="Copies the line ARG LORAS=… for this model">Copy</button><span class="hint-copy"></span> ${file(p, "Dockerfile", "Dockerfile")}`).join(" · ");
+  const steps = [`${gh ? "" : "Type your GitHub name above for the links. "}In each copy's <b>Dockerfile</b>, replace the line <code>ARG LORAS=…</code> with the copied one → <b>Commit changes</b> twice: ${each}`];
+  if (civ.length) steps.push(`A Civitai LoRA on a Hugging Face worker: add <code>CIVITAI_TOKEN=</code> with your token to <code>civitai.env</code> in ${civ.map(p => file(p, "civitai.env", esc(p.label))).join(" · ")}`);
+  steps.push(`RunPod builds ${ps.length > 1 ? "each" : "it"} again by itself (endpoint → <b>Builds</b>)${all ? ` — <b>+${gbs(all)} GB</b>${ps.length > 1 ? " in all" : ""}${ps.some(p => size(p) > 3e9) ? ", a lot: RunPod stops builds over 30 minutes, so fewer LoRAs is safer" : ""}` : ""}. These steps go away once it's built.`);
+  return `<div class="how"><b>${esc(ps.map(p => p.label).join(", "))} — LoRAs built in</b> · <a href="${DOCS}loras/#built-into-the-worker" target="_blank" rel="noopener">details ↗</a><ol>${steps.map(t => `<li>${t}</li>`).join("")}</ol></div>`;
 }
 // the LORAS line copies on click
 $("pack-how").addEventListener("click", e => {
@@ -952,9 +839,10 @@ async function makeEndpoints() {
   if (!$("auto-hf-row").hidden && !/^hf_\w{10,}$/.test($("auto-hf").value.trim())) { $("auto-state").textContent = "Paste your Hugging Face token first."; $("auto-hf").focus(); return; }
   keepEndpointInputs();
   $("auto-go").disabled = true;
-  for (const p of waitingForAuto()) {
+  const todo = waitingForAuto(), done = [];
+  for (const [i, p] of todo.entries()) {
     const c = catalogOf(p);
-    $("auto-state").textContent = `Making ${p.label}…`;
+    $("auto-state").textContent = `Making ${p.label} (${i + 1}/${todo.length})…` + (done.length ? ` · ${done.join(", ")} ✓` : "");
     try {
       const r = await fetch(RELAY_URL + "/create", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
                                          body: JSON.stringify({ model: p.setup_pick, gpu: c.gpu, video: /video/i.test(c.kind || ""), ...(c.gated && { hf: $("auto-hf").value.trim() }) }) });
@@ -963,6 +851,7 @@ async function makeEndpoints() {
       if (!r.ok || !j.id) throw new Error(j.error || `Error ${r.status}`);
       endpoints[p.id] = j.id; store.set("endpoints", endpoints);
       store.set("made", [...store.get("made", []), j.id]);  // Remove deletes these on RunPod too
+      done.push(p.label);
     } catch (err) { renderPacks(); $("auto-state").textContent = err.message; return; }
   }
   $("auto-state").textContent = "";
@@ -976,7 +865,7 @@ const isOwn = p => !!p.civitai || !p.src?.startsWith(CATALOG_DIR) && !p.src?.sta
 const ownWorkers = () => packs.filter(isOwn).length;
 // The catalog — models that start on RunPod without GitHub. Add one, follow the line under it, paste the endpoint ID.
 // Steps shared by many models live once in the catalog («setups»); a pack names them as "@<key>". A pack of your own can still carry its own text.
-let catalog = [], setups = {}, liveOrder = false;  // liveOrder: the list came from Hugging Face, most downloaded first
+let catalog = [], setups = {};
 const CUSTOM = "custom";
 let kind = "", shown = "";  // the tab picked last, and the one shown (the first, until the picked one exists); a search looks in every tab
 try { kind = localStorage.getItem("catalog-kind") || ""; } catch {}
@@ -1051,7 +940,7 @@ fetch(CATALOG_URL, { cache: "no-cache" }).then(r => r.json()).then(async j => {
   setups = j.setups || {};
   catalog = (j.models || []).map(m => ({ ...m, url: new URL(m.pack, CATALOG_URL).href }));
   renderPacks(); fillChips();
-  try { catalog = await liveCatalog(catalog); liveOrder = true; renderPacks(); fillChips(); } catch {}  // Hugging Face out of reach — the fixed list stays
+  try { catalog = await liveCatalog(catalog); renderPacks(); fillChips(); } catch {}  // Hugging Face out of reach — the fixed list stays
 }).catch(() => {});
 $("catalog").addEventListener("click", async e => {
   if (e.target.dataset.catCustom) {
@@ -1070,7 +959,6 @@ function findPacks() {
   document.querySelectorAll("#kinds button").forEach(b => b.classList.toggle("on", !q && b.dataset.kind === shown));
   $("custom").hidden = !!q || shown !== CUSTOM;
   $("catalog-hint").hidden = !q && shown === CUSTOM;
-  $("catalog-order").hidden = !liveOrder || !!q || shown === CUSTOM;
 }
 $("kinds").addEventListener("click", e => {
   const b = e.target.closest("button");
@@ -1205,8 +1093,8 @@ function leaveModels() {
   const then = afterModels; afterModels = null;
   if (usable().length && then) then();
 }
-// Chat · Models · Settings · About · Guide are views of this one page (#models, #settings, #about, #guide) — Back works; News lives in the manual
-const views = { models: $("v-models"), settings: $("v-settings"), about: $("v-about"), guide: $("v-guide") }, scrollAt = {};
+// Chat · Models · Settings are views of this one page (#models, #settings) — Back works; the setup steps, About and News live in the manual
+const views = { models: $("v-models"), settings: $("v-settings") }, scrollAt = {};
 let view = null;
 function showView() {
   const v = location.hash.slice(1) in views ? location.hash.slice(1) : "";
@@ -1224,18 +1112,6 @@ function showView() {
   if (was === "settings") leaveSettings();
 }
 addEventListener("hashchange", showView);
-// the guide's ticks are remembered in this browser (shared with guide.html)
-const guideSteps = [...document.querySelectorAll("#v-guide .step input")];
-let guideDone = [];
-try { guideDone = JSON.parse(localStorage.getItem("guide-done") || "[]"); } catch {}
-guideSteps.forEach((c, i) => {
-  c.checked = !!guideDone[i];
-  c.closest(".step").classList.toggle("done", c.checked);
-  c.addEventListener("change", () => {
-    c.closest(".step").classList.toggle("done", c.checked);
-    try { localStorage.setItem("guide-done", JSON.stringify(guideSteps.map(s => s.checked))); } catch {}
-  });
-});
 $("models-form").addEventListener("submit", e => { e.preventDefault(); location.hash = ""; });  // Done = back to the chat
 $("settings-form").addEventListener("submit", e => { e.preventDefault(); location.hash = ""; });  // Enter = back to the chat
 // Backup — everything this site keeps in localStorage (plugins too) except keys and tokens; results stay in IndexedDB
@@ -1619,7 +1495,7 @@ function render() {
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
-  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#settings">Settings</a>, then send a prompt.<br><a href="#about">About</a> · <a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a> · <a href="#guide">Setup guide</a></div>`);
+  }).join("") : `<div class="empty"><b class="intro">Prompt in, picture out — on your own RunPod.</b>Pick a model in <a href="#models">Models</a>, put your RunPod key in <a href="#settings">Settings</a>, then send a prompt.<br><a href="https://cobaltpear.github.io/docs/setup/" target="_blank" rel="noopener">Setup ↗</a> · <a href="https://cobaltpear.github.io/docs/" target="_blank" rel="noopener">Manual ↗</a> · <a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a></div>`);
 }
 const turnPacks = t => [...new Set(t.items.map(i => i.packId))].map(id => usable().find(p => p.id === id)).filter(Boolean);
 $("feed").addEventListener("click", e => {

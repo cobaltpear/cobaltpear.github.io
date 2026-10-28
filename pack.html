@@ -27,15 +27,8 @@ b.ui { white-space: nowrap; }
 .step.done { opacity: .55; }
 .step ol, .step ul { margin: 8px 0 0; padding-left: 22px; }
 .step li { margin: 4px 0; }
-table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
-td { border-top: 1px solid var(--line); padding: 6px 8px 6px 0; vertical-align: top; }
-td:first-child { color: var(--muted); width: 42%; }
 .note { margin-top: 8px; font-size: 14px; color: var(--muted); }
 ul.points { padding-left: 22px; line-height: 1.8; }
-.news { margin: 10px 0; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
-.news time { color: var(--muted); font-size: 13px; display: block; }
-.news ul { margin: 6px 0 0; padding-left: 18px; }
-.news li + li { margin-top: 6px; }
 .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
 .links a { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
 pre { font: 13px/1.5 ui-monospace, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; overflow-x: auto; }
@@ -53,7 +46,6 @@ pre { font: 13px/1.5 ui-monospace, monospace; background: var(--panel); border: 
 .form .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .form button { font: 14px system-ui, sans-serif; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .form button:disabled { opacity: .4; cursor: default; }
-details summary { cursor: pointer; }
 #out { max-height: 360px; overflow: auto; }
 </style>
 </head>
@@ -94,28 +86,9 @@ details summary { cursor: pointer; }
 </div>
 
 <div class="step"><h2>5. Put it in your repo and try it</h2>
-<ol>
-<li>Save it as <code>pack.json</code> at the top of your worker's GitHub repo, on the <code>main</code> branch.</li>
-<li><a href="./">Open Cobalt Pear</a> → <b class="ui">Models</b> → <b class="ui">Custom</b> → paste the repo's address under «Your own worker» → <b class="ui">Add</b>. No repo? <b class="ui">Choose a pack or ComfyUI workflow</b> takes the file itself.</li>
-<li>Paste your endpoint ID and send a prompt. The app reads the pack again each time it opens, so a fix shows at once.</li>
-</ol></div>
+<p>Save it as <code>pack.json</code> at the top of your worker's GitHub repo, then add the repo in <a href="./">Cobalt Pear</a> → <b class="ui">Models</b> → «Your own worker». <a href="https://cobaltpear.github.io/docs/make-a-pack/" target="_blank" rel="noopener">Steps, and what each field means ↗</a></p></div>
 
-<div class="step"><h2>6. Let people find it</h2>
-<p>Add the topic <code>cobalt-pear</code> to your repo (the ⚙️ next to About on its GitHub page). Every worker with a pack is listed at <a href="https://github.com/topics/cobalt-pear" target="_blank" rel="noopener">github.com/topics/cobalt-pear</a>.</p></div>
-
-<div class="step"><details><summary><h2 style="display:inline">What each field means</h2></summary>
-<table>
-<tr><td><code>format</code> · <code>engine</code></td><td><code>pack/1</code> · <code>comfyui</code> (a ComfyUI workflow) or <code>json</code> (any other worker)</td></tr>
-<tr><td><code>id</code> · <code>label</code> · <code>note</code></td><td>a short id · the name shown · tips shown under the model</td></tr>
-<tr><td><code>kind</code></td><td>the group it sits under in the model menu</td></tr>
-<tr><td><code>workflow</code> · <code>input</code></td><td>what is sent — the ComfyUI workflow, or the RunPod <code>input</code></td></tr>
-<tr><td><code>prompt</code> · <code>negative</code> · <code>seed</code> · <code>width</code> · <code>height</code> · <code>size</code> · <code>image</code></td><td>where each value goes, as a list of places. comfyui = <code>[node id, input name]</code>, json = the path inside <code>input</code>. <code>size</code> = <code>"1536x960"</code> in one string · <code>image</code> = a starting picture as base64</td></tr>
-<tr><td><code>sizes</code> · <code>size_step</code></td><td>sizes as <code>[width, height, name]</code> · the step sizes must be a multiple of</td></tr>
-</table>
-<p>What your worker sends back can have any shape — the app looks through the whole <code>output</code> for files (<code>{type: "base64", data}</code>, <code>data:…</code>, base64, <code>https://…</code> links) and for text under <code>content</code>, <code>text</code>, <code>response</code>, <code>output</code> or <code>caption</code>.</p>
-</details></div>
-
-<div class="links"><a href="./">Open the app</a><a href="guide.html">Setup guide</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
+<div class="links"><a href="./">Open the app</a><a href="https://cobaltpear.github.io/docs/setup/">Setup ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Questions &amp; ideas</a></div>
 <script>
 // ---- Model packs · engines · output ----
 // A pack tells how to call one worker: engine, request template, where prompt/seed/width/height go, size list. Format: PACK.md.
