@@ -96,6 +96,7 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 .sheet .pack b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 .sheet .pack [data-ep] { width: 16ch; }
+.sheet .pack .goes { margin-left: auto; font-size: 11px; color: var(--muted); white-space: nowrap; }
 .sheet .pack .new { font-size: 11px; color: var(--accent); }
 .sheet .pack .no-lora { font-size: 11px; color: var(--muted); opacity: .7; align-self: center; }
 .sheet .pack .gated { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
@@ -181,7 +182,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <body>
 <header>
   <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear</a></b>
-  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="https://cobaltpear.github.io/docs/" target="_blank" rel="noopener">Manual ↗</a><a href="https://cobaltpear.github.io/docs/setup/" target="_blank" rel="noopener">Setup ↗</a><a href="#price">Pricing</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
+  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#price">Pricing</a><a href="https://cobaltpear.github.io/docs/" target="_blank" rel="noopener">Manual ↗</a><a href="https://cobaltpear.github.io/docs/setup/" target="_blank" rel="noopener">Setup ↗</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
@@ -206,7 +207,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.28.8 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.28.9 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -242,7 +243,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.28.8";
+const VERSION = "2026.10.28.9";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -643,7 +644,7 @@ function renderPacks() {
   // one line per model so a long list stays easy to scan; the note shows on hover
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
-    <input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
+    <span class="goes" data-goes="${esc(p.id)}">${goesTo(endpoints[p.id])}</span><input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
     <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${takesLoras(p) && (loras[p.id] || []).length < (builtMode(p.id) ? 20 : 8) && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «Any Civitai SDXL model»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${tuneBox(p)}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
   // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
@@ -1007,6 +1008,7 @@ $("pack-list").addEventListener("change", e => {
   if (tk) { setTweak(e.target); fillLoras(); keepEndpointInputs(); setTimeout(renderPacks); return; }
   if (e.target.dataset.ep !== undefined) { keepEndpointInputs(); store.set("endpoints", endpoints); setTimeout(renderPacks); } });  // not inside the input's own blur
 // a LoRA link is looked up as soon as it is pasted (or on Enter) — no Add button
+$("pack-list").addEventListener("input", e => { const id = e.target.dataset.ep; if (id !== undefined) document.querySelector(`[data-goes="${CSS.escape(id)}"]`).innerHTML = goesTo(e.target.value); });
 $("pack-list").addEventListener("paste", e => { const id = e.target.dataset.loraAdd; if (id) setTimeout(() => addLora(id, e.target.value)); });
 $("pack-list").addEventListener("keydown", e => { const id = e.target.dataset.loraAdd; if (id && e.key === "Enter") { e.preventDefault(); addLora(id, e.target.value); }
   if (id && e.key === "Escape") { e.preventDefault(); keepEndpointInputs(); loraOpen = ""; renderPacks(); } });
@@ -1309,6 +1311,14 @@ const services = {
             cancel: (ep, id) => runpodCall(ep, `cancel/${id}`, {}) },
 };
 const serviceOf = ep => Object.values(services).find(sv => sv.owns?.(ep)) || services.runpod;
+// where a model's endpoint sends its pictures, shown next to its box — the service is picked by what is pasted there
+function goesTo(ep) {
+  ep = (ep || "").trim();
+  let sv;
+  try { sv = ep && serviceOf(ep); } catch { return ""; }  // a first draw before the services are set up
+  if (!sv) return "";
+  return sv === services.runpod && !/^[\w-]+$/.test(ep) ? `<b class="err" title="A RunPod endpoint ID is letters and numbers, like abc123xyz">Not a RunPod ID</b>` : `→ ${esc(sv.name)}`;
+}
 // a key still to give in Settings for these models — asked before sending
 const keyMissing = use => use.some(p => serviceOf(endpoints[p.id]).needsKey?.());
 // submit, then poll until done; onStatus is called when the status changes
