@@ -206,7 +206,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.28.6 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.28.7 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -242,7 +242,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.28.6";
+const VERSION = "2026.10.28.7";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -1087,7 +1087,8 @@ $("models-form").addEventListener("submit", e => { e.preventDefault(); location.
 $("settings-form").addEventListener("submit", e => { e.preventDefault(); location.hash = ""; });  // Enter = back to the chat
 // Backup — everything this site keeps in localStorage (plugins too) except keys and tokens; results stay in IndexedDB
 const SECRET = ["key", "hf-token", "civitai-token"];
-const backupKeys = () => Object.keys(localStorage).filter(k => k.startsWith(NS) && (NS || !k.startsWith("demo.")) && !SECRET.includes(k.slice(NS.length)));
+const secret = k => SECRET.includes(k) || k.endsWith("-key");  // a plugin's own key too (modal-key …)
+const backupKeys = () => Object.keys(localStorage).filter(k => k.startsWith(NS) && (NS || !k.startsWith("demo.")) && !secret(k.slice(NS.length)));
 $("backup-save").addEventListener("click", () => {
   const data = {};
   try { for (const k of backupKeys()) data[k.slice(NS.length)] = localStorage.getItem(k); } catch {}
@@ -1103,7 +1104,7 @@ $("backup-load").addEventListener("change", async e => {
   let b;
   try { b = JSON.parse(await f.text()); } catch {}
   if (b?.app !== "cobaltpear" || typeof b.data !== "object") { $("backup-state").textContent = "That file is not a Cobalt Pear backup."; return; }
-  try { for (const [k, v] of Object.entries(b.data)) if (!SECRET.includes(k) && typeof v === "string") localStorage.setItem(NS + k, v); } catch { $("backup-state").textContent = "This browser would not save it."; return; }
+  try { for (const [k, v] of Object.entries(b.data)) if (!secret(k) && typeof v === "string") localStorage.setItem(NS + k, v); } catch { $("backup-state").textContent = "This browser would not save it."; return; }
   location.reload();  // every list is read at start, so start again with what came back
 });
 
