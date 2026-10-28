@@ -181,7 +181,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <body>
 <header>
   <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear <span class="meta">· demo</span></a></b>
-  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="https://cobaltpear.github.io/docs/" target="_blank" rel="noopener">Manual ↗</a><a href="https://cobaltpear.github.io/docs/setup/" target="_blank" rel="noopener">Setup ↗</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
+  <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="https://cobaltpear.github.io/docs/" target="_blank" rel="noopener">Manual ↗</a><a href="https://cobaltpear.github.io/docs/setup/" target="_blank" rel="noopener">Setup ↗</a><a href="#price">Pricing</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
   <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
@@ -206,8 +206,13 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.28.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.28.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
+<div id="v-price" class="sheet page" hidden><div class="card">
+  <b>Pricing</b>
+  <div class="saved"><b>Cobalt Pear is free to use.</b></div>
+  <div class="hint">You pay RunPod for the GPU, by the second, only while a worker is making pictures — about $0.003 a picture once it is on, in our own test. A worker turns itself off when idle and then costs nothing. <a href="https://cobaltpear.github.io/docs/cost-and-speed/" target="_blank" rel="noopener">Cost and speed ↗</a></div>
+</div></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
   <b>Models</b>
   <div class="add" id="pack-tools"><input id="pack-find" type="search" autocomplete="off" placeholder="Find a model"></div>
@@ -271,7 +276,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.28.3";
+const VERSION = "2026.10.28.4";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -1093,8 +1098,8 @@ function leaveModels() {
   const then = afterModels; afterModels = null;
   if (usable().length && then) then();
 }
-// Chat · Models · Settings are views of this one page (#models, #settings) — Back works; the setup steps, About and News live in the manual
-const views = { models: $("v-models"), settings: $("v-settings") }, scrollAt = {};
+// Chat · Models · Settings · Price are views of this one page (#models, #settings) — Back works; the setup steps, About and News live in the manual
+const views = { models: $("v-models"), settings: $("v-settings"), price: $("v-price") }, scrollAt = {};
 let view = null;
 function showView() {
   const v = location.hash.slice(1) in views ? location.hash.slice(1) : "";
