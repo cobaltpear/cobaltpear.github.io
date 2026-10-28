@@ -206,7 +206,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.28.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.28.6 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -276,7 +276,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.28.5";
+const VERSION = "2026.10.28.6";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -1322,31 +1322,37 @@ $("prompt").addEventListener("paste", e => {
 });
 
 // ---- Generate ----
-// Where an endpoint runs: each service answers RunPod's /run and /status/<id> — call(ep, path, body) sends one of them.
+// Where an endpoint runs. Each service turns its own API into three calls:
+//   submit(ep, input) → job id · poll(ep, id) → { status, output, error } · cancel(ep, id)
+// status is one of IN_QUEUE · IN_PROGRESS · COMPLETED · FAILED · CANCELLED · TIMED_OUT; output is what the worker returned.
 // RunPod takes any endpoint no other service owns (owns(ep) = true); a plugin adds others to app.services.
+async function runpodCall(ep, path, body) {
+  if (!/^[\w-]+$/.test(ep)) throw new Error("That is not a RunPod endpoint ID");
+  const r = await fetch(`${RUNPOD_API}/${ep}/${path}`, { method: body ? "POST" : "GET", body: body && JSON.stringify(body),
+                                                          headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey } });
+  if (r.status === 401) throw new Error("Wrong RunPod key, or the key may not use this endpoint");
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || `RunPod error ${r.status}`);
+  return j;
+}
 const services = {
-  runpod: { name: "RunPod", needsKey: () => !apiKey, call: async (ep, path, body) => {
-    if (!/^[\w-]+$/.test(ep)) throw new Error("That is not a RunPod endpoint ID");
-    const r = await fetch(`${RUNPOD_API}/${ep}/${path}`, { method: body ? "POST" : "GET", body: body && JSON.stringify(body),
-                                                            headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey } });
-    if (r.status === 401) throw new Error("Wrong RunPod key, or the key may not use this endpoint");
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(j.error || `RunPod error ${r.status}`);
-    return j;
-  } },
+  runpod: { name: "RunPod", needsKey: () => !apiKey,
+            submit: async (ep, input) => (await runpodCall(ep, "run", { input })).id,
+            poll: async (ep, id) => { const s = await runpodCall(ep, `status/${id}`); return { status: s.status, output: s.output, error: s.error }; },
+            cancel: (ep, id) => runpodCall(ep, `cancel/${id}`, {}) },
 };
 const serviceOf = ep => Object.values(services).find(sv => sv.owns?.(ep)) || services.runpod;
 // a key still to give in Settings for these models — asked before sending
 const keyMissing = use => use.some(p => serviceOf(endpoints[p.id]).needsKey?.());
-// submit with /run and poll /status until done; onStatus is called when the status changes
+// submit, then poll until done; onStatus is called when the status changes
 async function runAndWait(ep, input, onStatus) {
   const sv = serviceOf(ep);
-  const job = await sv.call(ep, "run", { input });
+  const id = await sv.submit(ep, input);
   let last = "", fails = 0;
   for (;;) {
     await sleep(2000);
     let s;
-    try { s = await sv.call(ep, `status/${job.id}`); fails = 0; }
+    try { s = await sv.poll(ep, id); fails = 0; }
     catch (e) { if (++fails >= 5) throw e; continue; }  // ride out short network drops
     if (s.status !== last) { last = s.status; onStatus?.(s.status); }
     if (s.status === "COMPLETED") return s.output;
