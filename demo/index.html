@@ -18,7 +18,7 @@ header nav { margin-right: auto; display: flex; flex-wrap: wrap; gap: 2px; min-w
 header nav a { color: var(--muted); text-decoration: none; font-size: 13px; padding: 4px 8px; border-radius: 999px; }
 header nav a.on { color: var(--text); background: var(--panel); }
 header b img { width: 22px; height: 22px; }
-header a.plus, header a.about { color: var(--text); text-decoration: none; }
+header a.about { color: var(--text); text-decoration: none; }
 header a.about { display: flex; align-items: center; gap: 8px; }
 select, textarea, button, input { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
 select { padding: 6px 10px; max-width: 70vw; }
@@ -107,16 +107,9 @@ body.all-shown .veil .full-btn { display: none; }
 .sheet .pack .lora button { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; padding: 0 2px; }
 .sheet .pack .loras [data-lora-add] { flex: 1; min-width: 20ch; font-size: 12px; }
 .sheet .pack .save-pack { background: none; font: inherit; font-size: 11px; color: var(--text); cursor: pointer; }
-.sheet #auto { font-size: 13px; }
-/* the Civitai token, «Make it» and «by hand» each in a box of their own («by hand» only when «Make it» shows too) */
-.sheet #auto, .sheet #hand.boxed, .sheet #civ-box { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+/* the Civitai token in a box of its own */
+.sheet #civ-box { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
 .sheet .box-title { margin-bottom: 6px; color: var(--strong); font-size: 13px; font-weight: 600; }
-.sheet #hand.boxed .how:first-child, .sheet #hand.boxed .box-title + .how { margin-top: 0; }
-.sheet #auto label { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--text); font-size: 13px; cursor: pointer; }
-.sheet #auto label input { width: auto; flex: none; margin: 2px 0 0; }
-.sheet #auto label a { color: inherit; }
-.sheet #auto button { margin-top: 6px; }
-.sheet #auto button:disabled { opacity: .5; cursor: default; }
 [data-tune-reset]:disabled { opacity: .5; cursor: default; }
 .sheet .how { font-size: 12px; color: var(--muted); margin-top: 8px; }
 .sheet .how ol { margin: 4px 0 0; padding-left: 20px; }
@@ -183,7 +176,6 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <header>
   <b><a class="about" href="#"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22%23F4EFE8%22/%3E%3Cg transform=%22translate%2836 30%29 scale%280.86%29%22%3E%3Cpath d=%22M256 120 C 296 120, 312 160, 314 205 C 316 250, 400 290, 400 360 C 400 430, 330 462, 256 462 C 182 462, 112 430, 112 360 C 112 290, 196 250, 198 205 C 200 160, 216 120, 256 120 Z%22 fill=%22%230047AB%22/%3E%3Cpath d=%22M256 122 C 258 100, 266 80, 280 66%22 fill=%22none%22 stroke=%22%230047AB%22 stroke-width=%2214%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M272 98 C 300 66, 346 60, 380 70 C 362 108, 320 118, 276 108 Z%22 fill=%22%230047AB%22/%3E%3C/g%3E%3C/svg%3E" alt="">Cobalt Pear <span class="meta">· demo</span></a></b>
   <nav><a href="#">Chat</a><a href="#models">Models</a><a href="#settings">Settings</a><a href="#price">Pricing</a><a href="#about">About</a><a href="https://cobaltpear.github.io/docs/" target="_blank" rel="noopener">Manual ↗</a><a href="https://cobaltpear.github.io/docs/setup/" target="_blank" rel="noopener">Setup ↗</a><a href="https://cobaltpear.github.io/docs/news/" target="_blank" rel="noopener">News ↗</a><a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener" title="Questions, bugs and ideas — on GitHub. Screenshots welcome: just paste them in">Feedback ↗</a></nav>
-  <a id="plus" class="pill plus" target="_blank" rel="noopener" title="Add your own workers">Cobalt Pear Plus ↗</a>
   <a id="update" class="pill plus" target="_blank" rel="noopener" hidden>Update ↗</a>
   <button id="reveal-all" class="pill" type="button">Show all</button>
 </header>
@@ -191,7 +183,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <form id="form"><div class="box">
   <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button><span id="pic-unused" hidden>No chosen model takes a picture (Image To …) — it's left out</span></div><input id="pic-file" type="file" accept="image/*" hidden><div id="pic-menu" hidden></div>
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
-  <div class="row"><div id="models"></div><span class="right"><span id="lora-wrap"><button id="lora-btn" class="pill" type="button" title="The LoRAs this picture uses" hidden>LoRA</button><div id="lora-menu" hidden></div></span><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+  <div class="row"><div id="models"></div><span class="right"><span id="lora-wrap"><button id="lora-btn" class="pill" type="button" title="The LoRAs this picture uses" hidden>LoRA</button><div id="lora-menu" hidden></div></span><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><select id="shape" title="The picture's shape — a model that starts from a picture follows that picture" hidden><option value="landscape">Landscape</option><option value="square">Square</option><option value="portrait">Portrait</option></select><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
 <div id="v-settings" class="sheet page" hidden><form class="card" id="settings-form">
   <b>Settings</b>
@@ -207,12 +199,16 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.28.12 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.29.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
   <div class="saved"><b>Cobalt Pear is free to use.</b></div>
-  <div class="hint">You pay RunPod for the GPU, by the second, only while a worker is making pictures — about $0.003 a picture once it is on, in our own test. A worker turns itself off when idle and then costs nothing. <a href="https://cobaltpear.github.io/docs/cost-and-speed/" target="_blank" rel="noopener">Cost and speed ↗</a></div>
+  <ul class="hint">
+    <li><b>Free:</b> every model in the list and one worker of your own.</li>
+    <li><b>Plus</b> — <s>$29</s> <b>$19</b> launch price, paid once: any number of your own workers, Fine-tune, and workers on Modal. Updates through December 31, 2027. <a href="https://cobaltpear.gumroad.com/l/plus/LAUNCH" target="_blank" rel="noopener">Get Plus ↗</a></li>
+  </ul>
+  <div class="hint">You pay RunPod for the GPU, by the second, only while a worker is making pictures. A worker turns itself off when idle and then costs nothing. <a href="https://cobaltpear.github.io/docs/cost-and-speed/" target="_blank" rel="noopener">Cost and speed ↗</a></div>
 </div></div>
 <div id="v-about" class="sheet page" hidden><div class="card">
   <b>About</b>
@@ -221,7 +217,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <ul class="hint">
     <li>Just type — no GPU of your own, no ComfyUI, no install.</li>
     <li>Your own RunPod: your own GPU, your own rules — you pay only for the pictures you make.</li>
-    <li>Your key and pictures stay in your browser. Only <b>Make it for me</b>, if you tick it, passes your key through our small relay, which keeps nothing.</li>
+    <li>No server of ours in between: your key, prompts and pictures go only from your browser to RunPod, and stay in your browser. Cobalt Pear records nothing about you.</li>
   </ul>
 </div></div>
 <div id="v-models" class="sheet page" hidden><form class="card" id="models-form">
@@ -231,12 +227,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <div id="civ-box" hidden><div class="box-title">Civitai token</div>
   <div class="add" id="civ-row"><input id="civ-token" type="password" autocomplete="off" placeholder="Civitai token — only for LoRAs that need you signed in"></div>
   <div class="hint" id="civ-how"></div></div>
-  <div id="auto" hidden><div class="box-title">Make it for me</div><label><input id="auto-ok" type="checkbox"><span>Let Cobalt Pear make it on RunPod — your key passes through our relay, which keeps nothing about you (<a href="https://cobaltpear.github.io/docs/models/#add" target="_blank" rel="noopener">details ↗</a>).</span></label>
-  <div class="add" id="auto-hf-row" hidden><input id="auto-hf" type="password" autocomplete="off" placeholder="Hugging Face token (hf_...) for Gated models"></div>
-  <div class="hint" id="auto-hf-how" hidden></div>
-  <div class="hint" id="auto-which"></div>
-  <button id="auto-go" class="pill" type="button">Make it</button> <span class="hint" id="auto-state"></span></div>
-  <div id="hand"><div class="box-title" id="auto-or" hidden>Or by hand</div>
+  <div id="hand">
   <div class="add" id="gh-row" hidden><input id="gh-name" autocomplete="off" spellcheck="false" placeholder="Your GitHub name — for the links to your copy below"></div>
   <div id="pack-how"></div></div>
   <div id="catalog-box"><label>Add a model</label><div class="tabs" id="kinds"></div><div id="catalog"></div>
@@ -287,7 +278,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.28.12";
+const VERSION = "2026.10.29.1";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -296,7 +287,6 @@ const LANG = navigator.languages.map(l => l.split("-")[0]).find(l => MESSAGES[l]
 const tr = (key, vals = {}) => (MESSAGES[LANG][key] ?? MESSAGES.en[key] ?? key).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, n) => vals[n] ?? m);
 document.documentElement.lang = LANG;
 const UPDATE_URL = "https://cobaltpear.github.io/version.json";  // written by build.py — the site serves the newest pages, so a saved copy can tell it is old
-const PLUS_URL = "";  // sales page of Plus — empty = not on sale yet
 const PACKS_KEY = "simple-packs";  // the name from when Plus was a page of its own — kept so saved lists stay
 const GET_URL = "https://cobaltpear.github.io/";
 const CATALOG_URL = "https://cobaltpear.github.io/packs/index.json";  // models anyone can start on RunPod in a few clicks — no GitHub, no build
@@ -685,6 +675,7 @@ const kindOf = p => catalogOf(p)?.kind || packKind(p);
 // what an added model is, as on its list row: its kind, NSFW, Gated — or Custom, your own worker (not on the list)
 const packTags = p => { const c = catalogOf(p); return [kindOf(p), catalog.length && !c && "Custom", (c?.nsfw || p.nsfw) && "NSFW", c?.gated && "Gated"].filter(Boolean).map(t => `<span class="gated">${esc(t)}</span>`).join(""); };
 function renderPacks() {
+  nameCopies();
   // one line per model so a long list stays easy to scan; the note shows on hover
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
@@ -693,7 +684,7 @@ function renderPacks() {
   // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
   for (const p of byLabel(packs)) {
-    const s = !endpoints[p.id] && !p.civitai && setupOf(p);  // shown whether Make it is ticked or not, so nothing jumps under the pointer
+    const s = !endpoints[p.id] && !p.civitai && setupOf(p);
     if (s) how.set(s.url + "\n" + s.steps, [...(how.get(s.url + "\n" + s.steps) || []), p.label]);
   }
   // a Civitai model gets its own two links: a private copy of the worker, then civitai.env with the model filled in
@@ -721,18 +712,8 @@ function renderPacks() {
     + [...how].map(([k, labels]) => { const [url, steps] = k.split("\n");
     return `<div class="how"><b>${esc(labels.join(", "))}</b><ol><li>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${url.startsWith("https://github.com/") ? "Open the worker" : "Open RunPod"} ↗</a> → ` : ""}${esc(steps).replace(/\.\s*$/, "").replace("as the guide shows", `as the <a href="https://cobaltpear.github.io/docs/setup/#create-the-endpoint" target="_blank" rel="noopener">Setup ↗</a> shows`)} → paste ${labels.length > 1 ? "each ID next to its model" : "its ID above"}</li></ol></div>`; }).join("");
   $("pack-tools").hidden = packs.length + catalog.length < 8;
-  $("auto").hidden = !RELAY_URL || !waitingForAuto().length;
-  // a Gated model needs the customer's own HF token and its license accepted on HF — asked only while one is waiting
-  const gated = $("auto-ok").checked ? waitingForAuto().filter(p => catalogOf(p).gated) : [];
-  $("auto-hf-row").hidden = $("auto-hf-how").hidden = !gated.length;
-  $("auto-hf-how").innerHTML = gated.length ? `Gated: first press <b>Agree</b> on ${gated.map(p => `<a href="https://huggingface.co/${esc(p.setup_pick)}" target="_blank" rel="noopener">${esc(p.label)}</a>`).join(", ")}, then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token</a> — pick <b>Read</b> — and paste it here.` : "";
-  $("auto-go").disabled = !$("auto-ok").checked;
-  // which models «Make it» makes an endpoint for
-  $("auto-which").innerHTML = waitingForAuto().length ? "Makes an endpoint for: " + waitingForAuto().map(p => `<b>${esc(p.label)}</b>`).join(", ") : "";
   // the Civitai token box shows only while a Civitai LoRA is on a model
   $("civ-box").hidden = !Object.values(loras).flat().some(l => /^https:\/\/civitai\./.test(l.link));
-  $("auto-or").hidden = $("auto").hidden || !how.size;
-  $("hand").classList.toggle("boxed", !$("auto-or").hidden);
   renderCatalog();
 }
 // a model's LoRAs: name (opens its page) · strength · ×, and the link box while «+ LoRA» is open
@@ -837,43 +818,11 @@ $("lora-menu").addEventListener("click", e => {
 // the path as it was when clicked: a button the menu just redrew (Back to the model's own) is no longer inside it, but was
 document.addEventListener("click", e => { if (!e.composedPath().includes($("lora-wrap"))) $("lora-menu").hidden = true; });
 document.addEventListener("keydown", e => { if (e.key === "Escape") $("lora-menu").hidden = true; });
-// Make it: a model from the list gets its endpoint made by the relay (RunPod's create API can't be called from a page) — opt-in, ticked once
-const RELAY_URL = "https://cobaltpear-relay.cobaltpear.workers.dev";
 const catalogOf = p => catalog.find(c => c.url === p.src);
-const waitingForAuto = () => packs.filter(p => !endpoints[p.id] && p.setup_pick && catalogOf(p));
-try { $("auto-hf").value = localStorage.getItem("hf-token") || ""; } catch {}
 try { $("civ-token").value = localStorage.getItem("civitai-token") || ""; } catch {}
 $("civ-token").addEventListener("change", () => { try { localStorage.setItem("civitai-token", $("civ-token").value.trim()); } catch {} });
 // a Civitai download link gets the token, if there is one, as the request goes out (never kept with the LoRA)
 const withCivitaiToken = ls => { const t = $("civ-token").value.trim(); return t && ls ? ls.map(l => /^https:\/\/civitai\.com\/api\/download\//.test(l.url) ? { ...l, url: l.url + (l.url.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(t) } : l) : ls; };
-$("auto-hf").addEventListener("change", () => { try { localStorage.setItem("hf-token", $("auto-hf").value.trim()); } catch {} });
-try { $("auto-ok").checked = localStorage.getItem("auto-ok") === "1"; } catch {}
-$("auto-ok").addEventListener("change", () => { renderPacks(); try { localStorage.setItem("auto-ok", $("auto-ok").checked ? "1" : ""); } catch {} });
-async function makeEndpoints() {
-  const key = apiKey;
-  if (!key) { openSettings(makeEndpoints); return; }
-  if (!$("auto-hf-row").hidden && !/^hf_\w{10,}$/.test($("auto-hf").value.trim())) { $("auto-state").textContent = "Paste your Hugging Face token first."; $("auto-hf").focus(); return; }
-  keepEndpointInputs();
-  $("auto-go").disabled = true;
-  const todo = waitingForAuto(), done = [];
-  for (const [i, p] of todo.entries()) {
-    const c = catalogOf(p);
-    $("auto-state").textContent = `Making ${p.label} (${i + 1}/${todo.length})…` + (done.length ? ` · ${done.join(", ")} ✓` : "");
-    try {
-      const r = await fetch(RELAY_URL + "/create", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
-                                         body: JSON.stringify({ model: p.setup_pick, gpu: c.gpu, video: /video/i.test(c.kind || ""), ...(c.gated && { hf: $("auto-hf").value.trim() }) }) });
-      const j = await r.json().catch(() => ({}));
-      if (r.status === 403 && j.error === "This key can't create endpoints.") throw new Error("This key can't make endpoints. Put a key with All access in Settings — or do the steps below by hand.");
-      if (!r.ok || !j.id) throw new Error(j.error || `Error ${r.status}`);
-      endpoints[p.id] = j.id; store.set("endpoints", endpoints);
-      store.set("made", [...store.get("made", []), j.id]);  // Remove deletes these on RunPod too
-      done.push(p.label);
-    } catch (err) { renderPacks(); $("auto-state").textContent = err.message; return; }
-  }
-  $("auto-state").textContent = "";
-  renderPacks(); fillModels();  // the IDs are in their boxes now and the box goes away
-}
-$("auto-go").addEventListener("click", makeEndpoints);
 // one worker of your own, more with a plugin (hooks.ownLimit) — models from the catalog never count
 const CATALOG_DIR = new URL(".", CATALOG_URL).href;
 // a Civitai model is your own worker too (its pack sits in the catalog folder, but the worker is your copy)
@@ -895,7 +844,8 @@ const customSeen = new IntersectionObserver(es => es.forEach(e => {
   if (c) singleFile(c).then(ok => { b.hidden = !ok; }, () => {});
 }));
 function renderCatalog() {
-  const rest = catalog.filter(c => !packs.some(p => p.src === c.url || p.id === "hf-" + c.id));  // added, or added as Custom
+  // an added model stays — adding it again makes a second copy, for another endpoint (RunPod and Modal side by side)
+  const rest = catalog, added = c => packs.some(p => p.src === c.url || p.id === "hf-" + c.id);
   // your own worker is the last tab, always there — past the free one, adding asks to use it instead (addPack)
   const kinds = [...new Set(rest.map(c => c.kind || "")), CUSTOM];
   $("catalog-box").hidden = !kinds.length;
@@ -904,7 +854,7 @@ function renderCatalog() {
   $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
     `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
-    ${archFam(c.arch) ? `<button class="pill" type="button" hidden data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai ${CIVITAI_FAMS[archFam(c.arch)].name} model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}">Add</button></div></div>`).join("")).join("");
+    ${archFam(c.arch) ? `<button class="pill" type="button" hidden data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai ${CIVITAI_FAMS[archFam(c.arch)].name} model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}"${added(c) ? ` title="Add it once more, for another endpoint"` : ""}>${added(c) ? "Add another" : "Add"}</button></div></div>`).join("")).join("");
   findPacks();
   $("catalog").querySelectorAll("[data-cat-custom]").forEach(b => customSeen.observe(b.closest(".pack")));
 }
@@ -990,7 +940,7 @@ async function findPackUpdates() {
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const newPacks = (await Promise.all(packs.map(async (p, i) => {
     if (!p.src || p.src.startsWith("hf:")) return null;
-    try { const f = checkPack(await fetchPack(p.src)), n = { ...(typeof p.civitai === "object" ? civitaiPack(f, p.civitai) : f), src: p.src }; return same(n, p) ? null : [i, n]; } catch { return null; }  // offline — try next time
+    try { const f = checkPack(await fetchPack(p.src)), b = typeof p.civitai === "object" ? civitaiPack(f, p.civitai) : f, n = { ...b, ...(p.copy && asCopy(b, p.copy)), src: p.src, ...(p.plain && { plain: b.label, label: p.label }) }; return same(n, p) ? null : [i, n]; } catch { return null; }  // offline — try next time
   }))).filter(Boolean);
   if (!newPacks.length) return;
   for (const [i, n] of newPacks) {
@@ -1010,11 +960,40 @@ function forgetPack(id) {
   packs = packs.filter(p => p.id !== id); delete endpoints[id]; delete loras[id]; delete loraMode[id]; delete loraBuilt[id]; delete tweaks[id]; store.set("tweaks", tweaks);
   store.set(PACKS_KEY, packs); store.set("endpoints", endpoints); store.set("loras", loras); store.set("lora-mode", loraMode); store.set("lora-built", loraBuilt);
 }
+// the same model once more, beside the first, with its own endpoint, LoRAs and settings — named by nameCopies
+const asCopy = (p, n) => ({ id: `${p.id}-${n}`, label: `${p.label} (${n})`, copy: n, plain: p.label });
+// a model added more than once is told apart by where each one runs: «Name · RunPod», «Name · Modal», «Name · Modal (2)»
+function nameCopies() {
+  const groups = new Map();
+  for (const p of packs) { const base = p.copy ? p.id.slice(0, -String(p.copy).length - 1) : p.id; groups.set(base, [...(groups.get(base) || []), p]); }
+  let changed = false;
+  for (const g of groups.values()) {
+    if (g.length === 1 && !g[0].plain) continue;
+    const on = x => endpoints[x.id] ? serviceOf(endpoints[x.id]).name : "", seen = {};
+    for (const x of g) {
+      const plain = x.plain || x.label, s = on(x), k = seen[s] = (seen[s] || 0) + 1;
+      const label = g.length === 1 ? plain : plain + (s ? ` · ${s}` : "") + (k > 1 ? ` (${k})` : "");
+      if (g.length === 1) delete x.plain; else x.plain = plain;
+      if (label !== x.label || g.length === 1) { x.label = label; changed = true; }
+    }
+  }
+  if (changed) store.set(PACKS_KEY, packs);
+}
+// a model already there with its endpoint gets a copy; one still waiting for its endpoint is replaced, as before
+function nextCopy(p) {
+  const same = packs.filter(x => x.id === p.id || x.copy && x.id === asCopy(p, x.copy).id);
+  if (!same.length) return p;
+  const empty = same.find(x => !endpoints[x.id]);
+  if (empty) return { ...p, ...(empty.copy && asCopy(p, empty.copy)) };
+  let n = 2;
+  while (packs.some(x => x.id === asCopy(p, n).id)) n++;
+  return { ...p, ...asCopy(p, n) };
+}
 function addPack(data, name, src) {
   // a pack, or a ComfyUI API workflow (bare, or inside {"prompt": …})
-  const p = checkPack(data.format ? data : detectPack(data.prompt && !data.class_type && typeof data.prompt === "object" ? data.prompt : data, name));
-  if (src) p.src = src;
   keepEndpointInputs();
+  const p = nextCopy(checkPack(data.format ? data : detectPack(data.prompt && !data.class_type && typeof data.prompt === "object" ? data.prompt : data, name)));
+  if (src) p.src = src;
   // at the limit of your own workers, another one asks to take that one's place
   const old = isOwn(p) && !customAllowed() ? packs.filter(x => isOwn(x) && x.id !== p.id) : [];
   if (old.length && !confirm(`Use «${p.label}» instead of ${old.map(x => `«${x.label}»`).join(", ")}?\n\n${old.length > 1 ? "They leave" : "It leaves"} Models with ${old.length > 1 ? "their" : "its"} endpoint ID and LoRAs.`)) return false;
@@ -1073,14 +1052,8 @@ $("pack-list").addEventListener("click", e => {
   const id = e.target.dataset.delPack;
   if (!id) return;
   keepEndpointInputs();
-  const ep = endpoints[id], made = store.get("made", []);
   forgetPack(id);
   renderPacks();
-  // an endpoint Make it made goes too (one click makes it again); hand-made ones stay on RunPod
-  if (RELAY_URL && ep && made.includes(ep) && apiKey) {
-    store.set("made", made.filter(x => x !== ep));
-    fetch(RELAY_URL + "/delete", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey }, body: JSON.stringify({ id: ep }) }).catch(() => {});
-  }
 });
 let afterSettings = null;  // what was asked for before the key was given — runs on leaving Settings
 function openSettings(then) {
@@ -1212,7 +1185,7 @@ function tuneBox(p) {
 // One button names the one on (or «3 models») and opens a list grouped like the Models tabs; a click ticks a model on or off
 // and the list stays open until a click outside or Esc — so a hundred models still fit in one row.
 let chosen = store.get("models", []);
-function fillModels() { fillChips(); fitNegative(); fitPicture(); fillLoras(); }
+function fillModels() { fillChips(); fitNegative(); fitShape(); fitPicture(); fillLoras(); }
 function modelsHead() {
   const list = usable(), names = chosen.map(id => list.find(p => p.id === id)?.label).filter(Boolean);
   return (names.length > 1 ? `${names.length} models` : names[0] || "") + " ▾";
@@ -1247,7 +1220,7 @@ $("models").addEventListener("click", e => {
   else if (chosen.length > 1) chosen = chosen.filter(x => x !== id);  // the last model on stays on
   store.set("models", chosen);
   e.target.classList.toggle("on", chosen.includes(id)); $("model-btn").textContent = modelsHead();
-  fitNegative(); fitPicture(); fillLoras();
+  fitNegative(); fitShape(); fitPicture(); fillLoras();
 });
 $("models").addEventListener("input", e => { if (e.target.id === "model-find") findModels(); });
 document.addEventListener("click", e => { if (!e.target.closest("#models")) modelMenu(false); });
@@ -1267,10 +1240,20 @@ function fitNegative() {
   $("negative").placeholder = negDefaults().length > 1 ? "Negative: each model's own" : "Negative: model's own";
   if (!negEdited) $("negative").value = negDefault();
 }
+// Shape: landscape, square or portrait — shown when a chosen model has more than one; each model takes its own size of that shape
+const shapeOf = ([w, h]) => w > h ? "landscape" : w < h ? "portrait" : "square";
+function fitShape() {
+  const shapes = new Set(chosenPacks().filter(p => hasSize(p) && !takesImage(p)).flatMap(p => p.sizes.map(shapeOf)));
+  $("shape").hidden = shapes.size < 2;
+  for (const o of $("shape").options) o.hidden = !shapes.has(o.value);
+  const want = store.get("shape") || "landscape";
+  $("shape").value = shapes.has(want) || !shapes.size ? want : [...$("shape").options].find(o => !o.hidden).value;  // shows the shape these models will get
+}
+$("shape").addEventListener("change", () => store.set("shape", $("shape").value));
 function setNegative(v) { negEdited = negChanged(v); if (negEdited) $("negative").value = v; fitNegative(); }
 
 // The Picture button shows only when a chosen model starts from a picture (edit, image to video). Models that don't just ignore it.
-let picture = null, picUrl = "";  // Blob
+let picture = null, picUrl = "", picAspect = 0;  // Blob · its width ÷ height
 const needsPicture = () => chosenPacks().some(takesImage);
 function fitPicture() {
   $("attach").hidden = !needsPicture();
@@ -1280,7 +1263,8 @@ function fitPicture() {
 }
 function setPicture(blob) {
   if (picUrl) URL.revokeObjectURL(picUrl);
-  picture = blob || null; picUrl = picture ? URL.createObjectURL(picture) : "";
+  picture = blob || null; picUrl = picture ? URL.createObjectURL(picture) : ""; picAspect = 0;
+  if (picture) createImageBitmap(picture).then(b => { if (blob === picture) picAspect = b.width / b.height; }, () => {});
   $("pic").querySelector("img").src = picUrl;
   fitPicture();
 }
@@ -1383,8 +1367,10 @@ async function runAndWait(ep, input, onStatus) {
 let lastCreated = 0;
 const newCreated = () => (lastCreated = Math.max(Date.now(), lastCreated + 1));  // also the turn's key in IndexedDB
 function newItem(pack, created, n, seed) {
-  // size = the first landscape size of the pack (fills a laptop screen), else the first size
-  const [w, h] = hasSize(pack) ? pack.sizes.find(([w, h]) => w > h) || pack.sizes[0] : [];
+  // size = the pack's size nearest the picture's shape when it starts from one, else its first size of the chosen shape (first landscape, first size)
+  const near = a => [...pack.sizes].sort((x, y) => Math.abs(Math.log(x[0] / x[1] / a)) - Math.abs(Math.log(y[0] / y[1] / a)))[0];
+  const [w, h] = !hasSize(pack) ? [] : takesImage(pack) && picAspect ? near(picAspect)
+    : pack.sizes.find(s => shapeOf(s) === $("shape").value) || pack.sizes.find(s => shapeOf(s) === "landscape") || pack.sizes[0];
   return { id: `${created}-${n}`, packId: pack.id, label: pack.label, seed: seed ?? randSeed(), w, h, status: "IN_QUEUE", media: [], text: "" };
 }
 // one prompt → one turn; every chosen model × count gets its own job (a given seed is used for all of them)
@@ -1612,8 +1598,6 @@ function openViewer(src) {
 }
 
 fillModels(); showTune();
-$("plus").href = PLUS_URL;
-$("plus").hidden = !PLUS_URL;
 // ---- Plugins ----
 // A plugin is a file ({id, name, version, api, code, sig}) kept in this browser. It runs only if Cobalt Pear's signature over it checks out,
 // so a changed or made-up one (one that would read the RunPod key, say) is refused. It gets the small «app» below and nothing else is promised.
@@ -1694,6 +1678,5 @@ showView();
 loadHistory();
 if (!view) $("prompt").focus();  // the chat comes first; the empty screen points to Models, and the key is asked for on the first send
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "479e20130ef140e8bff9197d9e22dca1"}'></script>
 </body>
 </html>
