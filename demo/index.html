@@ -199,14 +199,14 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.29.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.29.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
   <div class="saved"><b>Cobalt Pear is free to use.</b></div>
   <ul class="hint">
     <li><b>Free:</b> every model in the list and one worker of your own.</li>
-    <li><b>Plus</b> — <s>$29</s> <b>$19</b> launch price, paid once: any number of your own workers, Fine-tune, and workers on Modal. Updates through December 31, 2027. <a href="https://cobaltpear.gumroad.com/l/plus/LAUNCH" target="_blank" rel="noopener">Get Plus ↗</a></li>
+    <li><b>Plus</b> — <s>$29</s> <b>$19</b> launch price until December 31, 2026, paid once: any number of your own workers, Fine-tune, and workers on Modal. 12 months of updates or more from the day you buy. <a href="https://cobaltpear.gumroad.com/l/plus/LAUNCH" target="_blank" rel="noopener">Get Plus ↗</a></li>
   </ul>
   <div class="hint">You pay RunPod for the GPU, by the second, only while a worker is making pictures. A worker turns itself off when idle and then costs nothing. <a href="https://cobaltpear.github.io/docs/cost-and-speed/" target="_blank" rel="noopener">Cost and speed ↗</a></div>
 </div></div>
@@ -279,7 +279,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.29.3";
+const VERSION = "2026.10.29.4";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
