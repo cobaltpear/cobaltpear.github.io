@@ -47,6 +47,7 @@ form .right { display: flex; align-items: center; gap: 6px; min-width: 0; }
 #seed, #negative { width: 12ch; padding: 4px 10px; border-radius: 999px; font-size: 14px; color: var(--muted); }
 #negative { width: 26ch; min-width: 6ch; flex: 0 1 auto; }
 #seed { min-width: 6ch; flex: 0 1 auto; }
+#count { width: 6ch; padding: 4px 10px; border-radius: 999px; font-size: 14px; color: var(--muted); }
 #pic { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; color: var(--muted); }
 #pic img, .turn .p img { height: 48px; border-radius: 6px; }
 #pic-menu { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 3; width: min(360px, calc(100vw - 32px)); padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; }
@@ -136,8 +137,8 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 .sheet .pack .tune-grid span.changed { color: var(--text); font-weight: 600; }
 .sheet .pack .tune-grid input { width: 16ch; padding: 1px 4px; font-size: 13px; }
 .sheet .pack .tune-grid input[type=checkbox] { width: auto; justify-self: start; }
-.sheet #tune-row { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; color: var(--text); font-size: 15px; cursor: pointer; }
-.sheet #tune-row input { width: auto; flex: none; margin: 3px 0 0; }
+.sheet #tune-row, .sheet #bulk-row { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; color: var(--text); font-size: 15px; cursor: pointer; }
+.sheet #tune-row input, .sheet #bulk-row input { width: auto; flex: none; margin: 3px 0 0; }
 #lora-menu { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 3; width: min(380px, calc(100vw - 32px)); max-height: 55vh; overflow-y: auto; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; font-size: 14px; }
 #lora-menu .kind { padding: 8px 2px 3px; font-size: 14px; font-weight: 700; color: var(--text); }
 #lora-menu label > span { color: var(--muted); }
@@ -183,7 +184,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 <form id="form"><div class="box">
   <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button><span id="pic-unused" hidden>No chosen model takes a picture (Image To …) — it's left out</span></div><input id="pic-file" type="file" accept="image/*" hidden><div id="pic-menu" hidden></div>
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
-  <div class="row"><div id="models"></div><span class="right"><span id="lora-wrap"><button id="lora-btn" class="pill" type="button" title="The LoRAs this picture uses" hidden>LoRA</button><div id="lora-menu" hidden></div></span><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><select id="shape" title="The picture's shape — a model that starts from a picture follows that picture" hidden><option value="landscape">Landscape</option><option value="square">Square</option><option value="portrait">Portrait</option></select><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
+  <div class="row"><div id="models"></div><span class="right"><span id="lora-wrap"><button id="lora-btn" class="pill" type="button" title="The LoRAs this picture uses" hidden>LoRA</button><div id="lora-menu" hidden></div></span><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><select id="shape" title="The picture's shape — a model that starts from a picture follows that picture" hidden><option value="landscape">Landscape</option><option value="square">Square</option><option value="portrait">Portrait</option></select><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="count" type="search" inputmode="numeric" autocomplete="off" placeholder="×1" title="Bulk requests: how many of each line (a line ending in ×3 makes 3)" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
 <div id="v-settings" class="sheet page" hidden><form class="card" id="settings-form">
   <b>Settings</b>
@@ -199,14 +200,14 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.29.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.29.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
   <div class="saved"><b>Cobalt Pear is free to use.</b></div>
   <ul class="hint">
     <li><b>Free:</b> every model in the list and one worker of your own.</li>
-    <li><b>Plus</b> — <s>$29</s> <b>$19</b> launch price until December 31, 2026, paid once: any number of your own workers, Fine-tune, and workers on Modal. 12 months of updates or more from the day you buy. <a href="https://cobaltpear.gumroad.com/l/plus/LAUNCH" target="_blank" rel="noopener">Get Plus ↗</a></li>
+    <li><b>Plus</b> — <s>$29</s> <b>$19</b> launch price until December 31, 2026, paid once: any number of your own workers, Fine-tune, Bulk requests, and workers on Modal. 12 months of updates or more from the day you buy. <a href="https://cobaltpear.github.io/docs/plus/" target="_blank" rel="noopener">What Plus adds ↗</a> · <a href="https://cobaltpear.gumroad.com/l/plus/LAUNCH" target="_blank" rel="noopener">Get Plus ↗</a></li>
   </ul>
   <div class="hint">You pay RunPod for the GPU, by the second, only while a worker is making pictures. A worker turns itself off when idle and then costs nothing. <a href="https://cobaltpear.github.io/docs/cost-and-speed/" target="_blank" rel="noopener">Cost and speed ↗</a></div>
 </div></div>
@@ -244,7 +245,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // DEMO — fake RunPod: no key or endpoint is checked, nothing leaves the browser except fetching packs from GitHub.
 // The "image" is drawn here: its colors come from the seed (same seed = same picture), the prompt is written on it.
 (() => {
-  const real = window.fetch, jobs = {};
+  const real = window.fetch, jobs = {}, drawn = {};
   const draw = (prompt, seed, w, h) => new Promise(res => {
     const c = document.createElement("canvas"); c.width = w || 1536; c.height = h || 960;
     const g = c.getContext("2d"); let s = seed % 2147483647 || 1; const r = () => (s = s * 16807 % 2147483647) / 2147483647;
@@ -261,11 +262,30 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
     if (!String(url).startsWith("https://api.runpod.ai/")) return real(url, opt);
     await new Promise(r => setTimeout(r, 300));
     const json = o => new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json" } });
+    const picture = inp => { const wf = inp.workflow, [w, h] = String(inp.size || "").split("x").map(Number);  // json-engine packs: {prompt, size: "WxH", seed}
+      return wf ? draw(pick(wf, "text") || "(no prompt)", pick(wf, "seed") ?? pick(wf, "noise_seed") ?? 0, pick(wf, "width"), pick(wf, "height"))
+                : draw(inp.prompt || "(no prompt)", inp.seed ?? 0, w, h); };
+    const newId = k => k + Math.random().toString(36).slice(2);
+    // Bulk requests: batch → a draft · batch/<id>/requests → each one, done 3 s after finalize · batch/<id>/finalize
+    const bm = String(url).split("?")[0].match(/\/batch(?:\/(\w+)\/(requests|finalize))?$/);
+    // kept for the tab, so a reload picks them back up like a real one
+    const batches = JSON.parse(sessionStorage.getItem("demo-batches") || "{}"), keep = () => sessionStorage.setItem("demo-batches", JSON.stringify(batches));
+    if (bm && !bm[1]) {
+      const id = newId("batch");
+      batches[id] = { t: 0, reqs: JSON.parse(opt.body).map(({ input }) => ({ id: newId("req"), input })) }; keep();
+      return json({ id, status: "DRAFT" });
+    }
+    if (bm) {
+      const b = batches[bm[1]];
+      if (!b) return new Response(JSON.stringify({ error: "batch not found" }), { status: 404 });
+      if (bm[2] === "finalize") { b.t = Date.now(); keep(); return json({ id: bm[1], status: "FINALIZED" }); }
+      const done = b.t && Date.now() - b.t > 3000;
+      return json({ requests: await Promise.all(b.reqs.map(async r => ({ id: r.id, input: r.input, status: !b.t ? "DRAFT" : done ? "COMPLETED" : "IN_QUEUE",
+                                                                         ...done ? { output: { images: [{ type: "base64", data: await (drawn[r.id] ||= picture(r.input)) }] } } : {} }))), total: b.reqs.length, hasMore: false });
+    }
     if (String(url).endsWith("/run")) {
-      const id = "demo" + Math.random().toString(36).slice(2), inp = JSON.parse(opt.body).input, wf = inp.workflow;
-      const [w, h] = String(inp.size || "").split("x").map(Number);  // json-engine packs: {prompt, size: "WxH", seed}
-      jobs[id] = { t: Date.now(), p: wf ? draw(pick(wf, "text") || "(no prompt)", pick(wf, "seed") ?? pick(wf, "noise_seed") ?? 0, pick(wf, "width"), pick(wf, "height"))
-                                        : draw(inp.prompt || "(no prompt)", inp.seed ?? 0, w, h) };
+      const id = newId("demo");
+      jobs[id] = { t: Date.now(), p: picture(JSON.parse(opt.body).input) };
       return json({ id, status: "IN_QUEUE" });
     }
     const j = jobs[String(url).split("/").pop()], age = Date.now() - j.t;
@@ -279,7 +299,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.29.4";
+const VERSION = "2026.10.29.5";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -293,7 +313,7 @@ const GET_URL = "https://cobaltpear.github.io/";
 const CATALOG_URL = "https://cobaltpear.github.io/packs/index.json";  // models anyone can start on RunPod in a few clicks — no GitHub, no build
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const STATUS = { IN_QUEUE: "In queue", IN_PROGRESS: "Generating", COMPLETED: "Done", FAILED: "Failed", CANCELLED: "Cancelled", TIMED_OUT: "Timed out", ERROR: "Error" };
+const STATUS = { BATCH: "Bulk request", IN_QUEUE: "In queue", IN_PROGRESS: "Generating", COMPLETED: "Done", FAILED: "Failed", CANCELLED: "Cancelled", TIMED_OUT: "Timed out", ERROR: "Error" };
 const randSeed = () => Math.floor(Math.random() * 2 ** 48);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const NS = "demo.";  // storage namespace — the demo build sets "demo." so its fake results never mix with real ones on the same site
@@ -1131,10 +1151,16 @@ $("backup-load").addEventListener("change", async e => {
 // ---- Models ----
 const usable = () => byLabel(packs.filter(p => endpoints[p.id]));
 // what plugins (Settings → Plugins) can change — the page itself takes one worker of your own and has no Fine-tune
-const hooks = { ownLimit: 1, tune: () => false };
+const hooks = { ownLimit: 1, tune: () => false, bulk: () => false };
 const customAllowed = () => ownWorkers() < hooks.ownLimit;
 const tuneOn = () => !!hooks.tune();
 function showTune() { document.body.classList.toggle("tune", tuneOn()); fillLoras(); }
+const bulkOn = () => !!hooks.bulk();
+const PROMPT_HINT = $("prompt").placeholder;
+function showBulk() {
+  $("count").hidden = !bulkOn();
+  $("prompt").placeholder = bulkOn() ? "One prompt per line — «… ×3» at the end makes 3 of it (Enter to send · Shift+Enter for a new line)" : PROMPT_HINT;
+}
 // the plain values of a model's request that Fine-tune can change: not the prompt, seed, size or picture (the chat sets those), not file names.
 // RunPod's own worker (the Hugging Face list) takes only those, so it has none.
 function tuneFields(p) {
@@ -1374,25 +1400,39 @@ function newItem(pack, created, n, seed) {
     : pack.sizes.find(s => shapeOf(s) === $("shape").value) || pack.sizes.find(s => shapeOf(s) === "landscape") || pack.sizes[0];
   return { id: `${created}-${n}`, packId: pack.id, label: pack.label, seed: seed ?? randSeed(), w, h, status: "IN_QUEUE", media: [], text: "" };
 }
-// one prompt → one turn; every chosen model × count gets its own job (a given seed is used for all of them)
-function run(prompt, use, count = 1, seed, negative = "", image = null) {
+// one prompt → one turn; every chosen model × count gets its own job (a given seed is used for all of them, or seed, seed+1 … with step)
+function makeTurn(prompt, use, count = 1, seed, negative = "", image = null, step = false) {
   const created = newCreated(), t = { created, prompt, negative, image: use.some(takesImage) ? image : null, items: [] };
-  for (const pack of use) for (let i = 0; i < count; i++) t.items.push(newItem(pack, created, t.items.length, seed));
+  for (const pack of use) for (let i = 0; i < count; i++) t.items.push(newItem(pack, created, t.items.length, seed == null ? undefined : seed + (step ? i : 0)));
   turns.push(t);
+  return t;
+}
+function run(...a) {
+  const t = makeTurn(...a);
   render(); scrollTo(0, document.body.scrollHeight);
   t.items.forEach(it => runItem(t, it));
 }
 // the LoRAs that are on: built into the worker = picked by link (none on = none used), by link = downloaded by the worker
 const picked = id => { const on = (loras[id] || []).filter(l => !l.off).map(l => tuneOn() ? l : { ...l, strength: LORA_STRENGTH }); return builtMode(id) ? { baked: on } : { loras: withCivitaiToken(on) }; };
-async function runItem(t, it) {
+// what one result sends: its model, endpoint and the request
+async function prepare(t, it) {
   const pack = packs.find(p => p.id === it.packId);
+  if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
+  if (takesImage(pack) && !t.image) throw new Error("This model starts from a picture — add one with Picture");
+  const image = takesImage(pack) ? await toB64(t.image) : undefined;
+  const input = packInput(tuned(pack), { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image, ...picked(pack.id) });
+  it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
+  return { pack, ep: endpoints[pack.id], input };
+}
+async function runItem(t, it) {
   try {
-    if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
-    if (takesImage(pack) && !t.image) throw new Error("This model starts from a picture — add one with Picture");
-    const image = takesImage(pack) ? await toB64(t.image) : undefined;
-    const input = packInput(tuned(pack), { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image, ...picked(pack.id) });
-    it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
-    const out = await runAndWait(endpoints[pack.id], input, st => { it.status = st; render(); }) || {};
+    const { pack, ep, input } = await prepare(t, it);
+    await finish(t, it, pack, await runAndWait(ep, input, st => { it.status = st; render(); }) || {});
+  } catch (err) { it.status = "ERROR"; it.error = err.message; }
+  render();
+}
+// what the worker returned → the result on the page, kept in the browser
+async function finish(t, it, pack, out) {
     if (/remote LoRA .* failed: 40[13]/.test(out.error || "")) throw new Error("A LoRA on this model needs you signed in to download it — paste your Civitai token in Models");
     if (out.error) throw new Error(out.error);
     if (Array.isArray(out.built_in) && builtMode(pack.id)) { const line = out.built_in.join(" "); if (line !== loraBuilt[pack.id]) { loraBuilt[pack.id] = line; store.set("lora-built", loraBuilt); keepEndpointInputs(); renderPacks(); fillLoras(); } }
@@ -1408,8 +1448,93 @@ async function runItem(t, it) {
     it.status = "COMPLETED";
     // show first, then keep — the result must not wait on browser storage (it can stall, e.g. Safari on a file:// page)
     keepTurn(t).catch(e => { it.error = "Not kept in the browser: " + e.message; render(); });
-  } catch (err) { it.status = "ERROR"; it.error = err.message; }
+}
+
+// ---- Bulk requests (Plus) — RunPod takes all of them in one batch and makes them when it has room; they survive closing the page ----
+// RunPod: POST batch [{input}] → {id} (a draft) · GET batch/<id>/requests → each request's id, input, status, output · POST batch/<id>/finalize starts it.
+// Other services have no batch, so their results go out as usual, a few at a time.
+const BATCH_POLL = NS ? 2000 : 30000;  // the demo answers in seconds
+function bulkLines(text) {  // every line is a prompt; «… ×3» (or x3) at its end makes 3 of it, else the number in the ×N box
+  const n0 = Math.min(100, Math.max(1, Number($("count").value) || 1));
+  return text.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+    const m = l.match(/^(.*?)(?:\s*×|\s+[xX])\s*(\d{1,3})$/);
+    return m && m[1].trim() ? { prompt: m[1].trim(), n: Math.min(100, Math.max(1, +m[2])) } : { prompt: l, n: n0 };
+  });
+}
+function runBulk(ts) {
+  const groups = {}, other = [];
+  for (const t of ts) for (const it of t.items) {
+    const ep = endpoints[it.packId];
+    if (ep && serviceOf(ep) === services.runpod) (groups[ep] ||= []).push([t, it]); else other.push([t, it]);
+  }
+  for (const [ep, jobs] of Object.entries(groups)) sendBatch(ep, jobs);
+  let next = 0;
+  const one = async () => { while (next < other.length) { const [t, it] = other[next++]; await runItem(t, it); } };
+  for (let k = 0; k < 4; k++) one();
+}
+// the same request written the same way, whatever order RunPod gives its keys back in
+const canon = v => Array.isArray(v) ? `[${v.map(canon)}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map(k => JSON.stringify(k) + ":" + canon(v[k]))}}` : JSON.stringify(v);
+async function batchRequests(ep, id) {
+  const out = [];
+  for (;;) {
+    const j = await runpodCall(ep, `batch/${id}/requests?offset=${out.length}&limit=100`);
+    out.push(...(j.requests || []));
+    if (!j.hasMore || !j.requests?.length) return out;
+  }
+}
+async function sendBatch(ep, jobs) {
+  const ready = [];
+  for (const [t, it] of jobs) {
+    try { ready.push({ t, it, ...await prepare(t, it) }); } catch (e) { it.status = "ERROR"; it.error = e.message; }
+  }
   render();
+  if (!ready.length) return;
+  try {
+    const b = await runpodCall(ep, "batch", ready.map(j => ({ input: j.input })));
+    // RunPod names each request itself — match them back by what was sent, else by order
+    const reqs = await batchRequests(ep, b.id), left = [...reqs];
+    ready.forEach((j, i) => {
+      const k = left.findIndex(r => canon(r.input) === canon(JSON.parse(JSON.stringify(j.input))));
+      j.it.batch = { ep, id: b.id, req: (k >= 0 ? left.splice(k, 1)[0] : reqs[i])?.id };
+      j.it.status = "BATCH";
+    });
+    await runpodCall(ep, `batch/${b.id}/finalize`, {});
+    store.set("batches", [...store.get("batches", []), { ep, id: b.id, turns: [...new Set(ready.map(j => j.t.created))] }]);
+    for (const t of new Set(ready.map(j => j.t))) keepTurn(t).catch(() => {});
+    watchBatch(ep, b.id);
+  } catch (e) { for (const j of ready) { j.it.status = "ERROR"; j.it.error = e.message; delete j.it.batch; } }
+  render();
+}
+const watching = new Set();
+async function watchBatch(ep, id) {
+  if (watching.has(id)) return;
+  watching.add(id);
+  const rec = store.get("batches", []).find(b => b.id === id), offPage = new Map();
+  // its turns: on the page, or (older than what is shown) read from the browser
+  const turnOf = async c => turns.find(t => t.created === c) || offPage.get(c) || await idb("readonly", s => s.get(c)).then(r => {
+    if (r) { for (const it of r.items) { it.media = []; it.status = it.batch ? "BATCH" : "COMPLETED"; } offPage.set(c, r); } return r; }).catch(() => null);
+  for (let fails = 0; ;) {
+    await sleep(BATCH_POLL);
+    let reqs;
+    try { reqs = await batchRequests(ep, id); fails = 0; } catch { if (++fails >= 20) break; continue; }  // still there next time the page opens
+    let waiting = 0;
+    for (const c of rec?.turns || []) {
+      const t = await turnOf(c);
+      for (const it of t?.items || []) {
+        if (it.batch?.id !== id || it.status !== "BATCH") continue;
+        const r = reqs.find(r => r.id === it.batch.req), st = r?.status;
+        if (st === "COMPLETED") {
+          delete it.batch;
+          try { await finish(t, it, packs.find(p => p.id === it.packId) || {}, r.output || {}); } catch (e) { it.status = "ERROR"; it.error = e.message; keepTurn(t).catch(() => {}); }
+        } else if (["FAILED", "CANCELLED", "TIMED_OUT"].includes(st) || !r) {
+          delete it.batch; it.status = "ERROR"; it.error = r?.error || (r ? STATUS[st] : "RunPod no longer has this request"); keepTurn(t).catch(() => {});
+        } else waiting++;
+      }
+    }
+    render();
+    if (!waiting) { store.set("batches", store.get("batches", []).filter(b => b.id !== id)); break; }
+  }
+  watching.delete(id);
 }
 $("form").addEventListener("submit", e => {
   e.preventDefault();
@@ -1420,12 +1545,17 @@ $("form").addEventListener("submit", e => {
   if (use.some(takesImage) && !picture) { choosePicture(() => $("form").requestSubmit()); return; }
   if (keyMissing(use)) { openSettings(() => $("form").requestSubmit()); return; }
   $("prompt").value = ""; keepDraft();
-  run(text, use, 1, sv ? Number(sv) : undefined, neg, picture);
+  if (!bulkOn()) { run(text, use, 1, sv ? Number(sv) : undefined, neg, picture); return; }
+  const ts = bulkLines(text).map(l => makeTurn(l.prompt, use, l.n, sv ? Number(sv) : undefined, neg, picture, true));
+  render(); scrollTo(0, document.body.scrollHeight);
+  runBulk(ts);
 });
 // what is typed in the box survives a reload too
 const keepDraft = () => store.set("draft", { prompt: $("prompt").value, negative: negEdited ? $("negative").value : null, seed: $("seed").value });
 $("prompt").addEventListener("input", keepDraft);
 $("seed").addEventListener("input", keepDraft);
+$("count").value = store.get("bulk-count", "");
+$("count").addEventListener("input", () => store.set("bulk-count", $("count").value.trim()));
 $("negative").addEventListener("input", () => { negEdited = negChanged($("negative").value); keepDraft(); });
 $("prompt").addEventListener("keydown", e => {
   if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("form").requestSubmit(); }
@@ -1441,7 +1571,7 @@ function idb(mode, fn) {
   });
 }
 async function keepTurn(t) {  // stores the finished items of a turn; a turn with none left is removed
-  const items = t.items.filter(i => i.status === "COMPLETED").map(({ id, packId, label, seed, w, h, text, blobs, sent }) => ({ id, packId, label, seed, w, h, text, blobs, sent }));
+  const items = t.items.filter(i => i.status === "COMPLETED" || i.status === "BATCH").map(({ id, packId, label, seed, w, h, text, blobs, sent, batch }) => ({ id, packId, label, seed, w, h, text, blobs, sent, batch }));
   if (!items.length) return idb("readwrite", s => s.delete(t.created));
   const rec = { created: t.created, prompt: t.prompt, negative: t.negative, image: t.image, items };
   for (;;) {  // nothing is removed by count — only when the browser has no room left, the oldest go first, and the chat says so
@@ -1475,7 +1605,7 @@ async function loadHistory() {
   if (recs.length < PAGE) allShownLoaded = true;
   if (!recs.length) return;
   for (const r of recs) for (const it of r.items) {
-    it.status = "COMPLETED";
+    it.status = it.batch ? "BATCH" : "COMPLETED";
     it.media = (it.blobs || []).map(b => ({ url: URL.createObjectURL(b), kind: mediaKind(b.type) || "image", type: b.type }));
   }
   const first = oldestShown === Infinity;
@@ -1505,7 +1635,8 @@ const fileName = (t, it, i, type) => `cobaltpear_${stamp(t.created)}_${it.seed}_
 const opened = new Set();  // results whose Details are open
 function itemHtml(t, it) {
   const media = it.media.map(m => mediaHtml(m, allShown || revealed.has(m.url))).join("") + (it.text ? `<div class="text">${esc(it.text)}</div>` : "");
-  const st = (it.status === "COMPLETED" ? "" : it.status === "IN_QUEUE" ? "In queue — a sleeping endpoint takes a minute or two to wake, a new one up to 10" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
+  const st = (it.status === "COMPLETED" ? "" : it.status === "BATCH" ? "Bulk request — RunPod makes it when it has room, which can take a while. You can close this page: it comes in when you open it again"
+    : it.status === "IN_QUEUE" ? "In queue — a sleeping endpoint takes a minute or two to wake, a new one up to 10" : STATUS[it.status] || it.status) + (it.error ? (it.status === "COMPLETED" ? "" : " — ") + it.error : "");
   const dl = it.media.map((m, i) => `<a href="${esc(m.url)}" download="${fileName(t, it, i, m.type)}">Download</a>`).join(" ");
   // a finished picture can be the start of the next one (Image To Image / Image To Video)
   const use = it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use as picture</button>` : "").join("");
@@ -1616,7 +1747,7 @@ async function signedOk(x) {
 }
 const pluginApp = { api: PLUGIN_API, hooks, services, store, $, esc,
   settings: html => { const d = document.createElement("div"); d.innerHTML = html; $("plugin-settings").append(d); return d; },
-  refresh: () => { fillModels(); showTune(); if (view === "models") renderPacks(); } };
+  refresh: () => { fillModels(); showTune(); showBulk(); if (view === "models") renderPacks(); } };
 const plugins = store.get("plugins", []), running = [];
 function showPlugins() {
   $("plugin-list").innerHTML = running.map(x => `<div class="add"><span>✓ ${esc(x.name)} · ${esc(x.version)}</span>${BUNDLED.includes(x) ? "" : `<button class="pill" type="button" data-plugin-del="${esc(x.id)}">Remove</button>`}</div>`).join("");
@@ -1676,7 +1807,7 @@ $("prompt").value = draft.prompt || ""; $("seed").value = draft.seed || "";
 setNegative(draft.negative ?? null);
 render();
 showView();
-loadHistory();
+loadHistory().then(() => store.get("batches", []).forEach(b => watchBatch(b.ep, b.id)));  // bulk requests sent before the page closed
 if (!view) $("prompt").focus();  // the chat comes first; the empty screen points to Models, and the key is asked for on the first send
 </script>
 </body>
