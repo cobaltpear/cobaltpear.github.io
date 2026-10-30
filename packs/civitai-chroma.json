@@ -3,7 +3,7 @@
   "engine": "comfyui",
   "kind": "Text To Image",
   "id": "civitai-chroma",
-  "label": "Any Civitai Chroma model",
+  "label": "Chroma Universal",
   "note": "Paste a Civitai model link in Cobalt Pear's «Your own worker» to set it up for that model. Chroma settings: 40 steps, CFG 4.5, Euler, beta. Uses a negative prompt; write long, detailed descriptions.",
   "civitai": "chroma",
   "sizes": [

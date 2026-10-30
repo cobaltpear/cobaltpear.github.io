@@ -200,7 +200,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.29.5 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.30.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -299,7 +299,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.29.5";
+const VERSION = "2026.10.30.1";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -589,7 +589,7 @@ let allShown = store.get("all-shown", true);  // Show all / Hide all is remember
 const revealed = new Set();
 
 // ---- Settings ----
-// A Civitai model link in «Your own worker» = the «Any Civitai …» worker of its family, set up for that model:
+// A Civitai model link in «Your own worker» = the «… Universal» worker of its family, set up for that model:
 // its name, and the settings most of its example pictures were made with (Civitai's API allows pages to ask)
 // per family: the Civitai base models it takes, the Hugging Face pipeline that has the same files, the RunPod sizes,
 // and the settings when its example pictures say nothing usable (cfg = Flux guidance for FLUX.1)
@@ -701,7 +701,7 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <span class="goes" data-goes="${esc(p.id)}">${goesTo(endpoints[p.id])}</span><input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Any text (demo)">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${takesLoras(p) && (loras[p.id] || []).length < (builtMode(p.id) ? 20 : 8) && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «Any Civitai SDXL model»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${tuneBox(p)}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${takesLoras(p) && (loras[p.id] || []).length < (builtMode(p.id) ? 20 : 8) && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «SDXL Universal»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${tuneBox(p)}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
   // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
   for (const p of byLabel(packs)) {
@@ -875,7 +875,7 @@ function renderCatalog() {
   $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
     `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
-    ${archFam(c.arch) ? `<button class="pill" type="button" hidden data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «Any Civitai ${CIVITAI_FAMS[archFam(c.arch)].name} model» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}"${added(c) ? ` title="Add it once more, for another endpoint"` : ""}>${added(c) ? "Add another" : "Add"}</button></div></div>`).join("")).join("");
+    ${archFam(c.arch) ? `<button class="pill" type="button" hidden data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «${CIVITAI_FAMS[archFam(c.arch)].name} Universal» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}"${added(c) ? ` title="Add it once more, for another endpoint"` : ""}>${added(c) ? "Add another" : "Add"}</button></div></div>`).join("")).join("");
   findPacks();
   $("catalog").querySelectorAll("[data-cat-custom]").forEach(b => customSeen.observe(b.closest(".pack")));
 }
@@ -1031,7 +1031,7 @@ $("pack-add").addEventListener("click", async () => {
     if (civitaiLink(url)) added = await civitaiAdd(await civitaiInfo(url));
     else {
       const d = await fetchPack(url), fam = typeof d.civitai === "string" && CIVITAI_FAMS[d.civitai];  // its pack names only the family
-      // the «Any Civitai … model» worker (or a copy of it) — the model it runs is the Civitai link, not the repo
+      // the «… Universal» worker (or a copy of it) — the model it runs is the Civitai link, not the repo
       if (fam) throw new Error(`That is the worker for any Civitai ${fam.name} model. Paste the model's own Civitai link here instead (from the address bar on its Civitai page) — it gets the model's name and settings.`);
       added = addPack(d, url.split("/").pop(), url);
     }

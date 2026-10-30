@@ -3,7 +3,7 @@
   "engine": "comfyui",
   "kind": "Text To Image",
   "id": "civitai-sd15",
-  "label": "Any Civitai SD 1.5 model",
+  "label": "SD 1.5 Universal",
   "note": "Paste a Civitai model link in Cobalt Pear's «Your own worker» to set it up for that model. SD 1.5 settings: 25 steps, CFG 7, DPM++ 2M Karras, 512×768.",
   "civitai": "sd15",
   "workflow": {
