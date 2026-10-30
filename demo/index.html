@@ -49,7 +49,7 @@ form .right { display: flex; align-items: center; gap: 6px; min-width: 0; }
 #seed { min-width: 6ch; flex: 0 1 auto; }
 #count { width: 6ch; padding: 4px 10px; border-radius: 999px; font-size: 14px; color: var(--muted); }
 #pic { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; color: var(--muted); }
-#pic img, .turn .p img { height: 48px; border-radius: 6px; }
+#pic :is(img, video), .turn .p :is(img, video) { height: 48px; border-radius: 6px; }
 #pic-menu { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 3; width: min(360px, calc(100vw - 32px)); padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px #0008; }
 #pic-menu .kind { padding: 0 2px 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
 #pic-menu .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 40vh; overflow-y: auto; margin-bottom: 8px; }
@@ -182,7 +182,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 </header>
 <main id="feed"></main>
 <form id="form"><div class="box">
-  <div id="pic" hidden><img alt=""><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button><span id="pic-unused" hidden>No chosen model takes a picture (Image To …) — it's left out</span></div><input id="pic-file" type="file" accept="image/*" hidden><div id="pic-menu" hidden></div>
+  <div id="pic" hidden><img alt=""><video muted playsinline hidden></video><button id="pic-x" class="pill" type="button" title="Remove the picture">✕</button><span id="pic-unused" hidden>No chosen model takes a picture (Image To …) — it's left out</span></div><input id="pic-file" type="file" accept="image/*" hidden><div id="pic-menu" hidden></div>
   <textarea id="prompt" placeholder="What should we make? (Enter to send · Shift+Enter for a new line)" required></textarea>
   <div class="row"><div id="models"></div><span class="right"><span id="lora-wrap"><button id="lora-btn" class="pill" type="button" title="The LoRAs this picture uses" hidden>LoRA</button><div id="lora-menu" hidden></div></span><button id="attach" class="pill" type="button" title="The picture to start from (or drop or paste one)" hidden>Picture</button><select id="shape" title="The picture's shape — a model that starts from a picture follows that picture" hidden><option value="landscape">Landscape</option><option value="square">Square</option><option value="portrait">Portrait</option></select><input id="negative" type="search" autocomplete="off" placeholder="Negative" title="Words to avoid — empty (✕) = each model's own" hidden><input id="count" type="search" inputmode="numeric" autocomplete="off" placeholder="×1" title="Bulk requests: how many of each line (a line ending in ×3 makes 3)" hidden><input id="seed" type="search" inputmode="numeric" autocomplete="off" placeholder="Seed" title="Empty = random each time"><button id="send" title="Send">↑</button></span></div>
 </div></form>
@@ -200,7 +200,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.30.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.30.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -299,7 +299,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.30.3";
+const VERSION = "2026.10.30.4";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -459,6 +459,8 @@ const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values)
 const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
 const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
 const takesImage = p => !!p.image?.length;  // edit and image-to-video packs: a picture is needed
+const canContinue = p => Object.values(p.workflow || {}).some(n => n.class_type === "MiniMaxH3ReferenceToVideo");  // goes on from a video (Continue)
+const isVideo = b => !!b?.type?.startsWith("video/");
 // which Models tab a pack sits under: its own «kind», else a guess — a text or speech worker's own fields (vLLM / OpenAI style, a voice) → Other,
 // a starting picture → Image To …, a video task or a video-saving node → … To Video
 const KINDS = ["Text To Image", "Text To Video", "Image To Image", "Image To Video", "Other"];
@@ -1300,14 +1302,18 @@ const needsPicture = () => chosenPacks().some(takesImage);
 function fitPicture() {
   $("attach").hidden = !needsPicture();
   $("pic").hidden = !picture;  // a picture put in stays in view; with no model to take it, it says so
-  $("pic-unused").hidden = !picture || needsPicture();
+  const vid = isVideo(picture);  // a video put in by Continue is for a model that goes on from one
+  $("pic-unused").hidden = !picture || (vid ? chosenPacks().some(canContinue) : needsPicture());
+  $("pic-unused").textContent = vid ? "No chosen model goes on from a video (MiniMax H3) — it's left out" : "No chosen model takes a picture (Image To …) — it's left out";
   $("attach").textContent = picture ? "Change picture" : "Picture";
 }
 function setPicture(blob) {
   if (picUrl) URL.revokeObjectURL(picUrl);
   picture = blob || null; picUrl = picture ? URL.createObjectURL(picture) : ""; picAspect = 0;
-  if (picture) createImageBitmap(picture).then(b => { if (blob === picture) picAspect = b.width / b.height; }, () => {});
-  $("pic").querySelector("img").src = picUrl;
+  const img = $("pic").querySelector("img"), vid = $("pic").querySelector("video");
+  img.hidden = isVideo(picture); vid.hidden = !isVideo(picture);
+  if (isVideo(picture)) { vid.onloadedmetadata = () => { if (blob === picture) picAspect = vid.videoWidth / vid.videoHeight; }; vid.src = picUrl; img.removeAttribute("src"); }
+  else { if (picture) createImageBitmap(picture).then(b => { if (blob === picture) picAspect = b.width / b.height; }, () => {}); img.src = picUrl; vid.removeAttribute("src"); }
   fitPicture();
 }
 // big photos are made smaller first (longest side 2048) so the request stays well under RunPod's size limit
@@ -1429,13 +1435,37 @@ function run(...a) {
 }
 // the LoRAs that are on: built into the worker = picked by link (none on = none used), by link = downloaded by the worker
 const picked = id => { const on = (loras[id] || []).filter(l => !l.off).map(l => tuneOn() ? l : { ...l, strength: LORA_STRENGTH }); return builtMode(id) ? { baked: on } : { loras: withCivitaiToken(on) }; };
+// Continue: MiniMax H3 can go on from a video — the last frames of the one before (and their sound) become the start of the next.
+// Its picture-to-video node is swapped for the plain one plus a guide made from the end of prev.mp4, sent in input.images.
+const CONT_FRAMES = 22;  // 0.92 s at 24 fps
+function continueWorkflow(wf) {
+  const id = Object.keys(wf).find(k => wf[k].class_type === "MiniMaxH3ReferenceToVideo"), r = wf[id].inputs;
+  for (const [k, v] of Object.entries(r)) if (k.startsWith("ref_images.") && wf[v[0]]?.class_type === "LoadImage") delete wf[v[0]];
+  // the prompt without the line in front of it that says to start from picture 1
+  const pn = Array.isArray(r.prompt) && wf[r.prompt[0]], prompt = pn?.class_type === "StringConcatenate" ? pn.inputs.string_b : r.prompt;
+  if (pn?.class_type === "StringConcatenate") delete wf[r.prompt[0]];
+  const fps = Object.values(wf).find(n => n.class_type === "CreateVideo")?.inputs.fps || 24, sec = +(CONT_FRAMES / fps).toFixed(4);
+  for (const n of Object.values(wf)) for (const [k, v] of Object.entries(n.inputs)) if (Array.isArray(v) && v[0] === id && v[1] === 0) n.inputs[k] = ["c5", 0];
+  wf[id] = { class_type: "MiniMaxH3ImageToVideo", inputs: { clip: r.clip, vae: r.vae, prompt, width: r.width, height: r.height, length: r.length } };
+  Object.assign(wf, {
+    c1: { class_type: "LoadVideo", inputs: { file: "prev.mp4" } },
+    c2: { class_type: "GetVideoComponents", inputs: { video: ["c1", 0] } },
+    c3: { class_type: "ImageFromBatch", inputs: { image: ["c2", 0], batch_index: -CONT_FRAMES, length: CONT_FRAMES } },
+    c4: { class_type: "TrimAudioDuration", inputs: { audio: ["c2", 1], start_index: -sec, duration: sec } },
+    c5: { class_type: "MiniMaxH3AddGuide", inputs: { positive: [id, 0], vae: r.vae, audio_vae: r.audio_vae, latent: [id, 1], image: ["c3", 0], audio: ["c4", 0], frame_idx: 0 } },
+  });
+  return wf;
+}
 // what one result sends: its model, endpoint and the request
 async function prepare(t, it) {
   const pack = packs.find(p => p.id === it.packId);
   if (!pack || !endpoints[pack.id]) throw new Error("This model or its endpoint is gone");
   if (takesImage(pack) && !t.image) throw new Error("This model starts from a picture — add one with Picture");
-  const image = takesImage(pack) ? await toB64(t.image) : undefined;
+  const cont = takesImage(pack) && isVideo(t.image);
+  if (cont && !canContinue(pack)) throw new Error("This model starts from a picture, not a video — only MiniMax H3 goes on from a video");
+  const image = takesImage(pack) && !cont ? await toB64(t.image) : undefined;
   const input = packInput(tuned(pack), { prompt: t.prompt, negative: t.negative || undefined, seed: it.seed, width: it.w, height: it.h, size: it.w && `${it.w}x${it.h}`, image, ...picked(pack.id) });
+  if (cont) { continueWorkflow(input.workflow); input.images = [{ name: "prev.mp4", image: await toB64(t.image) }]; }
   it.sent = describeInput(pack.engine, input);  // shown by Details — nothing the model got is hidden
   return { pack, ep: endpoints[pack.id], input };
 }
@@ -1455,7 +1485,8 @@ async function finish(t, it, pack, out) {
     if (out.warning) out.warning = "⚠ " + out.warning.replace(/remote_([0-9a-f]{24})\.safetensors/g, (f, h) => (loras[pack.id] || []).find(l => l.sha256.startsWith(h))?.label || f)
       .replace(/baked_(\d+)\.safetensors/g, (f, i) => (loras[pack.id] || []).find(l => l.link === (loraBuilt[pack.id] || "").split(" ")[i])?.label || f)
       .replace(/https:\/\/\S+?(?=,|$)/g, u => (loras[pack.id] || []).find(l => l.link === u)?.label || u);
-    const { media, text } = await readOutput(out);
+    let { media, text } = await readOutput(out);
+    if (isVideo(t.image)) media = media.filter(m => m.blob.size !== t.image.size);  // the worker sends the video it went on from back first
     if (!media.length && !text) throw new Error("No image, video, audio or text in the output");
     it.blobs = media.map(m => m.blob);
     it.media = media.map(m => ({ url: URL.createObjectURL(m.blob), kind: m.kind, type: m.blob.type }));
@@ -1655,17 +1686,19 @@ function itemHtml(t, it) {
   const dl = it.media.map((m, i) => `<a href="${esc(m.url)}" download="${fileName(t, it, i, m.type)}">Download</a>`).join(" ");
   // a finished picture can be the start of the next one (Image To Image / Image To Video)
   const use = it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use as picture</button>` : "").join("");
+  const pack = packs.find(p => p.id === it.packId);
+  const cont = pack && canContinue(pack) ? it.media.map((m, i) => m.kind === "video" ? `<button type="button" data-cont="${esc(it.id)}" data-i="${i}" title="Make the next scene, starting where this video ends">Continue</button>` : "").join("") : "";
   const edit = it.status === "COMPLETED" ? `<button type="button" data-edit="${esc(it.id)}" title="Put the prompt and this seed back in the box">Edit</button>` : "";
   const det = it.sent ? `<button type="button" data-details="${esc(it.id)}" title="Everything that was sent to the model">Details</button>` : "";
   const sent = it.sent && opened.has(it.id) ? `<div class="sent">${esc(it.sent.join("\n"))}</div>` : "";
-  return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${use}${edit}${det}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div>${sent}</div>`;
+  return `<div class="item">${media}<div class="meta"><span>${esc(it.label)}${it.seed != null ? ` · seed ${it.seed}` : ""}</span>${dl}${use}${cont}${edit}${det}${st ? `<span class="${it.status === "ERROR" ? "err" : ""}">${esc(st)}</span>` : ""}</div>${sent}</div>`;
 }
 function render() {
   $("feed").innerHTML = (storageFull ? `<p class="full">The browser ran out of room, so the oldest results were removed. Download the ones you want to keep.</p>` : "") + (turns.length ? turns.map((t, ti) => {
     const done = t.items.every(i => ["COMPLETED", "ERROR"].includes(i.status));
     const more = `<button type="button" data-four="${ti}" title="4 more with the same prompt and models">×4</button>`;
     if (t.image && !t.imageUrl) t.imageUrl = URL.createObjectURL(t.image);
-    return `<section class="turn"><div class="p">${t.imageUrl ? `<img src="${esc(t.imageUrl)}" alt="">` : ""}${esc(t.prompt)}</div>
+    return `<section class="turn"><div class="p">${t.imageUrl ? isVideo(t.image) ? `<video src="${esc(t.imageUrl)}" muted playsinline></video>` : `<img src="${esc(t.imageUrl)}" alt="">` : ""}${esc(t.prompt)}</div>
       <div class="items${t.items.length > 1 ? " many" : ""}">${t.items.map(it => itemHtml(t, it)).join("")}</div>
       ${done ? `<div class="meta"><button type="button" data-again="${ti}" title="Same prompt and models, new seeds">Again</button>${more}<button type="button" data-forget="${ti}" title="Remove it from this page and the browser">Delete</button></div>` : ""}
     </section>`;
@@ -1680,6 +1713,13 @@ $("feed").addEventListener("click", e => {
     if (!it?.blobs?.[+d.i]) return;
     setPicture(it.blobs[+d.i]);
     $("prompt").focus();
+    return;
+  }
+  if (d.cont) {  // this video goes in as the start, its model is chosen — write what happens next and send
+    const it = turns.flatMap(t => t.items).find(i => i.id === d.cont);
+    if (!it?.blobs?.[+d.i]) return;
+    choose([it.packId]); setPicture(it.blobs[+d.i]);
+    $("prompt").select(); $("prompt").focus();
     return;
   }
   if (d.edit) {  // one result: its prompt, model and seed go back into the box

@@ -227,6 +227,8 @@ const packInput = (p, values) => ENGINES[p.engine || "comfyui"].input(p, values)
 const packDefault = (p, k) => ENGINES[p.engine || "comfyui"].get(p, k);
 const describeInput = (engine, input) => ENGINES[engine || "comfyui"].describe(input);  // what was really sent, as lines
 const takesImage = p => !!p.image?.length;  // edit and image-to-video packs: a picture is needed
+const canContinue = p => Object.values(p.workflow || {}).some(n => n.class_type === "MiniMaxH3ReferenceToVideo");  // goes on from a video (Continue)
+const isVideo = b => !!b?.type?.startsWith("video/");
 // which Models tab a pack sits under: its own «kind», else a guess — a text or speech worker's own fields (vLLM / OpenAI style, a voice) → Other,
 // a starting picture → Image To …, a video task or a video-saving node → … To Video
 const KINDS = ["Text To Image", "Text To Video", "Image To Image", "Image To Video", "Other"];
