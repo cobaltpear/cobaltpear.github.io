@@ -200,7 +200,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.30.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.30.3 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -246,7 +246,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.30.2";
+const VERSION = "2026.10.30.3";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -551,12 +551,13 @@ const CIVITAI_FAMS = {
           arch: "ZImagePipeline", min: 3e9, gpu: 24, disk: 40, build: 25, sampler: "Euler", schedule: "simple", steps: [8, 4, 60], cfg: [1, 1, 8] },
   sd15: { name: "SD 1.5", bases: b => ["SD 1.5", "SD 1.5 LCM", "SD 1.5 Hyper"].includes(b), takes: "SD 1.5 checkpoints",
           min: 1.5e9, gpu: 16, disk: 20, build: 10, sampler: "DPM++ 2M Karras", steps: [25, 1, 80], cfg: [7, 1, 20] },
-  // video with sound from your picture; its workflow has no CFG (BasicGuider), and its shift stays as the pack has it
+  // video with sound from your picture; its workflow has no CFG (BasicGuider), and its shift stays as the pack has it.
+  // sparse: a second pack with sparse attention (civitai-…-sparse.json) for models whose creator recommends it
   "minimax-h3": { name: "MiniMax H3", bases: b => b === "MiniMax H3", takes: "MiniMax H3 models", min: 15e9, gpu: 48, disk: 80, build: 30,
-          sampler: "Euler", schedule: "simple", steps: [8, 4, 60], cfg: [1, 1, 8], tip: "Starts from your picture: 5 s with sound. Describe the motion and the sound, not the picture." },
+          sampler: "Euler", schedule: "simple", steps: [8, 4, 60], cfg: [1, 1, 8], sparse: true, tip: "Starts from your picture: 5 s with sound. Describe the motion and the sound, not the picture." },
 };
 const famOf = c => CIVITAI_FAMS[c?.fam] ? c.fam : "sdxl";  // a model added before there were families is SDXL
-const civitaiPackUrl = fam => `https://cobaltpear.github.io/packs/civitai-${fam}.json`, civitaiWorker = fam => `https://github.com/cobaltpear/civitai-${fam}`;
+const civitaiPackUrl = (fam, sparse) => `https://cobaltpear.github.io/packs/civitai-${fam}${sparse ? "-sparse" : ""}.json`, civitaiWorker = fam => `https://github.com/cobaltpear/civitai-${fam}`;
 const archFam = arch => Object.keys(CIVITAI_FAMS).find(f => CIVITAI_FAMS[f].arch && CIVITAI_FAMS[f].arch === arch);
 const civitaiLink = s => /^https:\/\/civitai\.(com|green|red)\/models\/\d+/.test(s);
 async function civitaiInfo(link) {
@@ -573,6 +574,7 @@ async function civitaiInfo(link) {
   const within = (x, [d, lo, hi]) => x >= lo && x <= hi ? x : d;
   const schnell = base === "Flux.1 S";
   return { fam, version: String(v.id), name: v.model.name, version_name: v.name, base, nsfw: !!v.model.nsfw, plain: !metas.length || undefined,
+           sparse: F.sparse && /sparse|sparsity/i.test(v.description || "") || undefined,  // its creator's words decide the first pick; the model's row can switch it
            sampler: most("sampler") || F.sampler, schedule: most("Schedule type") || F.schedule || "",
            steps: within(+most("steps"), schnell ? [4, 1, 8] : F.steps), cfg: within(+most("cfgScale"), F.cfg),
            clip: +most("clipSkip") || (base === "SDXL 1.0" || fam === "sd15" ? 1 : 2), negative: most("negativePrompt") || "", words: v.trainedWords || [] };
@@ -614,8 +616,9 @@ function civitaiPack(base, c) {
   const [s, k] = comfySampler(c.sampler, c.schedule, fam === "sdxl" ? undefined : [was("KSampler")?.sampler_name || was("KSamplerSelect")?.sampler_name, was("KSampler")?.scheduler || was("BasicScheduler")?.scheduler]);
   for (const n of nodes) {
     if (n.class_type === "KSampler") Object.assign(n.inputs, { steps: c.steps, cfg: c.cfg, sampler_name: s, scheduler: k });
-    if (n.class_type === "KSamplerSelect") n.inputs.sampler_name = s;
-    if (n.class_type === "BasicScheduler") Object.assign(n.inputs, { steps: c.steps, scheduler: k });
+    // the sparse pack keeps its own sampler and scheduler: they go with sparse attention
+    if (n.class_type === "KSamplerSelect" && !c.sparse) n.inputs.sampler_name = s;
+    if (n.class_type === "BasicScheduler") Object.assign(n.inputs, c.sparse ? { steps: c.steps } : { steps: c.steps, scheduler: k });
     if (n.class_type === "CFGGuider") n.inputs.cfg = c.cfg;
     if (n.class_type === "FluxGuidance") n.inputs.guidance = c.cfg;
     // a full-size (fp16) FLUX.1 file from Hugging Face is 24 GB: ComfyUI loads it as fp8 so it fits the GPU
@@ -624,11 +627,11 @@ function civitaiPack(base, c) {
   }
   // only what the workflow uses: no CFG without a node that takes it, no clip skip without CLIPSetLastLayer
   const has = (...t) => nodes.some(n => t.includes(n.class_type));
-  const how = `${c.steps} steps, ${has("KSampler", "CFGGuider", "FluxGuidance") ? `${fam === "flux" ? "Flux guidance" : "CFG"} ${c.cfg}, ` : ""}${c.sampler}${c.schedule && !/Karras|Exponential/.test(c.sampler) ? ` ${c.schedule}` : ""}${c.clip > 1 && has("CLIPSetLastLayer") ? `, clip skip ${c.clip}` : ""}`;
+  const how = c.sparse ? `${c.steps} steps` : `${c.steps} steps, ${has("KSampler", "CFGGuider", "FluxGuidance") ? `${fam === "flux" ? "Flux guidance" : "CFG"} ${c.cfg}, ` : ""}${c.sampler}${c.schedule && !/Karras|Exponential/.test(c.sampler) ? ` ${c.schedule}` : ""}${c.clip > 1 && has("CLIPSetLastLayer") ? `, clip skip ${c.clip}` : ""}`;
   if (c.negative && base.negative?.[0]) wf[base.negative[0][0]].inputs[base.negative[0][1]] = c.negative;
   return { ...base, id: c.id || `civitai-${c.version}`, label: c.name, nsfw: c.nsfw || undefined, workflow: wf, civitai: c,
            note: c.hf ? `${c.name} from Hugging Face, on your own worker copy — ${how}: plain ${F.name} settings, its Hugging Face page may suggest others.`
-             : `${c.name} ${c.version_name} (${c.base}) — ${how}, ${c.plain ? `plain ${F.name} settings (its example pictures say none), its Civitai page may suggest others` : "as in its example pictures"}.${F.tip ? ` ${F.tip}` : ""}${c.words.length ? ` Trigger words: ${c.words.join(", ")}` : ""}`,
+             : `${c.name} ${c.version_name} (${c.base}) — ${how}, ${c.plain ? `plain ${F.name} settings (its example pictures say none), its Civitai page may suggest others` : "as in its example pictures"}.${c.sparse ? " Sparse attention on (res_multistep, shift 12/3): your copy builds with RECOMMENDED=1." : ""}${F.tip ? ` ${F.tip}` : ""}${c.words.length ? ` Trigger words: ${c.words.join(", ")}` : ""}`,
            setup_url: civitaiWorker(fam), setup: "Use this template → Create a new repository (private), paste your Civitai token and this model's number at the top of its Dockerfile, then connect your copy on RunPod as the guide shows.",
            setup_pick: c.version };
 }
@@ -653,7 +656,7 @@ function renderPacks() {
   $("pack-list").innerHTML = byLabel(packs).map(p => `<div class="pack" data-name="${esc(p.label.toLowerCase())}"><div class="top">
     <b title="${esc(p.note || "")}">${esc(p.label)}</b>${freshPacks.has(p.id) ? `<span class="new">Updated</span>` : ""}
     <span class="goes" data-goes="${esc(p.id)}">${goesTo(endpoints[p.id])}</span><input data-ep="${esc(p.id)}" value="${esc(endpoints[p.id] || "")}" autocomplete="off" placeholder="Endpoint ID">
-    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${takesLoras(p) && (loras[p.id] || []).length < (builtMode(p.id) ? 20 : 8) && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «SDXL Universal»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${tuneBox(p)}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
+    <button class="pill" type="button" data-del-pack="${esc(p.id)}">Remove</button></div><div class="tags">${packTags(p)}${p.src ? "" : `<button class="gated save-pack" type="button" data-save-pack="${esc(p.id)}" title="Save as pack.json for your worker's repo">Save pack.json</button>`}${p.civitai && CIVITAI_FAMS[famOf(p.civitai)].sparse ? `<button class="gated save-pack" type="button" data-sparse="${esc(p.id)}" aria-pressed="${!!p.civitai.sparse}" title="Sparse attention: faster, for models whose creator recommends it (on by itself when the model's Civitai page says so). Your copy then builds with RECOMMENDED=1 and the endpoint needs Minimum CUDA version 13.0 — the steps below show where. Switching it after the build means building again">Sparse: ${p.civitai.sparse ? "on" : "off"}</button>` : ""}${takesLoras(p) && (loras[p.id] || []).length < (builtMode(p.id) ? 20 : 8) && loraOpen !== p.id ? `<button class="gated save-pack" type="button" data-lora-open="${esc(p.id)}" title="Add a LoRA from Civitai or Hugging Face">+ LoRA</button>` : ""}${takesLoras(p) ? "" : `<span class="no-lora" title="This model runs on RunPod's own worker, which takes only a prompt, size and seed — LoRAs need one of our worker repos (ComfyUI or A1111) or «SDXL Universal»">No LoRA on this worker</span>`}</div>${takesLoras(p) ? loraRow(p) : ""}${tuneBox(p)}${!endpoints[p.id] && p.setup_pick && !p.civitai ? `<div class="pick" data-copy="${esc(p.setup_pick)}" title="Click to copy">Model: <code>${esc(p.setup_pick)}</code> <span class="hint-copy"></span></div>` : ""}</div>`).join("");
   // models waiting for an endpoint ID that start the same way share one line of RunPod steps, led by their names
   const how = new Map();
   for (const p of byLabel(packs)) {
@@ -663,7 +666,7 @@ function renderPacks() {
   // a Civitai model gets its own two links: a private copy of the worker, then civitai.env with the model filled in
   const civ = byLabel(packs).filter(p => !endpoints[p.id] && p.civitai), gh = $("gh-name").value.trim().replace(/^@/, "");
   const make = p => `https://github.com/new?template_owner=cobaltpear&template_name=civitai-${famOf(p.civitai)}&owner=%40me&name=${civitaiRepo(p)}&visibility=private`;
-  const add = p => `https://github.com/${encodeURIComponent(gh)}/${civitaiRepo(p)}/new/main?filename=civitai.env&value=${encodeURIComponent(`CIVITAI_MODEL=${p.setup_pick}\n${p.civitai.hf ? p.civitai.gated ? "HF_TOKEN=" : "" : "CIVITAI_TOKEN="}`)}`;
+  const add = p => `https://github.com/${encodeURIComponent(gh)}/${civitaiRepo(p)}/new/main?filename=civitai.env&value=${encodeURIComponent(`CIVITAI_MODEL=${p.setup_pick}\n${p.civitai.sparse ? "RECOMMENDED=1\n" : ""}${p.civitai.hf ? p.civitai.gated ? "HF_TOKEN=" : "" : "CIVITAI_TOKEN="}`)}`;
   const tok = civ.some(p => !p.civitai.hf);  // a Hugging Face model needs no Civitai token
   const hft = civ.filter(p => p.civitai.gated);  // … but a Gated one needs a Hugging Face token
   // the steps once for all of them; only the links differ, one per model
@@ -676,7 +679,7 @@ function renderPacks() {
   if (hft.length) steps.push(`Make a Hugging Face token: <b>Agree</b> on ${hft.map(p => `<a href="https://huggingface.co/${esc(p.civitai.version.split("huggingface.co/")[1])}" target="_blank" rel="noopener">${esc(p.label)} ↗</a>`).join(", ")}, then <a href="https://huggingface.co/settings/tokens/new?tokenType=read" target="_blank" rel="noopener">make a token ↗</a> (<b>Read</b>) → copy it`);
   const addText = tok || hft.length ? "Add your token" : "Add the model";
   steps.push(gh ? `${links(add, addText)} → ${tok || hft.length ? `paste your token after ${[tok && "<code>CIVITAI_TOKEN=</code>", hft.length && "<code>HF_TOKEN=</code>"].filter(Boolean).join(" or ")} → ` : ""}<b>Commit changes</b> twice` : `Type your GitHub name above for the «${addText}» link${one ? "" : "s"}`);
-  steps.push(`On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} — GPU <b>${big.gpu} GB</b>, Container disk <b>${big.disk} GB</b> (<a href="https://cobaltpear.github.io/docs/setup/#create-the-endpoint" target="_blank" rel="noopener">where ↗</a>) → paste ${one ? "its ID above" : "each ID next to its model"}`);
+  steps.push(`On RunPod, make an endpoint from ${one ? `<code>${esc(civitaiRepo(civ[0]))}</code>` : "each copy"} — GPU <b>${big.gpu} GB</b>, Container disk <b>${big.disk} GB</b>${civ.some(p => p.civitai.sparse) ? `, Minimum CUDA version <b>13.0</b>${one ? "" : ` (${civ.filter(p => p.civitai.sparse).map(p => esc(p.label)).join(", ")})`}` : ""} (<a href="https://cobaltpear.github.io/docs/setup/#create-the-endpoint" target="_blank" rel="noopener">where ↗</a>) → paste ${one ? "its ID above" : "each ID next to its model"}`);
   // a model whose built-in LoRAs changed: the new LORAS line goes in its copy's Dockerfile, then RunPod builds it again
   const build = byLabel(packs).filter(p => builtMode(p.id) && (loras[p.id] || []).some(l => unbuilt(p.id, l)));
   $("gh-row").hidden = !civ.length && !build.length;
@@ -928,7 +931,13 @@ function keepEndpointInputs() {
   document.querySelectorAll("#pack-list [data-ep]").forEach(i => { if (i.value.trim()) endpoints[i.dataset.ep] = i.value.trim(); else delete endpoints[i.dataset.ep]; });
 }
 // a Civitai (or Hugging Face) model on its family's worker, whose pack is fetched again when it changes
-const civitaiAdd = async c => addPack(civitaiPack(checkPack(await fetchPack(civitaiPackUrl(c.fam))), c), "", civitaiPackUrl(c.fam));
+const civitaiAdd = async c => addPack(civitaiPack(checkPack(await fetchPack(civitaiPackUrl(c.fam, c.sparse))), c), "", civitaiPackUrl(c.fam, c.sparse));
+// sparse attention on or off for a model of a family that has both packs: the same model, the other pack
+async function switchSparse(id) {
+  const p = packs.find(x => x.id === id), c = { ...p.civitai, sparse: !p.civitai.sparse || undefined }, url = civitaiPackUrl(famOf(c), c.sparse);
+  const b = civitaiPack(checkPack(await fetchPack(url)), c), n = { ...b, ...(p.copy && asCopy(b, p.copy)), src: url };
+  packs = packs.map(x => x.id === id ? n : x); store.set(PACKS_KEY, packs); renderPacks();
+}
 function forgetPack(id) {
   packs = packs.filter(p => p.id !== id); delete endpoints[id]; delete loras[id]; delete loraMode[id]; delete loraBuilt[id]; delete tweaks[id]; store.set("tweaks", tweaks);
   store.set(PACKS_KEY, packs); store.set("endpoints", endpoints); store.set("loras", loras); store.set("lora-mode", loraMode); store.set("lora-built", loraBuilt);
@@ -1020,6 +1029,7 @@ $("pack-list").addEventListener("click", e => {
   if (pick) { keepEndpointInputs(); loraMode[e.target.dataset.id] = pick; loraChosen = e.target.dataset.id; store.set("lora-mode", loraMode); renderPacks(); document.querySelector(`[data-lora-add="${CSS.escape(e.target.dataset.id)}"]`)?.focus(); return; }
   if (open) { keepEndpointInputs(); loraOpen = open; loraChosen = ""; renderPacks(); document.querySelector(`[data-lora-add="${CSS.escape(open)}"]`)?.focus(); return; }
   if (del) { loras[del].splice(+e.target.dataset.i, 1); if (!loras[del].length && !builtMode(del)) delete loras[del]; store.set("loras", loras); renderPacks(); return; }
+  if (e.target.dataset.sparse) { keepEndpointInputs(); switchSparse(e.target.dataset.sparse).catch(err => alert(err.message)); return; }
   const save = packs.find(p => p.id === e.target.dataset.savePack);
   if (save) return savePack(save);
   const id = e.target.dataset.delPack;
