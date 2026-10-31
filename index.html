@@ -200,7 +200,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.30.4 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.10.31.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -246,7 +246,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.30.4";
+const VERSION = "2026.10.31.1";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -1263,6 +1263,19 @@ function setPicture(blob) {
   else { if (picture) createImageBitmap(picture).then(b => { if (blob === picture) picAspect = b.width / b.height; }, () => {}); img.src = picUrl; vid.removeAttribute("src"); }
   fitPicture();
 }
+// a video's last frame as a PNG, for a model that starts from a picture
+function lastFrame(blob) {
+  return new Promise((ok, no) => {
+    const v = Object.assign(document.createElement("video"), { muted: true, preload: "auto", src: URL.createObjectURL(blob) }), done = () => URL.revokeObjectURL(v.src);
+    v.onerror = () => { done(); no(new Error("the browser can't read it")); };
+    v.onloadedmetadata = () => { v.currentTime = isFinite(v.duration) ? Math.max(0, v.duration - 0.01) : 1e9; };  // a recorded WebM may not know its length: far past it lands on the end
+    v.onseeked = () => {
+      const c = Object.assign(document.createElement("canvas"), { width: v.videoWidth, height: v.videoHeight });
+      c.getContext("2d").drawImage(v, 0, 0);
+      c.toBlob(b => { done(); b ? ok(b) : no(new Error("no frame")); }, "image/png");
+    };
+  });
+}
 // big photos are made smaller first (longest side 2048) so the request stays well under RunPod's size limit
 async function fitFile(file) {
   const bmp = await createImageBitmap(file), k = Math.min(1, 2048 / Math.max(bmp.width, bmp.height));
@@ -1393,7 +1406,19 @@ function continueWorkflow(wf) {
   if (pn?.class_type === "StringConcatenate") delete wf[r.prompt[0]];
   const fps = Object.values(wf).find(n => n.class_type === "CreateVideo")?.inputs.fps || 24, sec = +(CONT_FRAMES / fps).toFixed(4);
   for (const n of Object.values(wf)) for (const [k, v] of Object.entries(n.inputs)) if (Array.isArray(v) && v[0] === id && v[1] === 0) n.inputs[k] = ["c5", 0];
-  wf[id] = { class_type: "MiniMaxH3ImageToVideo", inputs: { clip: r.clip, vae: r.vae, prompt, width: r.width, height: r.height, length: r.length } };
+  // the new video starts with those frames drawn again, a little brighter, so it is cut after them (and one more) — it starts where the earlier one ended
+  const cv = Object.values(wf).find(n => n.class_type === "CreateVideo"), cut = +((CONT_FRAMES + 1) / fps).toFixed(4);
+  if (cv) {
+    wf.c6 = { class_type: "ImageFromBatch", inputs: { image: cv.inputs.images, batch_index: CONT_FRAMES + 1, length: 4096 } };
+    // and its colors are moved to the earlier one's last frame, so a long chain of them keeps one light
+    wf.c8 = { class_type: "ImageFromBatch", inputs: { image: ["c2", 0], batch_index: -1, length: 1 } };
+    wf.c9 = { class_type: "ColorTransfer", inputs: { image_target: ["c6", 0], image_ref: ["c8", 0], method: "reinhard_lab", source_stats: "target_frame", "source_stats.target_index": 0, strength: 1 } };
+    cv.inputs.images = ["c9", 0];
+    if (cv.inputs.audio) { wf.c7 = { class_type: "TrimAudioDuration", inputs: { audio: cv.inputs.audio, start_index: cut, duration: 3600 } }; cv.inputs.audio = ["c7", 0]; }
+  }
+  // the cut-off frames are added to its length (on H3's 17k+5 grid), so what is left is as long as a video made from a picture
+  const length = typeof r.length === "number" ? 17 * Math.round((r.length + CONT_FRAMES + 1 - 5) / 17) + 5 : r.length;
+  wf[id] = { class_type: "MiniMaxH3ImageToVideo", inputs: { clip: r.clip, vae: r.vae, prompt, width: r.width, height: r.height, length } };
   Object.assign(wf, {
     c1: { class_type: "LoadVideo", inputs: { file: "prev.mp4" } },
     c2: { class_type: "GetVideoComponents", inputs: { video: ["c1", 0] } },
@@ -1634,7 +1659,7 @@ function itemHtml(t, it) {
   // a finished picture can be the start of the next one (Image To Image / Image To Video)
   const use = it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use as picture</button>` : "").join("");
   const pack = packs.find(p => p.id === it.packId);
-  const cont = pack && canContinue(pack) ? it.media.map((m, i) => m.kind === "video" ? `<button type="button" data-cont="${esc(it.id)}" data-i="${i}" title="Make the next scene, starting where this video ends">Continue</button>` : "").join("") : "";
+  const cont = pack && (canContinue(pack) || takesImage(pack)) ? it.media.map((m, i) => m.kind === "video" ? `<button type="button" data-cont="${esc(it.id)}" data-i="${i}" title="Make the next scene, starting where this video ends">Continue</button>` : "").join("") : "";
   const edit = it.status === "COMPLETED" ? `<button type="button" data-edit="${esc(it.id)}" title="Put the prompt and this seed back in the box">Edit</button>` : "";
   const det = it.sent ? `<button type="button" data-details="${esc(it.id)}" title="Everything that was sent to the model">Details</button>` : "";
   const sent = it.sent && opened.has(it.id) ? `<div class="sent">${esc(it.sent.join("\n"))}</div>` : "";
@@ -1665,7 +1690,11 @@ $("feed").addEventListener("click", e => {
   if (d.cont) {  // this video goes in as the start, its model is chosen — write what happens next and send
     const it = turns.flatMap(t => t.items).find(i => i.id === d.cont);
     if (!it?.blobs?.[+d.i]) return;
-    choose([it.packId]); setPicture(it.blobs[+d.i]);
+    const pack = packs.find(p => p.id === it.packId);
+    choose([it.packId]);
+    // MiniMax H3 takes the end of the video itself; other picture-to-video models start from its last frame
+    if (pack && !canContinue(pack)) lastFrame(it.blobs[+d.i]).then(setPicture, e => alert(`Couldn't take the video's last frame: ${e.message}`));
+    else setPicture(it.blobs[+d.i]);
     $("prompt").select(); $("prompt").focus();
     return;
   }
