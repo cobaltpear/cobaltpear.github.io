@@ -154,6 +154,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 .sheet .tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 2px; }
 .sheet .tabs button { flex: none; font-size: 14px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; }
 .sheet .tabs button.on { color: var(--text); border-color: var(--text); }
+.sheet .tabs button.own { margin-left: auto; border-style: dashed; }  /* your own worker — not a kind of model, so it stands apart */
 .sheet .pack .pick { margin-top: 6px; font-size: 14px; }
 .sheet .pack .pick .hint-copy { font-size: 12px; color: var(--muted); }
 .sheet .pack .pick code { font: 600 14px ui-monospace, monospace; color: var(--accent); }
@@ -200,7 +201,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.10.31.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.11.07.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -236,8 +237,8 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <div class="hint" id="catalog-hint">Add one, do the RunPod steps shown above, then paste the endpoint ID.</div>
   <div id="custom">
   <label for="pack-url">Your own worker</label>
-  <div class="add"><input id="pack-url" autocomplete="off" placeholder="Worker repo URL or Civitai model link"><button id="pack-add" class="pill" type="button">Add</button></div>
-  <div class="hint">A Civitai model link from the address bar on the model's page, or a worker repo — <a href="https://cobaltpear.github.io/docs/models/#your-own-worker" target="_blank" rel="noopener">which models, how ↗</a></div>
+  <div class="add"><input id="pack-url" autocomplete="off" placeholder="Civitai or Hugging Face model link, or a worker repo URL"><button id="pack-add" class="pill" type="button">Add</button></div>
+  <div class="hint">A model link from the address bar on its Civitai or Hugging Face page, or a worker repo — <a href="https://cobaltpear.github.io/docs/models/#your-own-worker" target="_blank" rel="noopener">which models, how ↗</a></div>
   <div class="add file-add"><span class="hint">or</span><label class="pill">Choose a pack or ComfyUI workflow (.json)…<input id="pack-file" type="file" accept=".json,application/json" multiple hidden></label></div>
   </div></div>
 </form></div>
@@ -246,7 +247,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.10.31.1";
+const VERSION = "2026.11.07.1";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -561,6 +562,16 @@ const CIVITAI_FAMS = {
 const famOf = c => CIVITAI_FAMS[c?.fam] ? c.fam : "sdxl";  // a model added before there were families is SDXL
 const civitaiPackUrl = (fam, sparse) => `https://cobaltpear.github.io/packs/civitai-${fam}${sparse ? "-sparse" : ""}.json`, civitaiWorker = fam => `https://github.com/cobaltpear/civitai-${fam}`;
 const archFam = arch => Object.keys(CIVITAI_FAMS).find(f => CIVITAI_FAMS[f].arch && CIVITAI_FAMS[f].arch === arch);
+const hfLink = s => /^https:\/\/huggingface\.co\/[\w.-]+\/[\w.-]+/.test(s);
+// a pasted Hugging Face model link → the same facts a list row has (its pipeline, Gated, NSFW), for the «… Universal» worker of its family
+async function hfModel(link) {
+  const name = link.match(/^https:\/\/huggingface\.co\/([\w.-]+\/[\w.-]+)/)[1];
+  const r = await fetch(`https://huggingface.co/api/models/${name}`);
+  if (!r.ok) throw new Error(`Hugging Face answered ${r.status} for ${name}`);
+  const m = await r.json(), tags = m.tags || [], arch = tags.map(t => /^diffusers:(\w+)$/.exec(t)?.[1]).find(Boolean);
+  if (!archFam(arch)) throw new Error(`A Hugging Face link works for ${Object.values(CIVITAI_FAMS).filter(f => f.arch).map(f => f.name).join(", ").replace(/, ([^,]+)$/, " and $1")} models. For other models, paste the address of a worker repo made for them`);
+  return { id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), label: name.split("/").pop(), setup_pick: m.id || name, arch, gated: !!m.gated, nsfw: tags.includes("not-for-all-audiences") };
+}
 const civitaiLink = s => /^https:\/\/civitai\.(com|green|red)\/models\/\d+/.test(s);
 async function civitaiInfo(link) {
   const api = path => fetch("https://civitai.com/api/v1/" + path).then(r => { if (!r.ok) throw new Error(`Civitai answered ${r.status} for this link`); return r.json(); });
@@ -594,7 +605,7 @@ function singleFile(c) {
 async function hfCheckpointInfo(c) {
   const fam = archFam(c.arch) || "sdxl", F = CIVITAI_FAMS[fam];
   if (!(await singleFile(c)))
-    throw new Error(`${c.label} has only diffusers folders on Hugging Face, no single-file checkpoint, so a worker copy can't load it — press Add to run it as it is`);
+    throw new Error(`${c.label} has only diffusers folders on Hugging Face, no single-file checkpoint, so a worker copy can't load it — find it in the model list and press Add to run it as it is`);
   if (fam !== "sdxl") { const schnell = /schnell/i.test(c.setup_pick);
     return { fam, hf: true, gated: !!c.gated || undefined, id: "hf-" + c.id, version: `https://huggingface.co/${c.setup_pick}`, name: c.label, version_name: "", base: F.name, nsfw: !!c.nsfw,
              sampler: F.sampler, schedule: F.schedule || "", steps: schnell ? 4 : F.steps[0], cfg: F.cfg[0], clip: 1, negative: "", words: [] }; }
@@ -650,8 +661,8 @@ const byLabel = list => [...list].sort((a, b) => a.label.localeCompare(b.label))
 const freshPacks = new Set();  // packs changed by the last update check
 // a list model under its own tab, your own worker by what its pack does (packKind)
 const kindOf = p => catalogOf(p)?.kind || packKind(p);
-// what an added model is, as on its list row: its kind, NSFW, Gated — or Custom, your own worker (not on the list)
-const packTags = p => { const c = catalogOf(p); return [kindOf(p), catalog.length && !c && "Custom", (c?.nsfw || p.nsfw) && "NSFW", c?.gated && "Gated"].filter(Boolean).map(t => `<span class="gated">${esc(t)}</span>`).join(""); };
+// what an added model is, as on its list row: its kind, NSFW, Gated — or Own worker (not on the list)
+const packTags = p => { const c = catalogOf(p); return [kindOf(p), catalog.length && !c && "Own worker", (c?.nsfw || p.nsfw) && "NSFW", c?.gated && "Gated"].filter(Boolean).map(t => `<span class="gated">${esc(t)}</span>`).join(""); };
 function renderPacks() {
   nameCopies();
   // one line per model so a long list stays easy to scan; the note shows on hover
@@ -813,14 +824,6 @@ const CUSTOM = "custom";
 let kind = "", shown = "";  // the tab picked last, and the one shown (the first, until the picked one exists); a search looks in every tab
 try { kind = localStorage.getItem("catalog-kind") || ""; } catch {}
 const setupOf = p => !p.setup ? null : p.setup.startsWith("@") ? setups[p.setup.slice(1)] || null : { url: p.setup_url || "", steps: p.setup };
-// Custom shows once Hugging Face says the model has a single file — a model with only diffusers folders can't go on a worker copy.
-// Asked only for the rows on screen, so a long list doesn't make a request per model.
-const customSeen = new IntersectionObserver(es => es.forEach(e => {
-  if (!e.isIntersecting) return;
-  customSeen.unobserve(e.target);
-  const b = e.target.querySelector("[data-cat-custom]"), c = catalog.find(c => c.url === b.dataset.catCustom);
-  if (c) singleFile(c).then(ok => { b.hidden = !ok; }, () => {});
-}));
 function renderCatalog() {
   // an added model stays — adding it again makes a second copy, for another endpoint (RunPod and Modal side by side)
   const rest = catalog, added = c => packs.some(p => p.src === c.url || p.id === "hf-" + c.id);
@@ -829,12 +832,11 @@ function renderCatalog() {
   $("catalog-box").hidden = !kinds.length;
   shown = kinds.includes(kind) ? kind : kinds[0] ?? "";
   $("kinds").hidden = kinds.length < 2;
-  $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}">${esc(k === CUSTOM ? "Custom" : k || "Other")}</button>`).join("");
+  $("kinds").innerHTML = kinds.map(k => `<button type="button" data-kind="${esc(k)}"${k === CUSTOM ? ' class="own"' : ""}>${esc(k === CUSTOM ? "＋ Your own worker" : k || "Other")}</button>`).join("");
   $("catalog").innerHTML = kinds.map(k => rest.filter(c => (c.kind || "") === k).map(c =>
     `<div class="pack cat" data-kind="${esc(k)}" data-name="${esc(c.label.toLowerCase())}"><div class="top"><b title="${esc(c.note || "")}">${esc(c.label)}</b>${c.nsfw ? `<span class="gated">NSFW</span>` : ""}${c.gated ? `<span class="gated">Gated</span>` : ""}
-    ${archFam(c.arch) ? `<button class="pill" type="button" hidden data-cat-custom="${esc(c.url)}" title="Run it on your own copy of the «${CIVITAI_FAMS[archFam(c.arch)].name} Universal» worker instead — LoRAs work there (counts as your own worker)">Custom</button>` : ""}<button class="pill" type="button" data-cat="${esc(c.url)}"${added(c) ? ` title="Add it once more, for another endpoint"` : ""}>${added(c) ? "Add another" : "Add"}</button></div></div>`).join("")).join("");
+    <button class="pill" type="button" data-cat="${esc(c.url)}"${added(c) ? ` title="Add it once more, for another endpoint"` : ""}>${added(c) ? "Add another" : "Add"}</button></div></div>`).join("")).join("");
   findPacks();
-  $("catalog").querySelectorAll("[data-cat-custom]").forEach(b => customSeen.observe(b.closest(".pack")));
 }
 // The list is RunPod's own, made the way RunPod makes it: Hugging Face models by downloads, kept if vLLM-Omni runs them.
 // So the order follows popularity, new models come in and dropped ones go by themselves (models already added stay).
@@ -887,11 +889,6 @@ fetch(CATALOG_URL, { cache: "no-cache" }).then(r => r.json()).then(async j => {
   try { catalog = await liveCatalog(catalog); renderPacks(); fillChips(); } catch {}  // Hugging Face out of reach — the fixed list stays
 }).catch(() => {});
 $("catalog").addEventListener("click", async e => {
-  if (e.target.dataset.catCustom) {
-    const c = catalog.find(c => c.url === e.target.dataset.catCustom);
-    try { await civitaiAdd(await hfCheckpointInfo(c)); } catch (err) { alert(err.message); }
-    return;
-  }
   const url = e.target.dataset.cat;
   if (!url) return;
   const c = catalog.find(c => c.url === url);
@@ -992,6 +989,7 @@ $("pack-add").addEventListener("click", async () => {
   try {
     let added;
     if (civitaiLink(url)) added = await civitaiAdd(await civitaiInfo(url));
+    else if (hfLink(url)) added = await civitaiAdd(await hfCheckpointInfo(await hfModel(url)));
     else {
       const d = await fetchPack(url), fam = typeof d.civitai === "string" && CIVITAI_FAMS[d.civitai];  // its pack names only the family
       // the «… Universal» worker (or a copy of it) — the model it runs is the Civitai link, not the repo
