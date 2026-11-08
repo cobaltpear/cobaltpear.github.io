@@ -201,7 +201,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.11.07.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.11.08.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -247,7 +247,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.11.07.1";
+const VERSION = "2026.11.08.1";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -554,6 +554,8 @@ const CIVITAI_FAMS = {
           arch: "ZImagePipeline", min: 3e9, gpu: 24, disk: 40, build: 25, sampler: "Euler", schedule: "simple", steps: [8, 4, 60], cfg: [1, 1, 8] },
   sd15: { name: "SD 1.5", bases: b => ["SD 1.5", "SD 1.5 LCM", "SD 1.5 Hyper"].includes(b), takes: "SD 1.5 checkpoints",
           min: 1.5e9, gpu: 16, disk: 20, build: 10, sampler: "DPM++ 2M Karras", steps: [25, 1, 80], cfg: [7, 1, 20] },
+  anima: { name: "Anima", bases: b => b === "Anima", takes: "Anima models", min: 3e9, gpu: 24, disk: 40, build: 25,
+          sampler: "ER SDE", schedule: "simple", steps: [30, 4, 80], cfg: [4, 1, 10], tip: "Start the prompt with «masterpiece, best quality, score_7,» and use Danbooru tags or plain sentences." },
   // video with sound from your picture; its workflow has no CFG (BasicGuider), and its shift stays as the pack has it.
   // sparse: a second pack with sparse attention (civitai-…-sparse.json) for models whose creator recommends it
   "minimax-h3": { name: "MiniMax H3", bases: b => b === "MiniMax H3", takes: "MiniMax H3 models", min: 15e9, gpu: 48, disk: 80, build: 30,
@@ -614,7 +616,7 @@ async function hfCheckpointInfo(c) {
            sampler: fast ? "DPM++ SDE" : "DPM++ 2M", schedule: "Karras", steps: fast ? 6 : 30, cfg: fast ? 2 : anime ? 6 : 5, clip: anime ? 2 : 1, negative: "", words: [] };
 }
 // A1111 sampler names (as Civitai shows them) → ComfyUI sampler and scheduler
-const SAMPLERS = { "Euler a": "euler_ancestral", "Euler": "euler", "DPM++ 2M": "dpmpp_2m", "DPM++ 2M SDE": "dpmpp_2m_sde", "DPM++ SDE": "dpmpp_sde", "DPM++ 2S a": "dpmpp_2s_ancestral",
+const SAMPLERS = { "Euler a": "euler_ancestral", "Euler A": "euler_ancestral", "ER SDE": "er_sde", "Euler": "euler", "DPM++ 2M": "dpmpp_2m", "DPM++ 2M SDE": "dpmpp_2m_sde", "DPM++ SDE": "dpmpp_sde", "DPM++ 2S a": "dpmpp_2s_ancestral",
                    "DPM++ 3M SDE": "dpmpp_3m_sde", "DPM2": "dpm_2", "DPM2 a": "dpm_2_ancestral", "Heun": "heun", "LMS": "lms", "DDIM": "ddim", "UniPC": "uni_pc", "LCM": "lcm" };
 const SCHEDULERS = { karras: "karras", exponential: "exponential", "sgm uniform": "sgm_uniform", simple: "simple", beta: "beta", normal: "normal" };
 // a name ComfyUI doesn't have keeps the one the family's workflow already has (SDXL: Euler a, normal)
@@ -1261,19 +1263,6 @@ function setPicture(blob) {
   else { if (picture) createImageBitmap(picture).then(b => { if (blob === picture) picAspect = b.width / b.height; }, () => {}); img.src = picUrl; vid.removeAttribute("src"); }
   fitPicture();
 }
-// a video's last frame as a PNG, for a model that starts from a picture
-function lastFrame(blob) {
-  return new Promise((ok, no) => {
-    const v = Object.assign(document.createElement("video"), { muted: true, preload: "auto", src: URL.createObjectURL(blob) }), done = () => URL.revokeObjectURL(v.src);
-    v.onerror = () => { done(); no(new Error("the browser can't read it")); };
-    v.onloadedmetadata = () => { v.currentTime = isFinite(v.duration) ? Math.max(0, v.duration - 0.01) : 1e9; };  // a recorded WebM may not know its length: far past it lands on the end
-    v.onseeked = () => {
-      const c = Object.assign(document.createElement("canvas"), { width: v.videoWidth, height: v.videoHeight });
-      c.getContext("2d").drawImage(v, 0, 0);
-      c.toBlob(b => { done(); b ? ok(b) : no(new Error("no frame")); }, "image/png");
-    };
-  });
-}
 // big photos are made smaller first (longest side 2048) so the request stays well under RunPod's size limit
 async function fitFile(file) {
   const bmp = await createImageBitmap(file), k = Math.min(1, 2048 / Math.max(bmp.width, bmp.height));
@@ -1657,7 +1646,7 @@ function itemHtml(t, it) {
   // a finished picture can be the start of the next one (Image To Image / Image To Video)
   const use = it.media.map((m, i) => m.kind === "image" ? `<button type="button" data-use="${esc(it.id)}" data-i="${i}" title="Start the next one from this picture">Use as picture</button>` : "").join("");
   const pack = packs.find(p => p.id === it.packId);
-  const cont = pack && (canContinue(pack) || takesImage(pack)) ? it.media.map((m, i) => m.kind === "video" ? `<button type="button" data-cont="${esc(it.id)}" data-i="${i}" title="Make the next scene, starting where this video ends">Continue</button>` : "").join("") : "";
+  const cont = pack && canContinue(pack) ? it.media.map((m, i) => m.kind === "video" ? `<button type="button" data-cont="${esc(it.id)}" data-i="${i}" title="Make the next scene, starting where this video ends">Continue</button>` : "").join("") : "";
   const edit = it.status === "COMPLETED" ? `<button type="button" data-edit="${esc(it.id)}" title="Put the prompt and this seed back in the box">Edit</button>` : "";
   const det = it.sent ? `<button type="button" data-details="${esc(it.id)}" title="Everything that was sent to the model">Details</button>` : "";
   const sent = it.sent && opened.has(it.id) ? `<div class="sent">${esc(it.sent.join("\n"))}</div>` : "";
@@ -1688,11 +1677,8 @@ $("feed").addEventListener("click", e => {
   if (d.cont) {  // this video goes in as the start, its model is chosen — write what happens next and send
     const it = turns.flatMap(t => t.items).find(i => i.id === d.cont);
     if (!it?.blobs?.[+d.i]) return;
-    const pack = packs.find(p => p.id === it.packId);
     choose([it.packId]);
-    // MiniMax H3 takes the end of the video itself; other picture-to-video models start from its last frame
-    if (pack && !canContinue(pack)) lastFrame(it.blobs[+d.i]).then(setPicture, e => alert(`Couldn't take the video's last frame: ${e.message}`));
-    else setPicture(it.blobs[+d.i]);
+    setPicture(it.blobs[+d.i]);
     $("prompt").select(); $("prompt").focus();
     return;
   }
