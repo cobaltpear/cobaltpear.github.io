@@ -201,7 +201,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.11.09.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.11.09.2 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -312,7 +312,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.11.09.1";
+const VERSION = "2026.11.09.2";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -632,6 +632,8 @@ const CIVITAI_FAMS = {
           sampler: "Euler", schedule: "simple", steps: [10, 4, 30], cfg: [1, 1, 4], tip: "Write full sentences. No negative prompt." },
   moss: { name: "MOSS Image", bases: b => b === "MOSS Image", takes: "MOSS Image models", min: 5e9, gpu: 24, disk: 40, build: 25,
           sampler: "ER SDE", schedule: "simple", steps: [25, 4, 80], cfg: [2.5, 1, 8] },
+  "qwen-2": { name: "Qwen Image 2", bases: b => ["Qwen 2", "Qwen 2.1"].includes(b), takes: "Qwen Image 2 and 2.1 models", min: 5e9, gpu: 24, disk: 40, build: 25,
+          sampler: "Euler", schedule: "simple", steps: [25, 4, 60], cfg: [1, 1, 8], tip: "Turbo models want 8 steps. Best at 2 megapixels or more." },
   anima: { name: "Anima", bases: b => b === "Anima", takes: "Anima models", min: 3e9, gpu: 24, disk: 40, build: 25,
           sampler: "ER SDE", schedule: "simple", steps: [30, 4, 80], cfg: [4, 1, 10], tip: "Start the prompt with «masterpiece, best quality, score_7,» and use Danbooru tags or plain sentences." },
   // video with sound from your picture; its workflow has no CFG (BasicGuider), and its shift stays as the pack has it.
