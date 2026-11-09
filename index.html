@@ -201,7 +201,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
   <label>Backup</label>
   <div class="add"><button id="backup-save" class="pill" type="button">Save to a file</button><label class="pill">Load from a file…<input id="backup-load" type="file" accept=".json,application/json" hidden></label></div>
   <div class="hint" id="backup-state">Models, endpoint IDs, LoRAs and settings in one file, to bring back after clearing site data or in another browser. Keys and tokens are left out — paste them again. Pictures are not in it — download the ones you keep.</div>
-  <div class="hint">Cobalt Pear 2026.11.08.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
+  <div class="hint">Cobalt Pear 2026.11.09.1 · <a href="https://github.com/cobaltpear/cobaltpear.github.io/discussions" target="_blank" rel="noopener">Feedback</a> — screenshots welcome, just paste them in</div>
 </form></div>
 <div id="v-price" class="sheet page" hidden><div class="card">
   <b>Pricing</b>
@@ -247,7 +247,7 @@ body:not(.tune) [data-lora-w], body:not(.tune) [data-lora-s] { display: none; }
 // The key lives in memory only (gone on reload); packs and endpoint IDs in localStorage; results with their files in IndexedDB (kept across reloads).
 // Built from standalone/src/page.html by standalone/build.py — edit the source, not simple.html.
 const RUNPOD_API = "https://api.runpod.ai/v2";
-const VERSION = "2026.11.08.1";
+const VERSION = "2026.11.09.1";
 // The app's words by language (src/lang/*.json): new and changed text goes there, called by tr("key", {name: value}).
 // Same file shape as i18next (flat keys, {{name}} slots), so moving to it later means loading these files there with keySeparator: false.
 // The browser's language picks; a word a language lacks comes in English. Values are put in as given — escape them first.
@@ -544,8 +544,15 @@ const revealed = new Set();
 // per family: the Civitai base models it takes, the Hugging Face pipeline that has the same files, the RunPod sizes,
 // and the settings when its example pictures say nothing usable (cfg = Flux guidance for FLUX.1)
 const CIVITAI_FAMS = {
-  sdxl: { name: "SDXL", bases: b => b.startsWith("SDXL") || ["Pony", "Illustrious", "NoobAI"].includes(b), takes: "SDXL, Pony, Illustrious and NoobAI checkpoints",
+  // SDXL and the three big SDXL lines each have their own worker: a Hugging Face SDXL file goes to «SDXL Universal», which takes any of them
+  sdxl: { name: "SDXL", bases: b => b.startsWith("SDXL"), takes: "SDXL 1.0 checkpoints (and SDXL Lightning, Turbo and Hyper)",
           arch: "StableDiffusionXLPipeline", min: 3e9, gpu: 16, disk: 20, build: 15, sampler: "Euler a", steps: [25, 1, 80], cfg: [6, 1, 20] },
+  illustrious: { name: "Illustrious", bases: b => b === "Illustrious", takes: "Illustrious checkpoints", min: 3e9, gpu: 16, disk: 20, build: 15,
+          sampler: "Euler a", steps: [28, 1, 80], cfg: [5.5, 1, 20], tip: "Start the prompt with «masterpiece, best quality,» and use Danbooru tags." },
+  noobai: { name: "NoobAI", bases: b => b === "NoobAI", takes: "NoobAI checkpoints (eps and v-pred)", min: 3e9, gpu: 16, disk: 20, build: 15,
+          sampler: "Euler a", steps: [28, 1, 80], cfg: [5, 1, 20], tip: "Use Danbooru tags. A v-pred model wants Euler and a low CFG (about 3–5); its Civitai page says which it is." },
+  pony: { name: "Pony", bases: b => b === "Pony", takes: "Pony checkpoints", min: 3e9, gpu: 16, disk: 20, build: 15,
+          sampler: "Euler a", steps: [25, 1, 80], cfg: [7, 1, 20], tip: "Start the prompt with «score_9, score_8_up, score_7_up,»." },
   flux: { name: "FLUX.1", bases: b => ["Flux.1 D", "Flux.1 S", "Flux.1 Krea"].includes(b), takes: "FLUX.1 dev, schnell and Krea models",
           arch: "FluxPipeline", min: 5e9, gpu: 24, disk: 40, build: 25, sampler: "Euler", schedule: "simple", steps: [25, 4, 60], cfg: [3.5, 1.5, 6] },
   chroma: { name: "Chroma", bases: b => b === "Chroma", takes: "Chroma models", min: 5e9, gpu: 24, disk: 40, build: 25,
@@ -554,6 +561,12 @@ const CIVITAI_FAMS = {
           arch: "ZImagePipeline", min: 3e9, gpu: 24, disk: 40, build: 25, sampler: "Euler", schedule: "simple", steps: [8, 4, 60], cfg: [1, 1, 8] },
   sd15: { name: "SD 1.5", bases: b => ["SD 1.5", "SD 1.5 LCM", "SD 1.5 Hyper"].includes(b), takes: "SD 1.5 checkpoints",
           min: 1.5e9, gpu: 16, disk: 20, build: 10, sampler: "DPM++ 2M Karras", steps: [25, 1, 80], cfg: [7, 1, 20] },
+  krea2: { name: "Krea 2", bases: b => b === "Krea 2", takes: "Krea 2 models", min: 5e9, gpu: 24, disk: 40, build: 25,
+          sampler: "Euler", schedule: "simple", steps: [52, 4, 80], cfg: [3.5, 1, 10], tip: "Write full sentences. No negative prompt." },
+  "krea2-turbo": { name: "Krea 2 Turbo", bases: b => b === "Krea 2 Turbo", takes: "Krea 2 Turbo models", min: 5e9, gpu: 24, disk: 40, build: 25,
+          sampler: "Euler", schedule: "simple", steps: [10, 4, 30], cfg: [1, 1, 4], tip: "Write full sentences. No negative prompt." },
+  moss: { name: "MOSS Image", bases: b => b === "MOSS Image", takes: "MOSS Image models", min: 5e9, gpu: 24, disk: 40, build: 25,
+          sampler: "ER SDE", schedule: "simple", steps: [25, 4, 80], cfg: [2.5, 1, 8] },
   anima: { name: "Anima", bases: b => b === "Anima", takes: "Anima models", min: 3e9, gpu: 24, disk: 40, build: 25,
           sampler: "ER SDE", schedule: "simple", steps: [30, 4, 80], cfg: [4, 1, 10], tip: "Start the prompt with «masterpiece, best quality, score_7,» and use Danbooru tags or plain sentences." },
   // video with sound from your picture; its workflow has no CFG (BasicGuider), and its shift stays as the pack has it.
@@ -592,7 +605,7 @@ async function civitaiInfo(link) {
            sparse: F.sparse && /sparse|sparsity/i.test(v.description || "") || undefined,  // its creator's words decide the first pick; the model's row can switch it
            sampler: most("sampler") || F.sampler, schedule: most("Schedule type") || F.schedule || "",
            steps: within(+most("steps"), schnell ? [4, 1, 8] : F.steps), cfg: within(+most("cfgScale"), F.cfg),
-           clip: +most("clipSkip") || (base === "SDXL 1.0" || fam === "sd15" ? 1 : 2), negative: most("negativePrompt") || "", words: v.trainedWords || [] };
+           clip: +most("clipSkip") || (fam === "sdxl" || fam === "sd15" ? 1 : 2), negative: most("negativePrompt") || "", words: v.trainedWords || [] };
 }
 // a Hugging Face SDXL, FLUX.1 or Z-Image model on your own copy of the same worker: it needs a single-file model, as the worker's build.sh picks it
 const singleFiles = new Map();  // repo → promise of whether it has one, asked once
